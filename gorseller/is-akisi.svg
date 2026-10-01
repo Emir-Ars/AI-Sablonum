@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="730" viewBox="0 0 1240 730" role="img" aria-labelledby="title desc">
+  <title id="title">Planlama, tek alt adım uygulaması ve durma</title>
+  <desc id="desc">Önce genel yol haritası, sonra seçilen aşamanın ayrıntılı planı hazırlanır. Kullanıcı tek alt adımı uygulamayı açıkça ister. Ajan kodu ve doğrulamayı tamamlar, kayıtları günceller, özet ve commit önerisinden sonra durur. Araç değişiminde kayıtlar okunur; sonraki adım için yeni yönlendirme gerekir.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#526784"/></marker>
+  </defs>
+  <rect width="1240" height="730" rx="24" fill="#f3f6fb"/>
+  <g font-family="Segoe UI, Arial, sans-serif">
+    <text x="48" y="57" font-size="30" font-weight="700" fill="#162d4d">Büyük resmi koru, tek alt adımı tamamla</text>
+    <text x="48" y="94" font-size="20" fill="#526784">Plan kabulü uygulama izni değildir • Metinle tanımlanan çalışma düzeni</text>
+    <rect x="48" y="137" width="330" height="173" rx="18" fill="#fff" stroke="#c1cfe1" stroke-width="2"/>
+    <rect x="455" y="137" width="330" height="173" rx="18" fill="#fff" stroke="#c1cfe1" stroke-width="2"/>
+    <rect x="862" y="137" width="330" height="173" rx="18" fill="#e9effa" stroke="#93afd4" stroke-width="2"/>
+    <g font-size="24" font-weight="700" fill="#162d4d">
+      <text x="73" y="180">1. Genel yol haritası</text>
+      <text x="480" y="180">2. Seçilen aşama</text>
+      <text x="887" y="180">3. Açık yönlendirme</text>
+    </g>
+    <g font-size="20" fill="#334e70">
+      <text x="73" y="225">İhtiyaç ve ana başlıklar</text>
+      <text x="73" y="263">Ürün kodu yazılmaz</text>
+      <text x="480" y="225">Alt adımlar + kabul ölçütleri</text>
+      <text x="480" y="263">Doğrulama yöntemi belirlenir</text>
+      <text x="887" y="225">“Yalnız 1.1'i uygula”</text>
+      <text x="887" y="263">İzin kullanıcının mesajıdır</text>
+    </g>
+    <path d="M392 222 H439" fill="none" stroke="#526784" stroke-width="3" marker-end="url(#arrow)"/>
+    <path d="M799 222 H846" fill="none" stroke="#526784" stroke-width="3" marker-end="url(#arrow)"/>
+    <path d="M1027 321 V357" fill="none" stroke="#526784" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="862" y="370" width="330" height="185" rx="18" fill="#e9f7ee" stroke="#89bba0" stroke-width="2"/>
+    <rect x="455" y="370" width="330" height="185" rx="18" fill="#e9f7ee" stroke="#89bba0" stroke-width="2"/>
+    <rect x="48" y="370" width="330" height="185" rx="18" fill="#fff4df" stroke="#dec38e" stroke-width="2"/>
+    <g font-size="24" font-weight="700" fill="#162d4d">
+      <text x="887" y="413">4. Tek adımı bitir</text>
+      <text x="480" y="413">5. Kayıtları güncelle</text>
+      <text x="73" y="413">6. Özetle ve dur</text>
+    </g>
+    <g font-size="20" fill="#334e70">
+      <text x="887" y="457">Kod + ilgili kontrol + düzeltme</text>
+      <text x="887" y="493">Gerekli tüm dosyalar birlikte</text>
+      <text x="887" y="531">Yeni kapsam için kullanıcı kararı</text>
+      <text x="480" y="457">Plan + Günlük + ilgili karar</text>
+      <text x="480" y="493">Devir: güncel durum özeti</text>
+      <text x="480" y="531">Başarısız / atlanan sonuç ayrı</text>
+      <text x="73" y="457">Sonuç + commit önerisi</text>
+      <text x="73" y="493">1.2'ye otomatik geçiş yok</text>
+      <text x="73" y="531">Commit ve push ayrıca onaylı</text>
+    </g>
+    <path d="M846 462 H799" fill="none" stroke="#526784" stroke-width="3" marker-end="url(#arrow)"/>
+    <path d="M439 462 H392" fill="none" stroke="#526784" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="48" y="594" width="1144" height="93" rx="18" fill="#162d4d"/>
+    <text x="73" y="630" font-size="22" font-weight="700" fill="#fff">Araç değişimi: devir hazırla → yeni sohbet → kayıtları ve Git durumunu oku</text>
+    <text x="73" y="664" font-size="20" fill="#d5e3f5">Önce durumu özetle. Kayıttaki “sonraki adım” izin değildir; kullanıcı uygulama kapsamını seçer.</text>
+  </g>
+</svg>
