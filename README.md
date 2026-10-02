@@ -2,7 +2,7 @@
 
 **Amaç:** Her yeni projede aynı çalışma düzenini kullanmak; planı birlikte hazırlamak, tek alt adımı uygulamak ve Codex ile Claude arasında repo kayıtlarıyla devam etmek.
 
-> 🚧 **Hedef sürüm: v0.1.0 — geliştirme paketi.** **1.1 ve 1.2 tamamlandı; 4 adımın 2'si doğrulandı.** Yerel kurucu hazırdır; elle denetim betiği ve VS Code davranış denemeleri sonraki adımlardır. Tamamlanmış `v0.1.0` sürüm etiketi/yayını henüz yoktur.
+> 🚧 **Hedef sürüm: v0.1.0 — geliştirme paketi.** **1.1–1.3 tamamlandı; 4 adımın 3'ü doğrulandı.** Yerel kurucu, elle denetim ve bağımlılıksız test betiği hazırdır; gerçek VS Code davranış denemeleri 1.4'tedir. Tamamlanmış `v0.1.0` sürüm etiketi/yayını henüz yoktur.
 
 ## 🧭 Çalışma düzeni
 
@@ -34,7 +34,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\kur.ps1 -TargetDirecto
 
 Kurucu yerel dosyaları kullanır; Git veya ağ işlemi yapmaz. Bütün kaynaklar, hedef dosyalar ve klasör üstleri yazmadan önce kontrol edilir. Kurulacak dosyalardan biri zaten varsa hiçbir dosyaya dokunmadan durur. İlgisiz proje dosyaları korunur. Kaynak paketle iç içe klasörler, global araç/eklenti/profil dizinleri ve bağlantılı/yönlendirilmiş yollar kabul edilmez. Yeni hedef oluşturulabilir; otomatik üzerine yazma veya güncelleme yapılmaz.
 
-Bu geliştirme paketinde **7 dosya** kurulur:
+Bu geliştirme paketinde **8 dosya** kurulur:
 
 ```text
 KitapTakip/
@@ -46,16 +46,19 @@ KitapTakip/
 │   ├── GUNLUK.md
 │   └── DEVIR.md
 └── .ai-sablon/
+    ├── kontrol.ps1
     └── kurulum.json
 ```
 
 `AGENTS.md` yalnız ortak kurallardan, `CLAUDE.md` adımsız kısa içe aktarımdan oluşur. Dört kayıt boş başlangıç içerikleriyle gelir. Kaynak deponun README'si, geliştirme kayıtları veya bu projeye özel kuralları kopyalanmaz.
 
-Kurulum kaydı `.ai-sablon/kurulum.json` sürümü, paket durumunu, saat dilimi içeren tarihi, kaynakların ve kurulan dosyaların SHA-256 özetlerini taşır. Özet, dosyanın o kopyasını tanımaya yarar; kullanıcı onayını veya kodun doğruluğunu kanıtlamaz. Kayıt kendi özetini içermez. `pendingFeatures` alanında elle denetim ve VS Code denemelerinin beklediği görünür; mevcut pakette kontrol betiği kurulmaz.
+Kurulum kaydı `.ai-sablon/kurulum.json` sürümü, paket durumunu, saat dilimi içeren tarihi, kaynakların ve kurulan dosyaların SHA-256 özetlerini taşır. Özet, dosyanın o kopyasını tanımaya yarar; kullanıcı onayını veya kodun doğruluğunu kanıtlamaz. Kayıt kendi özetini içermez. Kontrol betiği kuruluma dahildir; `pendingFeatures` alanında yalnız VS Code davranış denemeleri bekler.
+
+Bu özetler kurulum anını kaydeder. Ajanın AGENTS ve proje belgelerini sonradan güncellemesi normaldir; bu fark denetimde bilgi olarak gösterilir. Denetim, kopyalanan kaynak/çıktı özetlerinin kayıt içindeki eşleşmesini de kontrol eder. Kaynak dosyaların hedef projede bulunmasını veya merkezi kaynağın güncel hâline erişilmesini istemez.
 
 Yazma/kopyalama sırasında hata olursa işlem başarısız biter; oluşan dosya ve klasörler listelenir. Otomatik silme yapılmaz. Tamamlanmamış hedefte yeniden çalıştırma çakışma nedeniyle durur; rapordaki dosyalar incelenmeden üzerine yazılmaz.
 
-1.3 tamamlandığında gerçek kontrol betiği kaynak listesinin parçası olacak. İlk sürümün tamamlanması ve araç uyumluluğunun değerlendirilmesi 1.4'ten sonra mümkündür. GitHub'ın “Use this template” özelliği depoyu bütünüyle kopyaladığı için burada hedefe yerel kurulumun yerini tutmaz.
+İlk sürümün tamamlanması ve araç uyumluluğunun değerlendirilmesi 1.4'ten sonra mümkündür. GitHub'ın “Use this template” özelliği depoyu bütünüyle kopyaladığı için burada hedefe yerel kurulumun yerini tutmaz.
 
 Proje içinde kopya kullanmak, mevcut global veya üst klasör talimatlarını otomatik olarak etkisizleştirmez. Sabitlenen şey şablon dosyalarıdır; model ve eklenti sürümleri ayrıca değişebilir.
 
@@ -73,8 +76,8 @@ Proje içinde kopya kullanmak, mevcut global veya üst klasör talimatlarını o
 | [sablon/docs/PLAN.md](sablon/docs/PLAN.md) ve diğer üç kayıt | Yeni projeye aktarılacak boş başlangıç belgeleri | Mevcut |
 | [gorseller/kurulum.svg](gorseller/kurulum.svg), [is-akisi.svg](gorseller/is-akisi.svg) | Kurulum hedefi ve çalışma akışı | Mevcut |
 | [kur.ps1](kur.ps1), [surum.json](surum.json) | Yerel kurucu ve kaynak sürüm/kapsam bilgisi | Mevcut; geliştirme paketi |
-| `sablon/.ai-sablon/kontrol.ps1` | Hedef projenin elle kayıt denetimi | 1.3'te hazırlanacak |
-| `tests/Kurulum.Tests.ps1` | Ek paket gerektirmeyen kurulum test betiği | 1.3'te hazırlanacak |
+| [sablon/.ai-sablon/kontrol.ps1](sablon/.ai-sablon/kontrol.ps1) | Kurulan hedef projenin salt okunur kayıt denetimi | Mevcut |
+| [tests/Kurulum.Tests.ps1](tests/Kurulum.Tests.ps1) | Ek paket gerektirmeyen kurulum ve denetim kabul testleri | Mevcut; kaynak depoda çalışır |
 
 `docs/` ve `sablon/docs/` aynı geçmişin iki kopyası değildir: ilki bu şablonun gerçek çalışmasını, ikincisi kurulacak yeni projenin boş başlangıcını taşır. Kurulumdan sonra hedef projede belgeler `docs/` altında bulunur.
 
@@ -159,11 +162,47 @@ Bu düzen Singleton tasarım desenini otomatik sağlamaz ve her projeye Singleto
 
 ## ✅ Elle denetim ve Git
 
-1.3'te hazırlanacak denetim betiği dosya varlığını, belge bağlantılarını, sürüm kaydını ve eksik çalışma kayıtlarını kontrol edecek. **Kullanıcı onayının gerçekliğini, testlerin gerçekten çalıştığını veya kodun doğru olduğunu kanıtlamayacak.** İlk sürümde hook, otomatik engelleme veya yeni paket bulunmayacak.
+Kurulumdan sonra hedef proje kökünde elle denetimi çalıştırabilirsin:
+
+```powershell
+powershell.exe -NoProfile -File .\.ai-sablon\kontrol.ps1
+```
+
+Başka klasörden çalıştırırken hedefi açıkça ver; makine tarafından okunabilir çıktı için `-AsJson` kullanılabilir:
+
+```powershell
+powershell.exe -NoProfile -File .\sablon\.ai-sablon\kontrol.ps1 -ProjectDirectory "C:\Projeler\KitapTakip" -AsJson
+```
+
+İkinci komut kaynak şablon deposunda çalıştırılır; denetlenen yer `KitapTakip` hedefidir. Kaynak deponun kendi geliştirme kayıtlarını hedef projenin kurulum kaydı gibi kontrol etmez. Windows betikleri engelliyorsa kurulum bölümündeki gibi yalnız ilgili işleme `-ExecutionPolicy Bypass` eklenebilir.
+
+| Çıkış kodu | Anlamı | Örnek |
+|---|---|---|
+| **0** | Denetlenen yapıda hata/uyarı bulunmadı | Yapısal olarak uygun kayıtlar |
+| **1** | En az bir yapısal hata var | Eksik zorunlu dosya, bozuk JSON, bozuk yerel bağlantı |
+| **2** | Hata yok, en az bir uyarı var | Eksik çalışma kaydı, Plan–Devir farkı veya geliştirme paketi |
+
+Şu anki geliştirme paketinde temiz kurulumdan sonra bile **2 beklenir**: paket geliştirme durumundadır ve 1.4 araç denemeleri beklemektedir. Uyarı, kurulumun başarısız olduğu anlamına gelmez. Hata varsa 1 önceliklidir. JSON çıktısındaki `status`, `errors`, `warnings` ve `findings` alanları aynı ayrımı taşır.
+
+Denetim sekiz zorunlu dosyayı, varsa README'yi, CLAUDE içe aktarımını, UTF-8/BOM düzenini, yerel bağlantıları ve kurulum kaydının biçim/tutarlılığını inceler. Plan'ın gerçek alt adımlarını Günlük ve Devir ile karşılaştırır. Planlanmış işe tamamlanmış kayıt şartı koymaz; boş başlangıç, kod blokları ve HTML yorumlarını çalışma kaydı saymaz. Yerel bağlantının dosya hedefini kontrol eder; başlık parçalarını, dış URL'leri ve proje dışındaki yerel dosyaları denetlemez. Tam bir Markdown çözümleyicisi değildir.
+
+Belgelerin otomatik düzeltilmesi yoktur. Ajan bulguları değerlendirir; yetkili çalışma adımı içindeki eksik kayıtları tamamlar. **Kullanıcı onayının gerçekliğini, testlerin gerçekten çalıştığını veya kodun doğru olduğunu kanıtlamaz.** Git deposu oluşturmaz; dosya yazmaz veya ağ işlemi yapmaz. İlk sürümde hook, otomatik engelleme ve yeni paket yoktur.
+
+Kayıtlar başlangıç belgelerindeki standart alanları kullanır. Günlük'te gerçek kayıt başlığı `## yyyy-MM-dd HH:mm — açıklama`; alanlar `Çalışma birimi`, `Yapılan iş ve nedeni`, `Değişen dosyalar`, `Doğrulama`, `Başarısız`, `Atlanan`, `Çalıştırılamayan` biçimindedir. Kararlar `## K-001 — açıklama` gibi başlıklar ve `Karar`, `Gerekçe`, `Etki` alanlarıyla; Devir, Plan ile aynı `Güncel çalışma birimi` alanıyla yazılır. Serbest biçimli bir metnin anlamı veya onayın gerçekliği bu alanlardan çıkarılmaz.
+
+Şablon deposunun kurulum/denetim kabul testlerini kaynak depo kökünde çalıştır:
+
+```powershell
+powershell.exe -NoProfile -File .\tests\Kurulum.Tests.ps1
+```
+
+Bu testler Windows PowerShell 5.1 ve mevcut .NET dışında paket istemez. Test yordamı repo içinde bulunur; kaynak/kurulum örnekleri yalnız Windows'un geçici klasöründe oluşturulur. Gerçek projeye veya global skill/ayar dosyasına yazılmaz. Sonuç sayıları ve `SONUCLAR.json` yolu konsola verilir. Geçici örnekler otomatik silinmez. Test çıkışı 0: bütün kontroller geçti; 1: başarısızlık; 2: başarısızlık yok ama atlanan kontrol var. Ortam örnek klasör yönlendirmesi oluşturamıyorsa ilgili test gerekçesiyle atlanır; geçti diye gösterilmez.
+
+Bu test dosyası hedef projeye kopyalanmaz; hedefteki ürünün kendi testleri seçilen teknolojiye göre ayrıca hazırlanır. Testlerin sentetik kayıtlarla temiz sonuç üretmesi, gerçek VS Code denemelerinin tamamlandığı anlamına gelmez.
 
 Git deposunu, GitHub uzak adresini ve Git kimliğini sen kurarsın. Ajan yerel doğrulamaları tamamlar; dosya listesi ve Türkçe commit mesajı önerir. Açık onaydan sonra commit yapılır; push ayrıca onay gerektirir. `.gitignore` kapsamındaki yerel dosyalar commit edilmez; toplu `git add .` kullanılmaz.
 
-[GitHub deposu](https://github.com/Emir-Ars/AI-Sablonum) ve yerel Git deposu kullanıcı tarafından oluşturuldu; dal `main`, uzak adres `origin` olarak tanımlı. 1.1 commit ve push edildi; 1.2'nin yerel kurulum kontrolleri tamamlandı. Commit geçmişi Git'ten, yapılan kontroller Günlük'ten okunur. GitHub'a push ve sürüm etiketi ayrı işlemlerdir. Kurallar Windows PowerShell 5.1'i esas alır: `.ps1` UTF-8 BOM'lu, Markdown/JSON/YAML UTF-8 BOM'suz saklanır.
+[GitHub deposu](https://github.com/Emir-Ars/AI-Sablonum) ve yerel Git deposu kullanıcı tarafından oluşturuldu; dal `main`, uzak adres `origin` olarak tanımlı. 1.1 ve 1.2 commit ve push edildi. Commit geçmişi Git'ten, yapılan kontroller Günlük'ten okunur. GitHub'a push ve sürüm etiketi ayrı işlemlerdir. Kurallar Windows PowerShell 5.1'i esas alır: `.ps1` UTF-8 BOM'lu, Markdown/JSON/YAML UTF-8 BOM'suz saklanır.
 
 ## 🛠️ Geliştirme durumu
 
@@ -171,7 +210,7 @@ Git deposunu, GitHub uzak adresini ve Git kimliğini sen kurarsın. Ajan yerel d
 |---|---|---|
 | 1.1 | Kurallar, dört kayıt modeli, README, iki SVG | Doğrulandı — 12 Markdown, 2 SVG |
 | 1.2 | Kurucu ve kaynak sürüm kaydı | Doğrulandı — 41 kabul kontrolü |
-| 1.3 | Elle denetim ve bağımlılıksız test betiği | Planlandı |
+| 1.3 | Elle denetim ve bağımlılıksız test betiği | Doğrulandı — Windows PowerShell 5.1'de 60 kabul kontrolü |
 | 1.4 | Codex/Claude VS Code davranış denemeleri | Planlandı |
 
 Ayrıntılı durum ve kabul ölçütleri [Plan](docs/PLAN.md), gerçek kontrol sonuçları [Günlük](docs/GUNLUK.md), sonraki oturumun başlangıcı [Devir](docs/DEVIR.md) dosyasındadır. Genel planın kabulü sonraki adımların uygulama izni değildir.

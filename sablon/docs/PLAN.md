@@ -26,7 +26,8 @@ Durumlar: Planlandı, Uygulanıyor, Uygulandı — doğrulama bekliyor, Doğrula
 
 ## Doğrulama düzeni
 
-- Mevcut araçlar ve komutlar: Henüz belirlenmedi.
+- Projeye özel test araçları ve komutları: Henüz belirlenmedi.
+- Şablonun [elle kayıt denetimi](../.ai-sablon/kontrol.ps1): Proje kökünde `powershell.exe -NoProfile -File .\.ai-sablon\kontrol.ps1`. Kayıt yapısını kontrol eder; ürün testinin yerine geçmez. Çıkış 0: hata/uyarı yok, 1: hata, 2: uyarı.
 - Alt adım: İlgili testler ve kod denetimleri.
 - Ana aşama kapanışı: Mevcut testlerin tamamı ve gerekli bütünleşme kontrolleri.
 - Yeni araç: Bağımlılık eklenmeden önce kullanıcı kararı.

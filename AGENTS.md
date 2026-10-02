@@ -107,7 +107,7 @@ Bu kurallar, projeyi öğrenerek geliştiren kullanıcı için Codex ve Claude i
 - Bu depo genel amaçlı Codex–Claude proje şablonunun kaynağıdır; örnek ürün uygulaması değildir.
 - Ortak kuralların kaynağı `genel/KURALLAR.md` dosyasıdır. Ortak değişikliği önce orada yap; bu girişteki ortak bölümü ve kaynak özetini aynı adımda güncelle. Bu depoya özel bölüm ayrı korunur.
 - Bu deponun belge haritası yukarıdaki `docs/PLAN.md`, `docs/KARARLAR.md`, `docs/GUNLUK.md`, `docs/DEVIR.md` dosyalarıdır. `sablon/docs/` hedef projeler için temiz başlangıçtır; buraya şablon geliştirme geçmişi yazılmaz.
-- Çalışma birimi, kullanıcının açıkça seçtiği Plan alt adımıdır. 1.1 tamamlandı; kullanıcı 1.2'yi uygulamayı istedi. Adım sonunda doğrulama ve kayıtlar tamamlanır; sonraki adım için durulur.
+- Çalışma birimi, kullanıcının açıkça seçtiği Plan alt adımıdır; güncel durum Plan'dan okunur. Adım sonunda doğrulama ve kayıtlar tamamlanır; sonraki adım için durulur.
 - İlk sürümde yeni paket, hook, global skill veya ayar değişikliği yoktur. Kurucu ağ/Git işlemi yapmayacaktır.
-- Belge/SVG değişikliğinde bağlantı, içerik, kodlama ve görsel kontrolü yapılır. Kurucu davranışı izole geçici hedeflerde Windows PowerShell 5.1 ile doğrulanır. 1.3 test/denetim betikleri henüz hazır değilse çalıştırılmış gösterilmez.
+- Belge/SVG değişikliğinde bağlantı, içerik, kodlama ve görsel kontrolü yapılır. Kurucu/denetim davranışı `tests/Kurulum.Tests.ps1` ile izole geçici hedeflerde Windows PowerShell 5.1 üzerinde doğrulanır; gerçek ürün verisi kullanılmaz. Kaynak deponun kendi kayıtları kurulan hedef projenin metadata'sı gibi denetlenmez.
 - Git deposunu kullanıcı kurar. Git yoksa durumu bildir; depo, uzak adres veya kimlik ayarlama. Yayın ve VS Code davranış denemeleri yapılmadan uyumluluk doğrulandı deme.

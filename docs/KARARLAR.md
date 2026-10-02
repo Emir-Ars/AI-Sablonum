@@ -79,3 +79,24 @@ Bu dosya şablon deposunun karar geçmişidir; hedef projeye kopyalanmaz. Aşağ
 - Kullanıcı kararı: “commit edebilir miyiz fakat şu anda windows görev zamanlayıcı çalışıyor?” mesajıyla commit istedi; çalışan görevlerin etkisini sordu.
 - Gerekçe: Görev Zamanlayıcı çalışırken commit işleminin uygunluğunu netleştirmek istedi.
 - Etki: Çalışan görevler salt okunur kontrol edildi; tanımlı eylemlerinde bu depoya açık referans görülmedi. Önceden önerilen 9 dosya ve Türkçe mesajla yerel commit yapılır. Görevleri durdurma/değiştirme, push veya 1.3 uygulama izni yoktur.
+
+## K-012 — 1.2 push onayı
+
+- Kayıt zamanı: 2026-10-02 11:07; önceki mesajın zamanı değildir.
+- Kullanıcı kararı: “pushla”.
+- Gerekçe: Ayrıca bir gerekçe verilmedi.
+- Sonuç ve etki: `1e2fdfcd662a6e17e372ab50f054d903764ebffd` commiti `origin/main` dalına gönderildi. Çalışma ağacı temizdi; yeni adım uygulanmadı. Sürüm etiketi/yayını oluşturulmadı. Bu onay 1.3 değişikliklerine uygulanmaz.
+
+## K-013 — Yalnız 1.3 uygulama izni
+
+- Kayıt zamanı: 2026-10-02 11:07.
+- Kullanıcı kararı: “1.3 e geçelim”.
+- Gerekçe: Önceden kabul edilen sıradaki alt adımı seçti; ayrıca bir gerekçe verilmedi.
+- Etki: Elle denetim betiği, bağımlılıksız kurulum testleri, kaynak listesine ekleme ve ilgili belgeler tamamlanır. Global dosya/ayar veya görev değişikliği, yeni paket, 1.4 uygulaması, commit veya push izni yoktur.
+
+## K-014 — 1.3 commit/push ve 1.4 uygulama onayı
+
+- Tarih/saat: 2026-10-02 11:39; kayıt zamanı kabuktan alındı.
+- Karar: Kullanıcı “commit push yap 1.4 son adımı için ilerleyelim artk bitsin ki yeni projeme rahatça başlayayım” dedi. 1.3'ün Devir'deki 14 dosyalık commit kapsamı ve push işlemi açıkça onaylandı; ardından 1.4 uygulaması seçildi.
+- Gerekçe: Kullanıcı şablonun son adımını tamamlayıp yeni projesine başlamak istiyor.
+- Etki: Önce doğrulanmış 1.3 commit edilip gönderilir; ardından gerçek Codex/Claude VS Code davranışları değerlendirilir. Genel plan kabulü yerine doğrudan kullanıcı izni vardır. Global skill/ayar değişikliği, yeni paket, sürüm etiketi/yayını veya sonraki bir commit bu karardan kendiliğinden çıkarılmaz.

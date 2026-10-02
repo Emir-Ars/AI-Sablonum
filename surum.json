@@ -8,8 +8,9 @@
     { "source": "sablon/docs/PLAN.md", "target": "docs/PLAN.md" },
     { "source": "sablon/docs/KARARLAR.md", "target": "docs/KARARLAR.md" },
     { "source": "sablon/docs/GUNLUK.md", "target": "docs/GUNLUK.md" },
-    { "source": "sablon/docs/DEVIR.md", "target": "docs/DEVIR.md" }
+    { "source": "sablon/docs/DEVIR.md", "target": "docs/DEVIR.md" },
+    { "source": "sablon/.ai-sablon/kontrol.ps1", "target": ".ai-sablon/kontrol.ps1" }
   ],
   "generatedFiles": [ "CLAUDE.md", ".ai-sablon/kurulum.json" ],
-  "pendingFeatures": [ "manual-validation", "editor-behavior-validation" ]
+  "pendingFeatures": [ "editor-behavior-validation" ]
 }

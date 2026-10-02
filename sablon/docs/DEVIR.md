@@ -9,6 +9,8 @@
 
 ## Şu anki durum
 
+- Güncel çalışma birimi: Henüz seçilmedi.
+
 Proje ihtiyacı henüz netleştirilmedi. Tamamlanmış aşama veya alt adım yok.
 
 ## Yarım kalan işler
