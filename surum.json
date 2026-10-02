@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "version": "0.1.0",
+  "packageStatus": "development",
+  "minimumPowerShellVersion": "5.1",
+  "copyFiles": [
+    { "source": "genel/KURALLAR.md", "target": "AGENTS.md" },
+    { "source": "sablon/docs/PLAN.md", "target": "docs/PLAN.md" },
+    { "source": "sablon/docs/KARARLAR.md", "target": "docs/KARARLAR.md" },
+    { "source": "sablon/docs/GUNLUK.md", "target": "docs/GUNLUK.md" },
+    { "source": "sablon/docs/DEVIR.md", "target": "docs/DEVIR.md" }
+  ],
+  "generatedFiles": [ "CLAUDE.md", ".ai-sablon/kurulum.json" ],
+  "pendingFeatures": [ "manual-validation", "editor-behavior-validation" ]
+}

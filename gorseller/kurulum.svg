@@ -1,13 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1240" height="660" viewBox="0 0 1240 660" role="img" aria-labelledby="title desc">
   <title id="title">Sabit şablon sürümünden proje içine kurulum</title>
-  <desc id="desc">Kullanıcı belirli GitHub sürümünü indirir. Yerel kurucu hedef projeye talimatları ve boş kayıtları kopyalar. Eski projeler kendi sürümünde kalır. Global skill ve ayarlara yazılmaz. Kurucu 1.2 adımında hazırlanacaktır.</desc>
+  <desc id="desc">Kullanıcı seçilen kaynak paketini indirir. Yerel kurucu hedef projeye talimatları, boş kayıtları ve sürüm kaydını kopyalar. Eski projeler kendi kopyasında kalır. Global skill ve ayarlara yazılmaz. Kurucu hazırdır; kontrol betiği ve araç denemeleri sonraki adımlardır.</desc>
   <defs>
     <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#526784"/></marker>
   </defs>
   <rect width="1240" height="660" rx="24" fill="#f3f6fb"/>
   <g font-family="Segoe UI, Arial, sans-serif">
     <text x="48" y="57" font-size="30" font-weight="700" fill="#162d4d">Bir sürüm seç, her projede kendi kopyasını kullan</text>
-    <text x="48" y="94" font-size="20" fill="#526784">Hedef kurulum akışı • Kurucu 1.2 adımında hazırlanacak</text>
+    <text x="48" y="94" font-size="20" fill="#526784">Yerel kurucu hazır • Kontrol betiği ve araç denemeleri bekliyor</text>
     <rect x="48" y="136" width="330" height="193" rx="18" fill="#fff" stroke="#c1cfe1" stroke-width="2"/>
     <rect x="455" y="136" width="330" height="193" rx="18" fill="#fff" stroke="#c1cfe1" stroke-width="2"/>
     <rect x="862" y="136" width="330" height="193" rx="18" fill="#e9f7ee" stroke="#89bba0" stroke-width="2"/>
@@ -17,14 +17,14 @@
       <text x="887" y="179">3. Hedef proje</text>
     </g>
     <g font-size="20" fill="#334e70">
-      <text x="73" y="221">GitHub'dan seçilen etiket</text>
+      <text x="73" y="221">GitHub'dan seçilen paket</text>
       <text x="73" y="255">Örnek hedef: v0.1.0</text>
       <text x="73" y="292">İndirmeyi kullanıcı yapar</text>
       <text x="480" y="221">Önce yol ve çakışma kontrolü</text>
       <text x="480" y="255">Sonra dosya kopyalama</text>
       <text x="480" y="292">Ağ veya Git işlemi yok</text>
       <text x="887" y="221">AGENTS.md + CLAUDE.md</text>
-      <text x="887" y="255">Boş kayıtlar + denetim</text>
+      <text x="887" y="255">Dört boş proje kaydı</text>
       <text x="887" y="292">Sürüm + tarih + özetler</text>
     </g>
     <path d="M392 233 H439" fill="none" stroke="#526784" stroke-width="3" marker-end="url(#arrow)"/>

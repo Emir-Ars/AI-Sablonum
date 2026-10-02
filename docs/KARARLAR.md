@@ -58,3 +58,24 @@ Bu dosya şablon deposunun karar geçmişidir; hedef projeye kopyalanmaz. Aşağ
 - Kullanıcının gerekçesi: Codex/Claude'un ilk kurulum düzenine dönmek ve kuralları yeni projelerin içinde tutmak.
 - Etki: Önce eski kurucunun hedefleri ve mevcut dosyalar salt okunur incelenir. Yeni talep yalnız eski kurulumla ilişkili eklemeler için global dosyalara dokunmama kuralına istisnadır; ürünün yerleşik skill, eklenti, kimlik veya genel ayarları kapsam dışıdır. Dosyaların ilk kurulumda boş olduğu varsayılmaz; yedekler ve kaynak eşleşmesi değerlendirilir.
 - Sonuç: 2026-10-02 00:30 kaydında doğrulanmış iki global dosya ve sekiz özel skill klasörü silinmeden yedeğe taşındı. Eski kurucunun eklediği `attribution` alanı, en eski ayar yedeğinde bulunmadığı doğrulanarak kaldırıldı. Diğer Claude ayarları aynı kaldı; kaynak depo ve eski yedekler korunuyor.
+
+## K-009 — 1.1 push onayı ve o oturumda durma
+
+- Kayıt zamanı: 2026-10-02 10:02; önceki kullanıcı mesajının zamanı değildir.
+- Kullanıcı kararı: Önceki mesajında yalnız push yapılmasını, sonraki adımın o oturumda uygulanmamasını istedi.
+- Kullanıcının gerekçesi: Sonraki adıma ertesi gün geçmek istediğini belirtti.
+- Sonuç ve etki: `1dde9d6` commiti `origin/main` dalına gönderildi; uzak dal aynı commit kimliğiyle doğrulandı. Sürüm etiketi/yayını oluşturulmadı. Bu onay yeni 1.2 değişikliklerine uygulanmaz.
+
+## K-010 — Yalnız 1.2 uygulama izni
+
+- Kayıt zamanı: 2026-10-02 10:02.
+- Kullanıcı kararı: “1.2 ye başlayalım”.
+- Gerekçe: Önceden kabul edilen plandaki sıradaki alt adımı açıkça seçti; ayrıca bir gerekçe verilmedi.
+- Etki: Yerel kurucu, kaynak sürüm bilgisi, bu davranışın doğrulaması ve ilgili belgeler tamamlanır. 1.3/1.4'e geçilmez; 1.2 commit ve push için ayrı onay beklenir. Global skill, eklenti ve ayarlar bu adımda değiştirilmez.
+
+## K-011 — 1.2 yerel commit onayı
+
+- Kayıt zamanı: 2026-10-02 10:24.
+- Kullanıcı kararı: “commit edebilir miyiz fakat şu anda windows görev zamanlayıcı çalışıyor?” mesajıyla commit istedi; çalışan görevlerin etkisini sordu.
+- Gerekçe: Görev Zamanlayıcı çalışırken commit işleminin uygunluğunu netleştirmek istedi.
+- Etki: Çalışan görevler salt okunur kontrol edildi; tanımlı eylemlerinde bu depoya açık referans görülmedi. Önceden önerilen 9 dosya ve Türkçe mesajla yerel commit yapılır. Görevleri durdurma/değiştirme, push veya 1.3 uygulama izni yoktur.

@@ -2,7 +2,7 @@
 
 **Amaç:** Her yeni projede aynı çalışma düzenini kullanmak; planı birlikte hazırlamak, tek alt adımı uygulamak ve Codex ile Claude arasında repo kayıtlarıyla devam etmek.
 
-> 🚧 **Hedef sürüm: v0.1.0.** **1.1 tamamlandı ve belge/görsel kontrolleri yapıldı; 4 adımın 1'i doğrulandı.** Kurulum, denetim ve VS Code davranış denemeleri sonraki adımlardır. GitHub'da yayımlanmış veya kurulum için hazır bir sürüm değildir.
+> 🚧 **Hedef sürüm: v0.1.0 — geliştirme paketi.** **1.1 ve 1.2 tamamlandı; 4 adımın 2'si doğrulandı.** Yerel kurucu hazırdır; elle denetim betiği ve VS Code davranış denemeleri sonraki adımlardır. Tamamlanmış `v0.1.0` sürüm etiketi/yayını henüz yoktur.
 
 ## 🧭 Çalışma düzeni
 
@@ -18,17 +18,44 @@ Ajanın problem çözme yeteneğine sınır konmaz; uygulama kapsamı senin seç
 
 ![Sabit şablon sürümünden proje içine yerel kurulum hedefi](gorseller/kurulum.svg)
 
-Hedef akış şöyle olacak: GitHub'dan belirli sürümü indir → yerel kaynak paketinden hedef klasöre kur → o projede aynı sürümü kullan. Her proje kendi kopyasını taşıyacak. Global skill, eklenti veya kurulum dosyası değiştirilmeyecek; eski projeler kendiliğinden güncellenmeyecek.
+Akış: GitHub'dan seçilen paketi indir → yerel kaynak paketinden hedef klasöre kur → o projede aynı dosya kopyasını kullan. Yayımlanmış sürüm etiketi hazır olduğunda onu seçebilirsin. Şu anki paket geliştirme durumundadır; şablonun tamamı bitmiş değildir. Her proje kendi kopyasını taşır. Global skill, eklenti veya kurulum dosyası değişmez; eski projeler kendiliğinden güncellenmez.
 
-**Aşağıdaki komut 1.2 tamamlandıktan sonra kullanılacak. `kur.ps1` henüz yok; şimdi çalıştırılamaz.** Komut, indirdiğin şablon paketinin kökünde Windows PowerShell 5.1 ile çalıştırılacak:
+Komutu, indirdiğin şablon paketinin kökünde Windows PowerShell 5.1 ile çalıştır. `TargetDirectory` kurulacak proje klasörüdür; yeni veya mevcut olabilir. Göreli yol verirsen PowerShell'de bulunduğun klasöre göre çözülür:
 
 ```powershell
 powershell.exe -NoProfile -File .\kur.ps1 -TargetDirectory "C:\Projeler\KitapTakip"
 ```
 
-Kurucu yerel dosyaları kullanacak; Git veya ağ işlemi yapmayacak. Hedef yollar ve çakışmalar dosya yazılmadan kontrol edilecek. Kurulacak dosyalardan biri zaten varsa işlem hiçbir dosyaya dokunmadan duracak. Kaynak paket içine kurulum yapılmayacak. Kurulum sürümü, tarihi ve kaynak dosyaların SHA-256 özetleri kaydedilecek; kopyalama hatasında hangi dosyaların oluştuğu bildirilecek.
+Windows “running scripts is disabled on this system” hatası verirse aynı komutu yalnız o işlem için çalıştırma izniyle kullanabilirsin; global çalıştırma politikası değişmez:
 
-Kurucu, şablon deposunun kendi geçmişini taşımayacak. Yeni projeye ortak talimatlar, boş başlangıç belgeleri, elle kontrol betiği ve sürüm kaydı aktarılacak. GitHub'ın “Use this template” özelliği depoyu bütünüyle kopyaladığı için bu projede hedefe kurulumun yerini tutmaz.
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\kur.ps1 -TargetDirectory "C:\Projeler\KitapTakip"
+```
+
+Kurucu yerel dosyaları kullanır; Git veya ağ işlemi yapmaz. Bütün kaynaklar, hedef dosyalar ve klasör üstleri yazmadan önce kontrol edilir. Kurulacak dosyalardan biri zaten varsa hiçbir dosyaya dokunmadan durur. İlgisiz proje dosyaları korunur. Kaynak paketle iç içe klasörler, global araç/eklenti/profil dizinleri ve bağlantılı/yönlendirilmiş yollar kabul edilmez. Yeni hedef oluşturulabilir; otomatik üzerine yazma veya güncelleme yapılmaz.
+
+Bu geliştirme paketinde **7 dosya** kurulur:
+
+```text
+KitapTakip/
+├── AGENTS.md
+├── CLAUDE.md
+├── docs/
+│   ├── PLAN.md
+│   ├── KARARLAR.md
+│   ├── GUNLUK.md
+│   └── DEVIR.md
+└── .ai-sablon/
+    └── kurulum.json
+```
+
+`AGENTS.md` yalnız ortak kurallardan, `CLAUDE.md` adımsız kısa içe aktarımdan oluşur. Dört kayıt boş başlangıç içerikleriyle gelir. Kaynak deponun README'si, geliştirme kayıtları veya bu projeye özel kuralları kopyalanmaz.
+
+Kurulum kaydı `.ai-sablon/kurulum.json` sürümü, paket durumunu, saat dilimi içeren tarihi, kaynakların ve kurulan dosyaların SHA-256 özetlerini taşır. Özet, dosyanın o kopyasını tanımaya yarar; kullanıcı onayını veya kodun doğruluğunu kanıtlamaz. Kayıt kendi özetini içermez. `pendingFeatures` alanında elle denetim ve VS Code denemelerinin beklediği görünür; mevcut pakette kontrol betiği kurulmaz.
+
+Yazma/kopyalama sırasında hata olursa işlem başarısız biter; oluşan dosya ve klasörler listelenir. Otomatik silme yapılmaz. Tamamlanmamış hedefte yeniden çalıştırma çakışma nedeniyle durur; rapordaki dosyalar incelenmeden üzerine yazılmaz.
+
+1.3 tamamlandığında gerçek kontrol betiği kaynak listesinin parçası olacak. İlk sürümün tamamlanması ve araç uyumluluğunun değerlendirilmesi 1.4'ten sonra mümkündür. GitHub'ın “Use this template” özelliği depoyu bütünüyle kopyaladığı için burada hedefe yerel kurulumun yerini tutmaz.
 
 Proje içinde kopya kullanmak, mevcut global veya üst klasör talimatlarını otomatik olarak etkisizleştirmez. Sabitlenen şey şablon dosyalarıdır; model ve eklenti sürümleri ayrıca değişebilir.
 
@@ -45,11 +72,11 @@ Proje içinde kopya kullanmak, mevcut global veya üst klasör talimatlarını o
 | [docs/DEVIR.md](docs/DEVIR.md) | Bu şablonda kaldığımız yerin güncel özeti | Mevcut |
 | [sablon/docs/PLAN.md](sablon/docs/PLAN.md) ve diğer üç kayıt | Yeni projeye aktarılacak boş başlangıç belgeleri | Mevcut |
 | [gorseller/kurulum.svg](gorseller/kurulum.svg), [is-akisi.svg](gorseller/is-akisi.svg) | Kurulum hedefi ve çalışma akışı | Mevcut |
-| `kur.ps1`, `surum.json` | Yerel kurucu ve kaynak sürüm bilgisi | 1.2'de hazırlanacak |
+| [kur.ps1](kur.ps1), [surum.json](surum.json) | Yerel kurucu ve kaynak sürüm/kapsam bilgisi | Mevcut; geliştirme paketi |
 | `sablon/.ai-sablon/kontrol.ps1` | Hedef projenin elle kayıt denetimi | 1.3'te hazırlanacak |
 | `tests/Kurulum.Tests.ps1` | Ek paket gerektirmeyen kurulum test betiği | 1.3'te hazırlanacak |
 
-`docs/` ve `sablon/docs/` aynı geçmişin iki kopyası değildir: ilki bu şablonun gerçek çalışmasını, ikincisi kurulacak yeni projenin boş başlangıcını taşır. Kurucu tamamlandığında hedef projede belgeler `docs/` altında bulunacak.
+`docs/` ve `sablon/docs/` aynı geçmişin iki kopyası değildir: ilki bu şablonun gerçek çalışmasını, ikincisi kurulacak yeni projenin boş başlangıcını taşır. Kurulumdan sonra hedef projede belgeler `docs/` altında bulunur.
 
 Ortak bir kural değişecekse önce `genel/KURALLAR.md` düzenlenir. Bu deponun `AGENTS.md` ortak bölümü de kaynağa uydurulur; proje bölümü korunur. Yeni sürüm eski projelere kendiliğinden yayılmaz. Yalnız projeye özel teknoloji, mimari veya komut kararı ise ilgili projenin `AGENTS.md` proje bölümüne yazılır.
 
@@ -136,14 +163,14 @@ Bu düzen Singleton tasarım desenini otomatik sağlamaz ve her projeye Singleto
 
 Git deposunu, GitHub uzak adresini ve Git kimliğini sen kurarsın. Ajan yerel doğrulamaları tamamlar; dosya listesi ve Türkçe commit mesajı önerir. Açık onaydan sonra commit yapılır; push ayrıca onay gerektirir. `.gitignore` kapsamındaki yerel dosyalar commit edilmez; toplu `git add .` kullanılmaz.
 
-[GitHub deposu](https://github.com/Emir-Ars/AI-Sablonum) ve yerel Git deposu kullanıcı tarafından oluşturuldu; dal `main`, uzak adres `origin` olarak tanımlı. Bu belgeler 1.1 kapsamını taşır; commit geçmişi Git'ten, yapılan kontroller Günlük'ten okunur. GitHub'a push ve sürüm etiketi ayrı işlemlerdir. Kurallar Windows PowerShell 5.1'i esas alır: `.ps1` UTF-8 BOM'lu, Markdown/JSON/YAML UTF-8 BOM'suz saklanır.
+[GitHub deposu](https://github.com/Emir-Ars/AI-Sablonum) ve yerel Git deposu kullanıcı tarafından oluşturuldu; dal `main`, uzak adres `origin` olarak tanımlı. 1.1 commit ve push edildi; 1.2'nin yerel kurulum kontrolleri tamamlandı. Commit geçmişi Git'ten, yapılan kontroller Günlük'ten okunur. GitHub'a push ve sürüm etiketi ayrı işlemlerdir. Kurallar Windows PowerShell 5.1'i esas alır: `.ps1` UTF-8 BOM'lu, Markdown/JSON/YAML UTF-8 BOM'suz saklanır.
 
 ## 🛠️ Geliştirme durumu
 
 | Adım | İçerik | Durum |
 |---|---|---|
 | 1.1 | Kurallar, dört kayıt modeli, README, iki SVG | Doğrulandı — 12 Markdown, 2 SVG |
-| 1.2 | Kurucu ve kaynak sürüm kaydı | Planlandı |
+| 1.2 | Kurucu ve kaynak sürüm kaydı | Doğrulandı — 41 kabul kontrolü |
 | 1.3 | Elle denetim ve bağımlılıksız test betiği | Planlandı |
 | 1.4 | Codex/Claude VS Code davranış denemeleri | Planlandı |
 
