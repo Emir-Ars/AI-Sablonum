@@ -100,3 +100,17 @@ Bu dosya şablon deposunun karar geçmişidir; hedef projeye kopyalanmaz. Aşağ
 - Karar: Kullanıcı “commit push yap 1.4 son adımı için ilerleyelim artk bitsin ki yeni projeme rahatça başlayayım” dedi. 1.3'ün Devir'deki 14 dosyalık commit kapsamı ve push işlemi açıkça onaylandı; ardından 1.4 uygulaması seçildi.
 - Gerekçe: Kullanıcı şablonun son adımını tamamlayıp yeni projesine başlamak istiyor.
 - Etki: Önce doğrulanmış 1.3 commit edilip gönderilir; ardından gerçek Codex/Claude VS Code davranışları değerlendirilir. Genel plan kabulü yerine doğrudan kullanıcı izni vardır. Global skill/ayar değişikliği, yeni paket, sürüm etiketi/yayını veya sonraki bir commit bu karardan kendiliğinden çıkarılmaz.
+
+## K-015 — 1.4 denemeleri için adım adım yönlendirme
+
+- Tarih/saat: 2026-10-02 13:24; kabuktan alınan kayıt zamanı.
+- Karar: Kullanıcı “tamamdır şimdi 1.4ü de halledelim neler yapmam gerekiyor” diyerek önceki 1.4 iznini sürdürdü ve kendi yapacağı işlemleri sordu.
+- Gerekçe: Gerçek VS Code denemelerinin nasıl tamamlanacağını öğrenmek istiyor.
+- Etki: Hazır geçici alanlar kontrol edilir; mesaj sırası ve kabul ölçütleri kılavuzla açıklanır. İlk Codex mesajından başlayarak her gerçek sonuç ayrı değerlendirilir. Kullanıcı mesajının kendisi başarılı deneme sonucu değildir; global ayar/skill veya yeni paket değişikliği yoktur.
+
+## K-016 — Küçük adımları koruma ve son yerel commit
+
+- Tarih/saat: 2026-10-02 13:55; kabuktan alınan kayıt zamanı.
+- Karar: Kullanıcı küçük işlere bölünmesini sevdiğini, biraz yavaşlasa da bu yapıyla düzenli ilerlediğini açıkladı; mevcut yapı uygunsa son commitle bitirmeyi istedi.
+- Gerekçe: Düzenli ve küçük adımlı proje geliştirme tercihinin korunması.
+- Etki: Önceki sadeleştirme önerisi uygulanmaz; ortak kurallar değişmez. Codex'in ikinci cevabı gerçek dosyalarla karşılaştırılır ve mevcut sekiz dosyalık kaynak düzeltmesi/kayıt kapsamı son yerel commite alınır. Kalan altı denemenin yapıldığı veya 1.4'ün tümüyle doğrulandığı sonucu çıkarılmaz; paket geliştirme durumunda kalır. Bu mesaj yeni push veya sürüm yayını onayı değildir.

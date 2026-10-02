@@ -1,60 +1,51 @@
 # Güncel devir notu
 
-- Kayıt zamanı: 2026-10-02 11:39; kabuktan alındı.
-- Proje: Codex–Claude proje şablonu; `v0.1.0` geliştirme paketi, tamamlanmış sürüm yayını yok.
-- Güncel çalışma birimi: **1.3 — tamamlandı ve doğrulandı**. 1.4'e başlanmadı.
-- Durumun kaynağı: [Plan](PLAN.md). Kararlar: [Kararlar](KARARLAR.md). Kontrol sonuçları ve sorun geçmişi: [Günlük](GUNLUK.md).
+- Kayıt zamanı: 2026-10-02 13:55; kabuktan alındı.
+- Proje: Codex–Claude proje şablonu; `v0.1.0` geliştirme paketi. Sürüm etiketi/yayını yok.
+- Güncel durum: **1.1–1.3 doğrulandı; 1.4 kısmen doğrulandı (2/8). Mevcut sonuçlarla son yerel commit onaylandı.**
+- Durum: [Plan](PLAN.md). Kullanıcı tercihi/onayı: [Kararlar](KARARLAR.md). Gerçek kontrol geçmişi: [Günlük](GUNLUK.md). Kalan denemeler: [VS Code kılavuzu](VS_CODE_DENEMELERI.md).
 
-## Git ve dosyalar
+## Git durumu
 
-- Gözlenen baz commit: `1e2fdfcd662a6e17e372ab50f054d903764ebffd` — **Yerel şablon kurucusu ve sürüm kaydını ekle**.
-- Dal `main`, uzak adres `https://github.com/Emir-Ars/AI-Sablonum.git`; kullanıcı kurdu. Git kimliği/uzak adresi değiştirilmedi. 1.2 ayrı onaylarla commit ve push edildi; bu oturum temiz çalışma ağacıyla başladı.
-- Aşağıdaki 14 dosya değişmiş/yeni durumda. Kullanıcı bu 1.3 commitini ve push işlemini açıkça onayladı; kayıt hazırlanırken henüz işlem sonucu yok. Bu not kendisini içerecek gelecekteki commit kimliğini tahmin etmez.
+- Gözlenen baz commit: `a678ce9896e65a46b18ed04cd101332a84f11ddd` — **Elle kayıt denetimi ve bağımlılıksız kurulum testlerini ekle**.
+- 1.3 kullanıcının açık onayıyla commit/push edildi; HEAD ve `origin/main` eşleşti. Bu not son committen önce hazırlanır; yeni kimlik Git geçmişinden okunur, önceden tahmin edilmez.
+- Kullanıcı aşağıdaki sekiz dosyanın son yerel commitini istedi. Yeni push veya GitHub sürüm yayını onayı yok; kalan denemeler başarılı sayılmaz.
 
-## Tamamlanan iş ve doğrulama
+## Doğrulananlar ve sınırlar
 
-- Hedefe kurulan salt okunur denetim betiği dosyaları, basit yerel belge bağlantılarını, sürüm kaydını ve eksik çalışma kayıtlarını kontrol eder. Kaynak/çıktı özetleri kurulum anını kaydeder; belgelerin normal değişmesi hata sayılmaz.
-- Yeni kurulum 8 dosya içerir; kontrol betiği gerçek kaynak dosyasından aktarılır. Temiz başlangıç belgeleri geliştirme geçmişini taşımaz.
-- Windows PowerShell **5.1.26100.9444** üzerinde **60/60 başarılı; başarısız 0, atlanan 0**, test çıkışı 0. Üç betikte ayrıştırma hatası 0; BOM baytları `239 187 191`. Komut, kapsam ve ara hatalar Günlük'tedir.
-- Son test kaydı: `C:\Users\Emir\AppData\Local\Temp\ai-sablon-tests-90ff16eaaada438bbbedc392d64c5c51\SONUCLAR.json`. İzole test verileri geçici klasörde korunur; otomatik toplu silme yok.
-- README, kurulum SVG'si, kayıt modelleri ve bu deponun kayıtları güncellendi. Ortak kaynak, root CLAUDE ve kurucu değişmedi.
-- Son içerik denetiminde 18 dosya ve 42 yerel bağlantı başarılı; ortak kaynak/AGENTS eşleşti, temiz başlangıçlar korundu. Son testten sonra 8 kaynak özeti değişmedi. İki SVG geçerli XML; iki PNG önizleme üretildi ve görüntülenerek okunabilirlik kontrol edildi.
-- UYARI: Paket `development` durumunda; gerçek VS Code davranış denemeleri bekliyor. Temiz kurulumda denetimin çıkış 2 vermesi beklenen uyarıdır. Çıkış 0: hata/uyarı yok; 1: hata; 2: yalnız uyarı.
-- Denetim kullanıcı onayının gerçekliğini, testlerin gerçekten çalıştığını veya kodun doğruluğunu kanıtlamaz. Dış URL/başlık parçaları ve tam Markdown sözdizimi denetlenmez.
-- UYARI: Önizlemede `Fontconfig error: No writable cache directories` tekrar görüldü; PNG üretimi ve görsel inceleme başarılı. Global önbellek değiştirilmedi; uyarı giderilmiş sayılmadı. Ayrıntı Günlük'tedir.
+- Yerel kurucu ve salt okunur kayıt denetimi hazır. Son kod değişikliği, sayısal alt adım bulunmayan dolu genel görüşme kaydının yanlış eksik sayılmasını giderdi; tamamlanan adımın eşleşen Günlük şartı korundu.
+- Windows PowerShell 5.1.26100.9444: **64/64 kabul testi başarılı; başarısız 0, atlanan 0**. Üç betikte BOM/ayrıştırma kontrolü başarılı. Sonuç: `C:\Users\Emir\AppData\Local\Temp\ai-sablon-tests-4315dc8553d34c7a963c10359ed2ea7b\SONUCLAR.json`.
+- C-1: Codex yalnız genel yol haritasını hazırlayıp belgeleri güncelledi; ürün/test kodu yazmadan durdu.
+- C-2: Codex seçilen başlık doğrulama aşamasını kendi ürettiği üç alt adıma ayırdı; kapsam/kabul/doğrulama/durumları yazdı, önerileri kullanıcı kararı saymadı ve kod yazmadan durdu.
+- C-1/C-2 cevapları gerçek deneme dosyalarıyla karşılaştırıldı. Sekiz dosya dışında ürün/test kodu yok. Güncel kaynakla denetim 0 hata, yalnız 2 geliştirme uyarısı verdi; eski deneme kopyası/kayıtları değiştirilmedi.
+- **Yapılmayanlar:** Tek alt adım uygulaması/durma, Claude genel/ayrıntılı plan/uygulama ve iki yönlü devir: kalan 6 kontrol. Tam gerçek araç uyumluluğu veya 1.4 tamamlanması iddia edilmez.
+- Kullanıcı küçük alt adımları sevdiğini açıkladı. Mevcut çalışma kuralları korunur; başlıkları/numaraları ajan üretir, kullanıcı uygulanacak adımı seçer. Sadeleştirme önerisi uygulanmadı.
 
-## Yarım işler ve bekleyenler
+## Uyarılar
 
-- 1.3 kapsamında yarım iş veya çözülmemiş başarısız kabul kontrolü yok. Son belge/görsel denetimi de tamamlandı; gerçek sonuçlar Günlük'tedir.
-- 1.4: Codex/Claude VS Code davranış denemesi yapılmadı; gerçek araç uyumluluğu doğrulandı denmez. Kullanıcı bu adımın uygulamasını açıkça istedi; 1.3 gönderildikten sonra ilerlenir.
-- Yeni paket kurulmadı; global skill, eklenti, ayar/kurulum dosyaları ve Windows görevleri değiştirilmedi. Gerçek projeye kurulum yapılmadı.
-- Önceki ayrı kaldırma talebinin yedeği `C:\Users\Emir\ai-sablon-kaldirma-yedekleri\20261002-002951` konumunda korunur. Bu eski işlem yeni şablon kurucusunun özelliği değildir; tarihsel kanıt Günlük'tedir.
+- UYARI: Paket `development`, bekleyen özellik `editor-behavior-validation`. Temiz denetim çıkışı 2 beklenen geliştirme uyarılarıdır; release yapılmadı.
+- UYARI: Önceki SVG önizlemesinin `Fontconfig error: No writable cache directories` mesajı giderilmiş sayılmadı; PNG üretimi/görsel inceleme başarılıydı.
+- Global skill, eklenti, ayar/kurulum dosyaları, eski projeler ve Windows görevleri değiştirilmedi. Yeni paket/Git yapılandırması kurulmadı.
+- Deneme alanları `C:\Users\Emir\AppData\Local\Temp\ai-sablon-1-4-a786651c2968443bb17472da81303f12` altında korunur. Deneme teknolojisi yalnız PowerShell 5.1; şablon genel amaçlıdır.
 
-## Onaylı 1.3 commit kapsamı
+## Onaylı son commit kapsamı
 
-Türkçe mesaj: **Elle kayıt denetimi ve bağımlılıksız kurulum testlerini ekle**.
-
-Dosyalar tek tek seçilir; geçici test verileri/raporlar ve PNG önizlemeler commit kapsamına alınmaz:
+Türkçe mesaj: **Genel plan kayıt denetimini düzelt ve VS Code deneme sonuçlarını kaydet**.
 
 ```text
-AGENTS.md
 README.md
 docs/PLAN.md
 docs/KARARLAR.md
 docs/GUNLUK.md
 docs/DEVIR.md
-gorseller/kurulum.svg
-sablon/docs/PLAN.md
-sablon/docs/KARARLAR.md
-sablon/docs/GUNLUK.md
-sablon/docs/DEVIR.md
-surum.json
+docs/VS_CODE_DENEMELERI.md
 sablon/.ai-sablon/kontrol.ps1
 tests/Kurulum.Tests.ps1
 ```
 
 ## Devam yönlendirmesi
 
-1. Proje kurallarını, Plan'ı ve bu notu oku; `git status --short` ve `git log --oneline -5` ile disk durumunu karşılaştır. UYARI satırlarını ilk özette bildir.
-2. Kullanıcı 1.3 commit ve push işlemini açıkça onayladı. Yalnız yukarıdaki 14 dosyayı seç; gerçek sonucu Git geçmişinden okuyup kaydet.
-3. Kullanıcı aynı mesajda 1.4 uygulamasını istedi. 1.3 gönderildikten sonra gerçek VS Code davranış denemelerine ilerle; gözlenmeyen sonucu başarılı sayma.
+1. Kurallar, Plan ve Devir'i oku; Git status/log ile karşılaştır. Bu commitin sonucunu Git'ten oku; tekrar commit yapma.
+2. Yeni ürün projesi kullanıcının seçtiği hedefe kurucuyla kurulur; buradaki şablon geliştirme geçmişi hedefe taşınmaz. Bu kapanış yeni ürün projesine yazma izni değildir.
+3. Kalan davranış denemeleri ileride yapılırsa kılavuzu gerçek Plan'a göre takip et; uygulanacak numarayı sabitleme. Gözlenen sonucu kaydetmeden 1.4 doğrulandı veya release oldu deme.
+4. Yeni push, etiket/yayın veya yeni kapsam için doğrudan kullanıcı yönlendirmesi esas alınır. Mevcut global kurulum dosyalarını değiştirme.

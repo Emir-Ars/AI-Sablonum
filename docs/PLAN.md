@@ -4,16 +4,16 @@
 
 - Amaç: Codex ve Claude için proje içinde kalan, sürümü sabit ortak çalışma düzeni hazırlamak.
 - Hedef sürüm: `v0.1.0`; henüz yayımlanmadı.
-- Güncel çalışma birimi: **1.3 — elle denetim ve bağımlılıksız kurulum testleri, tamamlandı ve doğrulandı**.
-- Uygulama izni: Kullanıcı “1.3 e geçelim” diyerek yalnız 1.3'ü açıkça istedi.
-- Son güncelleme: 2026-10-02 11:39; kayıt zamanı kabuktan alındı.
-- Git durumu: Dal `main`, gözlenen baz commit `1e2fdfc`; 1.2 commit/push edildi. Kullanıcı 1.3 commit/push işlemini açıkça onayladı; sonuç henüz bu kayıt hazırlanırken gözlenmedi.
+- Güncel çalışma birimi: **1.4 — kısmen doğrulandı (2/8); mevcut sonuçlar ve kaynak düzeltmesi son commite hazırlanıyor**.
+- Uygulama izni: Kullanıcı önce 1.3 commit/push ve ardından 1.4 uygulamasını istedi; son mesajında küçük adımlı yapıyı koruyarak mevcut sonuçlarla son yerel commiti istedi.
+- Son güncelleme: 2026-10-02 13:55; kayıt zamanı kabuktan alındı.
+- Git durumu: Dal `main`, gözlenen baz commit `a678ce9`; 1.3 commit/push tamamlandı, HEAD ve `origin/main` eşleşti. 1.4 hazırlık belgeleri henüz commit edilmedi.
 
 ## Genel yol haritası
 
 | Aşama | Amaç | Durum |
 |---|---|---|
-| 1 | İlk sürümün belgeleri, yerel kurulumu, elle denetimi ve iki araçta davranış denemesi | 1.1–1.3 doğrulandı; 1.4 planlandı |
+| 1 | İlk sürümün belgeleri, yerel kurulumu, elle denetimi ve iki araçta davranış denemesi | 1.1–1.3 doğrulandı; 1.4 uygulanıyor |
 
 ## Seçilen aşamanın ayrıntıları
 
@@ -22,9 +22,20 @@
 | **1.1** | Ortak kurallar, bu deponun kayıtları, temiz başlangıç belgeleri, README ve iki SVG | Tek adım izni açık; belge rolleri ayrı; anlatım mevcut ve gelecek özellikleri ayırıyor | Bağlantı, içerik tutarlılığı, UTF-8 ve görsel okunabilirlik | Doğrulandı |
 | **1.2** | Yerel `kur.ps1` ve `surum.json` | Ön kontrol; çakışmada yazmama; kaynak içine kurmama; sabit sürüm ve kaynak özetleri; kopyalama hatası bildirimi | Windows PowerShell 5.1'de 41 kabul kontrolü; başarısız 0, atlanan 0 | Doğrulandı |
 | **1.3** | Elle kontrol betiği ve ek bağımlılık gerektirmeyen kurulum testleri | Dosya, bağlantı, sürüm kaydı ve eksik kayıt kontrolü; kanıt sınırları açık | Windows PowerShell 5.1'de 60/60 başarılı; başarısız 0, atlanan 0; üç betikte BOM/ayrıştırma başarılı | Doğrulandı |
-| **1.4** | Codex ve Claude VS Code davranış denemeleri | Yalnız planlama, tek adımda durma, kayıt güncelleme ve araç değişimi gözlenmiş | Her araçta gerçek oturum ve kayıt karşılaştırması | Planlandı; uygulama izni bekliyor |
+| **1.4** | Codex ve Claude VS Code davranış denemeleri | Yalnız planlama, tek adımda durma, kayıt güncelleme ve araç değişimi gözlenmiş | C-1/C-2 doğrulandı (2/8); kaynak düzeltmesi sonrası 64/64 kabul testi başarılı | Kısmen doğrulandı; mevcut sonuçlarla commit, kalan 6 kontrol yapılmadı |
 
 Genel planın kabulü veya bu tablodaki sonraki adım, uygulama izni değildir. Yetkili alt adım tamamlanınca doğrulama ve kayıtlar bitirilir; sonraki adım için durulur.
+
+### 1.4 kapsamı ve kabul ölçütleri
+
+- İki geçici deneme alanı gerçek kurucuyla hazırlandı; kaynak depoda örnek ürün oluşturulmaz. Her alanda 8 dosya, denetimde 0 hata ve beklenen 2 geliştirme uyarısı var.
+- [VS Code deneme kılavuzu](VS_CODE_DENEMELERI.md) her araç için genel plan, ayrıntılı aşama, tek alt adım uygulaması ve diğer araçta yeni sohbetle salt okunur devir kontrolünü tanımlar. Toplam sekiz davranış kontrolü, gerçek cevap/dosya/test sonucu karşılaştırmasıyla değerlendirilir.
+- PowerShell 5.1 yalnız bu izole denemenin teknolojisidir; şablon genel amaçlı kalır. Yeni paket, global ayar/skill değişikliği veya gerçek proje verisi kullanılmaz.
+- Yeni araç önceki sohbet aktarılmadan kayıtları okumalı, son doğrulamayı doğru özetlemeli ve uygulama izni beklemelidir. Deneme alanında Git yokluğunu bildirmesi beklenir; kendiliğinden Git kurulmaz.
+- Dosyada eklenti bulunması, sekiz dosyalı kurulumun başarısı ve elle denetim çıkışı, ajan davranışının doğrulandığını kanıtlamaz. C-1/C-2 cevapları ve dosyaları karşılaştırıldı; diğer altı davranış kontrolü yapılmadı.
+- C-1'de genel görüşmenin dolu çalışma birimi alanı yanlış biçimde eksik sayılıyordu. Kaynak denetim alan doluluğunu sayısal adım eşlemesinden ayıracak şekilde düzeltildi; 64/64 kabul testi başarılı. Güncel kaynakla C-1 denetimi 0 hata, 2 geliştirme uyarısı verdi. Deneme klasörünün eski kurulum kopyası/kayıtları değiştirilmedi.
+- Bu oturumda Codex VS Code arayüzünün otomasyonu Computer Use yönergesi tarafından yasaklanır; gerçek mesajları kullanıcı eklentiye gönderir. Hazır kapsamın değerlendirmesi sonuçlar geldikçe yapılır; doğrulanmamış durum release olarak işaretlenmez.
+- Ana aşama gerçek davranış sonuçlarıyla kapanırken mevcut kurulum/denetim testlerinin tamamı ve uygun içerik kontrolleri yeniden çalıştırılır. GitHub sürüm etiketi/yayını ayrı işlem olarak kalır.
 
 ### 1.3 kapsamı ve kabul ölçütleri
 
@@ -73,8 +84,8 @@ Bu bölüm 1.2'de doğrulanan kapsamı kaydeder. Güncel pakete 1.3'te gerçek k
 
 ## Bekleyen kararlar
 
-- 1.3 commit ve push onayı alındı; aşağıdaki gerçek sonuç kaydı işlemlerden sonra güncellenecek.
-- Kullanıcı 1.4 uygulamasını açıkça istedi; 1.3 gönderildikten sonra son adımın kapsamı ve kabul kontrolleri ele alınacak.
+- 1.3 commit/push tamamlandı. C-1/C-2 doğrulandı. Kullanıcı mevcut küçük adımlı yapıyı koruyup son commiti istedi; kaynak düzeltmesi ve mevcut deneme sonuçları bu sınırla kaydedilir.
+- Kalan altı davranış kontrolü yapılmadı; 1.4'ün tam doğrulaması ve release durumu buradan çıkarılmaz. Bu tur yalnız yerel commit onayı var; yeni push veya GitHub sürüm yayını onayı yok.
 - Yeni bağımlılık veya otomatik güncelleme ekleme kararı yoktur.
 
 Kullanıcının verdiği kararlar [Kararlar](KARARLAR.md) dosyasındadır.
@@ -85,7 +96,7 @@ Kullanıcının verdiği kararlar [Kararlar](KARARLAR.md) dosyasındadır.
 - Elle denetim standart belge başlıkları, alan adları ve alt adım tablosunu tanır; serbest biçimli metnin anlamını veya tüm Markdown özelliklerini çözümleyen bir araç değildir.
 - Kısmi yazma hatası, geçici paket kopyasında kontrollü hata üretilerek doğrulandı; fiziksel disk doluluğu veya gerçek proje erişim hatası yaşandığı iddia edilmiyor.
 - GitHub'da yayın veya etiket yoktur; `v0.1.0` hedef sürümdür.
-- Codex ve Claude VS Code davranışı henüz denenmedi. Talimat dosyası teknik bir izin kilidi veya kusursuz hatırlama garantisi değildir.
+- Codex genel ve ayrıntılı planlama davranışı C-1/C-2'de doğrulandı; tek adım uygulaması, Claude davranışları ve iki yönlü devir henüz denenmedi. Küçük alt adımlarla ilerleme kullanıcının güncel tercihidir; kurallar sadeleştirilmedi. Talimat dosyası teknik bir izin kilidi veya kusursuz hatırlama garantisi değildir.
 - Proje içine kopyalama global ayarları değiştirmez; mevcut global/üst klasör talimatlarının etkisini kendiliğinden ortadan kaldırmaz.
 - Sabit şablon sürümü model, eklenti veya çalışma ortamını sabitlemez.
 - Elle denetim, dosyadaki kaydı kontrol eder; kullanıcının gerçekten izin verdiğini veya testlerin çalıştırıldığını kanıtlamaz.

@@ -425,6 +425,44 @@ Test-Case 'Yanlış adımın günlüğü eksik kaydı karşılamaz' {
     $check = Invoke-Check $f; Assert-Code $check 'W_LOG_MISSING'
 }
 
+Test-Case 'Genel planlama günlüğü sayısal alt adım olmadan geçerlidir' {
+    $f = New-Fixture; Install-Fixture $f
+    Add-Log $f 'Genel yol haritası; uygulama alt adımı seçilmedi.'
+    $check = Invoke-Check $f
+    Assert-Equal $check.data.errors 0 'Genel görüşme kaydı hata değildir'
+    Assert-Equal $check.data.warnings 2 'Yalnız geliştirme ve araç denemesi uyarıları kalmalı'
+    Assert-Code $check 'W_LOG_FIELDS' $false
+}
+
+Test-Case 'Genel planlama kaydında da eksik doğrulama alanı bulunur' {
+    $f = New-Fixture; Install-Fixture $f
+    Add-Log $f 'Genel yol haritası'
+    $path = Join-Path $f.target 'docs/GUNLUK.md'
+    Write-TestFile $path ([IO.File]::ReadAllText($path).Replace('- Doğrulama: örnek-komut;', '- Eksik alan: örnek-komut;'))
+    $check = Invoke-Check $f
+    Assert-Code $check 'W_LOG_FIELDS'
+    $fieldFindings = @($check.data.findings | Where-Object { $_.code -eq 'W_LOG_FIELDS' })
+    Assert-Equal $fieldFindings.Count 1 'Yalnız eksik doğrulama bildirilir'
+    Assert-True ($fieldFindings[0].message.Contains('alan eksik: Doğrulama')) 'Doğrulama alanı doğru adla bildirilir'
+}
+
+Test-Case 'Genel görüşme kaydı tamamlanan alt adımın günlüğünü karşılamaz' {
+    $f = New-Fixture; Install-Fixture $f
+    Set-Plan $f; Set-Handoff $f; Add-Log $f 'Genel yol haritası'
+    $check = Invoke-Check $f
+    Assert-Code $check 'W_LOG_MISSING'
+    Assert-Code $check 'W_LOG_FIELDS' $false
+}
+
+Test-Case 'Eksik çalışma birimi diğer dolu alanlarla geçerli sayılmaz' {
+    $f = New-Fixture; Install-Fixture $f
+    Add-Log $f 'Genel yol haritası'
+    $path = Join-Path $f.target 'docs/GUNLUK.md'
+    Write-TestFile $path ([IO.File]::ReadAllText($path).Replace('- Çalışma birimi: Genel yol haritası', '- Eksik birim: Genel yol haritası'))
+    $check = Invoke-Check $f
+    Assert-Code $check 'W_LOG_FIELDS'
+}
+
 Test-Case 'Gerçek kayıtta eksik doğrulama alanı bulunur' {
     $f = New-Fixture; Install-Fixture $f
     Set-Plan $f; Set-Handoff $f; Add-Log $f

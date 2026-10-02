@@ -263,11 +263,14 @@ try {
         $entries = [regex]::Matches($journal, '(?ms)^## \d{4}-\d{2}-\d{2} \d{2}:\d{2}[^\r\n]*\r?\n(?<body>.*?)(?=^## |\z)')
         foreach ($entry in $entries) {
             $body = $entry.Groups['body'].Value
-            $unit = Get-StepId (Get-Field $body 'Çalışma birimi')
-            if ($unit -eq '') { Add-Finding 'UYARI' 'W_LOG_FIELDS' 'Günlük: tarihli çalışma kaydında Çalışma birimi alanı eksik.'; continue }
-            $loggedSteps[$unit] = $true
+            $unitText = Get-Field $body 'Çalışma birimi'
+            if (-not (Test-FilledField $unitText)) { Add-Finding 'UYARI' 'W_LOG_FIELDS' 'Günlük: tarihli çalışma kaydında Çalışma birimi alanı eksik.'; continue }
+            $unit = Get-StepId $unitText
+            if ($unit -ne '') { $loggedSteps[$unit] = $true }
+            $unitLabel = $unitText
+            if ($unit -ne '') { $unitLabel = $unit }
             foreach ($field in @('Yapılan iş ve nedeni', 'Değişen dosyalar', 'Doğrulama', 'Başarısız', 'Atlanan', 'Çalıştırılamayan')) {
-                if (-not (Test-FilledField (Get-Field $body $field))) { Add-Finding 'UYARI' 'W_LOG_FIELDS' ('Günlük: ' + $unit + ' kaydında alan eksik: ' + $field) }
+                if (-not (Test-FilledField (Get-Field $body $field))) { Add-Finding 'UYARI' 'W_LOG_FIELDS' ('Günlük: ' + $unitLabel + ' kaydında alan eksik: ' + $field) }
             }
         }
         foreach ($unit in $steps.Keys) {

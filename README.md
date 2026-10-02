@@ -202,7 +202,7 @@ Bu test dosyası hedef projeye kopyalanmaz; hedefteki ürünün kendi testleri s
 
 Git deposunu, GitHub uzak adresini ve Git kimliğini sen kurarsın. Ajan yerel doğrulamaları tamamlar; dosya listesi ve Türkçe commit mesajı önerir. Açık onaydan sonra commit yapılır; push ayrıca onay gerektirir. `.gitignore` kapsamındaki yerel dosyalar commit edilmez; toplu `git add .` kullanılmaz.
 
-[GitHub deposu](https://github.com/Emir-Ars/AI-Sablonum) ve yerel Git deposu kullanıcı tarafından oluşturuldu; dal `main`, uzak adres `origin` olarak tanımlı. 1.1 ve 1.2 commit ve push edildi. Commit geçmişi Git'ten, yapılan kontroller Günlük'ten okunur. GitHub'a push ve sürüm etiketi ayrı işlemlerdir. Kurallar Windows PowerShell 5.1'i esas alır: `.ps1` UTF-8 BOM'lu, Markdown/JSON/YAML UTF-8 BOM'suz saklanır.
+[GitHub deposu](https://github.com/Emir-Ars/AI-Sablonum) ve yerel Git deposu kullanıcı tarafından oluşturuldu; dal `main`, uzak adres `origin` olarak tanımlı. 1.1–1.3 commit ve push edildi. Commit geçmişi Git'ten, yapılan kontroller Günlük'ten okunur. GitHub'a push ve sürüm etiketi ayrı işlemlerdir. Kurallar Windows PowerShell 5.1'i esas alır: `.ps1` UTF-8 BOM'lu, Markdown/JSON/YAML UTF-8 BOM'suz saklanır.
 
 ## 🛠️ Geliştirme durumu
 
@@ -211,9 +211,11 @@ Git deposunu, GitHub uzak adresini ve Git kimliğini sen kurarsın. Ajan yerel d
 | 1.1 | Kurallar, dört kayıt modeli, README, iki SVG | Doğrulandı — 12 Markdown, 2 SVG |
 | 1.2 | Kurucu ve kaynak sürüm kaydı | Doğrulandı — 41 kabul kontrolü |
 | 1.3 | Elle denetim ve bağımlılıksız test betiği | Doğrulandı — Windows PowerShell 5.1'de 60 kabul kontrolü |
-| 1.4 | Codex/Claude VS Code davranış denemeleri | Planlandı |
+| 1.4 | Codex/Claude VS Code davranış denemeleri | Kısmen doğrulandı — Codex planlama 2/8; diğer 6 kontrol yapılmadı |
 
 Ayrıntılı durum ve kabul ölçütleri [Plan](docs/PLAN.md), gerçek kontrol sonuçları [Günlük](docs/GUNLUK.md), sonraki oturumun başlangıcı [Devir](docs/DEVIR.md) dosyasındadır. Genel planın kabulü sonraki adımların uygulama izni değildir.
+
+1.4 için mesaj sırası ve beklenen sonuçlar [VS Code deneme kılavuzunda](docs/VS_CODE_DENEMELERI.md) bulunur. 2/8 gerçek davranış kontrolü doğrulandı: Codex genel planı ve seçilen aşamanın alt başlıklarını kendisi hazırlayıp uygulamadan durdu. Tek adım uygulaması, Claude ve iki yönlü devir denemeleri henüz yapılmadı; tam araç uyumluluğu doğrulandı denmez. Bu denemede ortaya çıkan genel görüşme kaydı yanlış uyarısı kaynakta düzeltildi; güncel kabul betiği 64/64 başarılı, başarısız 0 ve atlanan 0. Küçük alt adımlar, kullanıcının sevdiği çalışma düzeni olarak korunur; bunların içeriğini ve numaralarını ajan üretir, kullanıcı uygulanacak adımı seçer.
 
 ## 🔎 Resmî kaynaklar ve doğrulama sınırı
 
