@@ -1024,3 +1024,25 @@ if(@($results|Where-Object{-not $_.Passed}).Count -gt 0){exit 1}
 - Başarısız: Commit ve push işleminde 0; Git global ignore erişim ve satır sonu uyarıları sürer.
 - Atlanan: Ürün testleri yeniden çalıştırılmadı; önceki gerçek test ve inceleme kanıtları korunur. Bu aşama yalnız yayımlama/kayıt işlemidir.
 - Çalıştırılamayan: Yeni projenin yolu seçilmediği için kurulum yapılmadı. Genel zekâ, tam araç uyumluluğu veya gerçek geçmiş aktarımı bu işlemle doğrulanmış sayılmaz.
+
+## 2026-10-13 11:45 — README'de geçici kurulum ve kaynak temizliği yönergesi
+
+- Çalışma birimi: K-035'in yalnız README/kayıt kapsamı; seçilen şablon geliştirmesi yeniden açılmadı.
+- Yapılan iş ve nedeni: Kullanıcının uzun kurulum isteğini ezberlememesi için repo README'sine kısa kullanıcı isteği ve geçici kaynağın güvenli kullanım sırası eklendi. Mevcut proje hedefi doğrulanır; kaynak işletim sisteminin geçici alanında yalnız bu işlem için oluşturulur. Mevcut kurucu/sekiz dosya eşlemesi kullanılır; hedef ve metadata özetleriyle salt okunur denetim doğrulanır. Yalnız iki bilinen geliştirme/IDE uyarısı kabul edilir; hata/başka uyarı/kesintide kaynak korunur. Temizlikte gerçek yol/dizin sınırı, tüm alt içerikte yönlendirme olmaması, yalnız bu işlemde oluşturulan içerik ve açık kullanıcı/araç izni yeniden doğrulanır. Eski kaynaklar/proje dosyaları silinmez.
+- Değişen dosyalar: README.md, docs/PLAN.md, docs/KARARLAR.md, docs/GUNLUK.md, docs/DEVIR.md. Kurucu/denetim/test/manifest, ortak kurallar/AGENTS, başlangıç belgeleri, araştırmalar ve özgün deneyler değişmez. Hiçbir indirme, kurulum veya silme çalıştırılmadı.
+- İnceleme katmanı: Zorunlu; silinecek alanın yanlış tarif edilmesi veri kaybına yol açabilir. Ayrı salt okunur tasarım incelemesindeki üç açıklık metne işlendi: sabit Windows yolu yerine sistemin geçici dizini, dizin sınırları/tüm alt içerikte yönlendirme ve oluşturulan içerik kontrolü, denetim 2'nin yalnız bütün uyarılar iki izinli türdense kabul edilmesi. Son metin incelemesinde açık kullanıcı silme onayı, mevcut dosyaların korunması, kurucunun indirme/temizlik yapmaması ve gerçek yürütme iddiası olmaması kontrol edildi; yeni somut bulgu yok. Bu yalnız içerik incelemesidir.
+- Doğrulama: Katı UTF-8/BOM, PowerShell/JSON/SVG ayrıştırması, yerel dosya bağlantıları ve kayıt tutarlılığı **22 kaynak/82 bağlantı**, **111 hızlı dosya/121 bağlantı**, çıkış 0 verdi. Ortak kaynak/AGENTS özeti değişmedi; K-035, Plan–Devir birimi, Q/T/S kayıtları, temiz başlangıç ve beş sütun korundu. Tarihsel beş deney Markdown BOM farkı ayrı tutuldu, onarılmadı. Son git diff --check çıkış 0; başlangıçla karşılaştırmada yalnız yetkili beş dosya değişti, diğer 17 kaynak ile 111 hızlı/211 eski deney dosyası ve fotoğraf aynı kaldı. Betik ve ortak davranış değiştirilmedi.
+- Başarısız: Bu içerik kontrolünde 0; mevcut Git ignore erişim/satır sonu ve geliştirme/IDE/tarihsel SVG uyarıları giderilmiş sayılmaz.
+- Atlanan: Kurulum testleri bu belge açıklamasında yeniden çalıştırılmadı; yeni betik davranışı yok. Önceki gerçek test sonuçları bu turda çalışmış sayılmaz.
+- Çalıştırılamayan: Yeni yönergenin gerçek ajanla indirme/kurulum/temizlik akışı denenmedi; hedef seçilmedi ve kurulum/silme izni bu belge onayından çıkarılmadı. README metni otomatik yürütme garantisi değildir.
+- Git ve kapanış: Son gözlenen baz 972d433. Bu beş dosya henüz commit edilmedi; yeni commit/push onayı yok. Önerilen mesaj **Repo linkinden geçici kurulum ve güvenli temizlik yönergesini ekle**. İki özgün araştırma belgesi yalnız yerelde kalır; gerçek eski masaüstü kaynağına dokunulmadı.
+
+## 2026-10-13 11:48 — Geçici kurulum yönergesinin Git kapsamı onayı
+
+- Çalışma birimi: K-036'nın beş belgeyle sınırlı Git işlemi; yeni kurulum veya davranış uygulaması değil.
+- Yapılan iş ve nedeni: Kullanıcı README ve dört proje kaydının commit/push işlemini onayladı. Karar, Plan ve Devir güncellendi; kaynak/geçici klasör veya gerçek proje silinmedi.
+- Değişen dosyalar: README.md, docs/PLAN.md, docs/KARARLAR.md, docs/GUNLUK.md, docs/DEVIR.md; iki araştırma belgesi hariç.
+- Doğrulama: git status/log/remote ve kullanıcı kimliği salt okunur kontrol edildi; dal main, baz 972d433, mevcut origin ve kimlik korundu. Önceki içerik incelemesi ve belge kontrolleri korunur; commit öncesi indeks kapsamı ve git diff --check tekrar kontrol edilir. Bu kayıt Git işlemi öncesidir; sonuç tahmin edilmez.
+- Başarısız: Bu hazırlıkta yok; mevcut Git ignore erişim/satır sonu uyarıları sürer.
+- Atlanan: Belge/Git kapsamında ürün testleri yeniden çalıştırılmadı.
+- Çalıştırılamayan: Bu kayıt yazılırken yeni commit/push henüz yürütülmedi; gerçek ajan kurulum/temizlik akışı denenmedi.

@@ -268,3 +268,20 @@ Bu dosya şablon deposunun karar geçmişidir; hedef projeye kopyalanmaz. Aşağ
 - Ajanın teknik değerlendirmesi: Yerel özgün belgeler silinmeden korunur; Plan'daki bu dosyalara bağlantılar, yayımlanan deponun gerektirmeyeceği kaynak notuna çevrilir. Dosyalar tek tek seçilir; toplu ekleme, kimlik/uzak depo ayarı, force push veya sürüm etiketi yapılmaz.
 - Etki: Bağlantı ve ilgili Plan/Günlük/Devir kayıtları güncellenir. Commit mesajı: Proje davranış şablonunu ve güvenli aşama arşivini tamamla. Kullanıcı mevcut origin/main için push izni verdi; gözlenmeyen sonuç başarılı sayılmaz.
 - Sınır: İki özgün araştırma belgesi Git indeksine alınmaz ve yayımlanmaz. Yeni projeye kurulum henüz yapılmaz; hedef yol seçilmedi. Kurucu/manifest, model/global ayarlar, gerçek geçmiş ve özgün deneyler değişmez. Sürüm hâlâ geliştirme paketidir; bu onay release veya tam araç uyumluluğu doğrulaması değildir.
+
+## K-035 — Repo linkinden geçici kaynakla kurulumu README'de anlatmak
+
+- Tarih/saat: 2026-10-13 11:42; kabuktan alındı.
+- Karar: Kullanıcı README'ye kalıcı geçici kurulum/temizlik yönergesi eklenmesini onayladı. Repo kaynağı yalnız geçici alana indirilir; hedefte kurulum doğrulandıktan sonra yalnız bu işlem için oluşturulan kaynak alanı temizlenebilir.
+- Gerekçe: Kullanıcı masaüstünde ayrıca kaynak klasörü bırakılmasını istemiyor ve her kurulumda uzun bir isteği ezberlemek istemediğini belirtti.
+- Ajanın teknik değerlendirmesi: Mevcut kurucu yerel paketi kullanmayı sürdürür; indirme/temizlik, README'yi izleyen ajanın ayrı işlemidir. Hedef ve gerçek geçici yol, dizin sınırları, bütün alt içerikte yönlendirme olmaması ve yalnız bu işlemde oluşturulan içeriğin temizlenmesi açıkça doğrulanır. Hata/başka uyarı/kesintide kaynak korunur; kullanıcı ve araç onayı geçerlidir.
+- Etki: README'ye kısa kullanıcı isteği ve güvenli sıra eklendi; ilgili Plan/Günlük/Devir kayıtları güncellenir. Salt okunur bağımsız tasarım incelemesi, geçici dizinin sistemden alınması, yol sınırı/alt içerik kontrolü ve denetim 2'nin tek başına başarı sayılmaması açıklıklarını istedi; metne işlendi.
+- Sınır: kur.ps1, denetim/test betikleri, manifest, ortak davranış kuralları/AGENTS, başlangıç belgeleri ve global/model/araç ayarları değişmez. Mevcut AI-Sablonum klasörü dahil hiçbir gerçek kaynak/proje silinmez veya güncellenmez; bu turda kurulum yapılmaz. Yeni yönergenin gerçek ajan tarafından uygulanması denenmiş sayılmaz. Bu karar yeni commit/push işlemi için onay değildir.
+
+## K-036 — Geçici kurulum yönergesini GitHub'a göndermek
+
+- Tarih/saat: 2026-10-13 11:48; kabuktan alındı.
+- Karar: Kullanıcı README.md ve docs/PLAN.md, docs/KARARLAR.md, docs/GUNLUK.md, docs/DEVIR.md dosyalarının belirtilen mesajla commit edilmesini ve origin/main'e gönderilmesini onayladı.
+- Gerekçe: Önceki onay sorusu, repo linkini kullanacak ajanların yönergeye erişmesini amaçlıyordu; kullanıcı ayrıca bir gerekçe bildirmedi.
+- Etki: Yalnız bu beş belge ve aynı kapsamdaki gerçek Git sonuç kayıtları gönderilir. Ana mesaj: Repo linkinden geçici kurulum ve güvenli temizlik yönergesini ekle. İki özgün araştırma belgesi hariç kalır.
+- Sınır: Kurucu, denetim/test/manifest, ortak davranış kuralları ve gerçek projeler değişmez; kurulum/silme veya sürüm yayını yapılmaz. Git kimliği/uzak adresi ayarlanmaz; force push kullanılmaz.

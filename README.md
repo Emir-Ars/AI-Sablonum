@@ -30,6 +30,25 @@ Ayrıntılı ölçütler [ortak kurallarda](genel/KURALLAR.md) bulunur. Bu iki d
 
 Akış: GitHub'dan seçilen paketi indir → yerel kaynak paketinden hedef klasöre kur → o projede aynı dosya kopyasını kullan. Yayımlanmış sürüm etiketi hazır olduğunda onu seçebilirsin. Seçilen davranış düzeni hazırdır; paket geliştirme durumunu ve mevcut doğrulama sınırlarını korur. Her proje kendi kopyasını taşır. Global skill, eklenti veya kurulum dosyası değişmez; eski projeler kendiliğinden güncellenmez.
 
+### Repo bağlantısıyla geçici kurulum
+
+Repo linkini ajana verirken uzun bir yönerge yerine şunu söyleyebilirsin:
+
+> README'deki geçici kurulum ve temizlik yöntemini kullanarak bu repoyu mevcut projeme kur.
+
+Bu yöntem ajan içindir; **kur.ps1 kendisi depoyu indirmez veya kaynak klasörünü silmez.** Ajan bu README'yi okuyup aşağıdaki sırayı uygular; belge, araçların izin sınırlarını kaldırmaz ve otomatik yürütme garantisi değildir.
+
+1. Açık projenin hedef olduğunu ve mutlak yolunu doğrula; hedef belirsizse kullanıcıya sor. Repo içeriğini hedefin içine klonlama ve mevcut projenin Git deposunu/kimliğini değiştirme.
+2. İşletim sisteminden alınan geçici dizin altında yalnız bu işlem için benzersiz, boş bir çalışma klasörü oluştur; tam yolunu kaydet. Geçici dizinin sabit bir Windows yolu olduğunu varsayma. Kaynak paketi bu alana indir; masaüstünde veya hedef projede ayrıca AI-Sablonum/YapayZeka_Şablonum kaynak klasörü oluşturma. Mevcut kaynak klasörlerini güncelleme veya silme. Kullanılan repo ve commit/paket kaynağını belirt.
+3. Paketin yönergelerini ve dosya eşlemesini incele, mevcut kur.ps1 dosyasını doğrulanan hedef için çalıştır. Yeni kurucu yazma; dosyaları elle yeniden eşleyerek korumaları atlama. Kurucu, global ayarlar ve hedefin mevcut dosyaları değiştirilmez; çakışmada üzerine yazmadan dur.
+4. Hedefte sekiz beklenen dosyayı, kurulum kaydını ve kayıtlı dosya özetlerini doğrula; hedefin .ai-sablon/kontrol.ps1 denetimini çalıştır. Çıkış 0 uygundur. Çıkış 2 ancak hata yoksa ve bütün uyarılar yalnız mevcut paketin iki bilinen geliştirme/IDE uyarısıysa beklenen sınır olarak kabul edilir; 2 tek başına başarı değildir.
+5. Kurulum/denetim başarısız, kesintili veya çalıştırılamamışsa ya da başka uyarı/fark varsa kaynağı koru; geçici yolu ve açık sorunu bildir. Hedefte oluşan dosyaları geri alma/silme veya eski kurulumu güncelleme.
+6. Başarılı doğrulamadan sonra, temizlikten hemen önce silinecek gerçek mutlak yolun kaydedilmiş ve yalnız bu işlemde oluşturulmuş çalışma klasörü olduğunu yeniden kontrol et. Dizin sınırını gözeterek işletim sisteminin geçici dizini altında kaldığını doğrula; benzer adla başlayan başka yol yeterli değildir. Proje, mevcut kaynak, disk/profil veya geçici dizinin kökü silme hedefi olamaz. Hedefte ve bütün alt içeriğinde sembolik bağlantı/klasör yönlendirmesi bulunmadığını ve içeriğin bu indirmede oluşturulduğunu doğrula; beklenmedik içerik/yol farkında dur.
+7. Yalnız doğrulanmış, bu işlemde oluşturulan geçici indirme/kaynak alanını temizle. Açık kullanıcı silme onayı ve aracın yetki sınırları geçerlidir; istek temizliği açıkça kapsamıyorsa veya araç ayrıca onay istiyorsa onay al. Projedeki docs/.ai-sablon, önceden var olan kaynaklar veya başkasının geçici alanı silinmez. Temizlik yapılamazsa başarılı kurulumla karıştırma; kalan yolu bildir.
+8. Hedef yolunu, kurulan sürüm/kaynağı, denetim sonucunu ve geçici kaynağın temizlenip temizlenmediğini özetle. Ürün kodu yazmaya veya sonraki aşamaya geçme.
+
+Şablondan hedefe yalnız aşağıda gösterilen sekiz dosya eklenir; projenin diğer mevcut dosyaları korunur. Gerekli docs/ ve .ai-sablon/ klasörleri normal kurulumun parçalarıdır. Geçici kaynak silinse de kurulmuş proje kendi kopyasıyla çalışır. Aşağıdaki yerel komutlar, zaten indirilmiş bir kaynaktan kurulum seçeneğidir; geçici indirme/temizlik işlemini kendi başlarına yapmazlar.
+
 Komutu, indirdiğin şablon paketinin kökünde Windows PowerShell 5.1 ile çalıştır. `TargetDirectory` kurulacak proje klasörüdür; yeni veya mevcut olabilir. Göreli yol verirsen PowerShell'de bulunduğun klasöre göre çözülür:
 
 ```powershell
