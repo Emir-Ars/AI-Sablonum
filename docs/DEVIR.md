@@ -1,6 +1,6 @@
 # Güncel devir notu
 
-- Kayıt zamanı: 2026-10-13 10:44; kabuktan alındı. Bu Git kaydı commit öncesinde hazırlanmıştır.
+- Kayıt zamanı: 2026-10-13 10:47; kabuktan alındı. Ana şablon commit/push sonucunun ardından hazırlanmıştır.
 - Proje: Codex–Claude şablon kaynağı; v0.1.0 geliştirme paketi, yayın/etiket yok.
 - Güncel çalışma birimi: **1.6.3 — İzole arşivleme akışı; doğrulandı**.
 - Belge haritası: [Plan](PLAN.md), [Kararlar](KARARLAR.md), [Günlük](GUNLUK.md), [Deneme kılavuzu](VS_CODE_DENEMELERI.md).
@@ -23,6 +23,6 @@
 ## Sınırlar Ve Git
 
 - UYARI: Geliştirme/IDE, Git ignore/satır sonu ve tarihsel SVG uyarıları sürüyor; giderilmiş sayılmaz. kur.ps1, kontrol.ps1, surum.json, genel/KURALLAR.md, AGENTS.md, dört başlangıç belgesi, global/model/araç ayarı, araştırmalar ve özgün deneyler bu alt adımda korunur. Ortak kaynak SHA-256 `ade3d16041d8adda8c5d26c2f6f9ba8c0253608eed379d56ef9c3fa3bbdc1007` değişmez.
-- K-034 ile 14 değiştirilmiş şablon/kayıt dosyası ve tests/ornekler/1.7-kurallar.txt için commit/push onayı verildi; önceki K-028 kapsam belirsizliği giderildi. İki araştırma belgesi yerelde tutulur, Plan'ın bunlara dosya bağlantıları kaldırıldı. Desktop/Downloads'taki proje anlatımları ve yeni projeye kurulum kapsam dışıdır. Commit/push sonucu Git çıktısından kontrol edilir; bu commit öncesi kayıt gözlenmeyen sonucu başarılı saymaz. Sürüm yayını/etiket izni yoktur.
-- Gözlenen baz commit `792d570c75c560198375f87df042bcdd1727cf75`; mevcut kullanıcı değişiklikleri korunur.
+- K-034'ün 15 onaylı dosyası `9236246` ile commit edildi ve `git push origin main` çıkış 0 ile `792d570..9236246 main -> main` verdi. İki araştırma belgesi indekse alınmadı ve yayımlanmadı; yalnız yerelde kaldı. Kontrolde izlenen dosyalar temizdi, yalnız bu iki belge izlenmiyordu. Desktop/Downloads'taki proje anlatımları ve yeni projeye kurulum kapsam dışıdır. Yayın/etiket oluşturulmadı; mevcut CI yapılandırması bulunmadığından CI başarısı iddia edilmez.
+- Gözlenen baz commit `9236246`; sonuç notunun kendisini içerecek sonraki kayıt commit'i önceden yazılmaz. Kullanıcının yerel araştırma belgeleri korunur.
 - 1.6.3'ün altı dosyası önceki Günlük'tedir. K-034 Git kapsamı: AGENTS.md, README.md, genel/KURALLAR.md; docs/PLAN.md, docs/KARARLAR.md, docs/GUNLUK.md, docs/DEVIR.md, docs/VS_CODE_DENEMELERI.md; sablon/docs/PLAN.md, sablon/docs/KARARLAR.md, sablon/docs/GUNLUK.md, sablon/docs/DEVIR.md; sablon/.ai-sablon/kontrol.ps1, tests/Kurulum.Tests.ps1, tests/ornekler/1.7-kurallar.txt. Seçilen commit mesajı: **Proje davranış şablonunu ve güvenli aşama arşivini tamamla**. İki özgün araştırma belgesi yalnız yerelde korunur; otomatik eski proje güncellemesi yapılmaz.

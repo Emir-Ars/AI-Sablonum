@@ -1014,3 +1014,13 @@ if(@($results|Where-Object{-not $_.Passed}).Count -gt 0){exit 1}
 - Atlanan: Bu düşük etkili bağlantı/kayıt düzeltmesinde ürün testleri yeniden çalıştırılmadı; yeni davranış veya betik değişikliği yok.
 - Çalıştırılamayan: Commit/push bu kayıt yazılırken henüz yürütülmedi. Yeni projenin hedef yolu seçilmediğinden kurulum yapılmadı.
 - İnceleme katmanı: Yok; yalnız yerel kaynak bağlantılarının kaldırılması ve kullanıcı Git kararının kayıtları değişti. Önceki zorunlu arşiv incelemeleri korunur; araştırma içerikleri yayımlanmaz.
+
+## 2026-10-13 10:47 — Onaylı şablon dosyalarının commit ve push sonucu
+
+- Çalışma birimi: K-034 Git işlemi ve sonuç kaydı; ürün/şablon davranışı değişmedi.
+- Yapılan iş ve nedeni: Onaylı 15 dosya tek tek git add ile seçildi; indeks listesi izin verilen listeyle birebir karşılaştırıldı. İki araştırma belgesi indekste yoktu. BOM'suz UTF-8 geçici mesaj dosyasıyla git commit -F çalıştırıldı; commit **9236246**, mesaj **Proje davranış şablonunu ve güvenli aşama arşivini tamamla**, 15 dosya. Ardından **git push origin main** çıkış **0**, çıktı **792d570..9236246 main -> main** verdi. Kullanıcı kimliği/uzak adresi/global ayarı değiştirilmedi; force push, sürüm etiketi veya release yok.
+- Değişen dosyalar: Gönderilen 15 dosya K-034/Devir'de listelidir. Sonuç kaydı için yalnız docs/PLAN.md, docs/GUNLUK.md ve docs/DEVIR.md güncellenir; bu kayıt ayrı kısa commit ile gönderilir. Gözlenen baz 9236246'dır; sonraki commit kimliği tahmin edilmez.
+- Doğrulama: Commit öncesi katı UTF-8/BOM/ayrıştırma, yerel bağlantı, ortak kaynak/AGENTS, Plan–Devir ve K-034 kontrolleri **22 kaynak/82 bağlantı**, **111 hızlı dosya/121 bağlantı**, çıkış 0; git diff --check ve git diff --cached --check çıkış 0. Son git status --short yalnız iki araştırma belgesini izlenmeyen olarak gösterdi; izlenen dosyalar temizdi. Araştırmalar silinmedi/taşınmadı. .github/CI yapılandırması bulunmadı; CI sonucu iddia edilmez.
+- Başarısız: Commit ve push işleminde 0; Git global ignore erişim ve satır sonu uyarıları sürer.
+- Atlanan: Ürün testleri yeniden çalıştırılmadı; önceki gerçek test ve inceleme kanıtları korunur. Bu aşama yalnız yayımlama/kayıt işlemidir.
+- Çalıştırılamayan: Yeni projenin yolu seçilmediği için kurulum yapılmadı. Genel zekâ, tam araç uyumluluğu veya gerçek geçmiş aktarımı bu işlemle doğrulanmış sayılmaz.
