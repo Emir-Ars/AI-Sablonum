@@ -1046,3 +1046,13 @@ if(@($results|Where-Object{-not $_.Passed}).Count -gt 0){exit 1}
 - Başarısız: Bu hazırlıkta yok; mevcut Git ignore erişim/satır sonu uyarıları sürer.
 - Atlanan: Belge/Git kapsamında ürün testleri yeniden çalıştırılmadı.
 - Çalıştırılamayan: Bu kayıt yazılırken yeni commit/push henüz yürütülmedi; gerçek ajan kurulum/temizlik akışı denenmedi.
+
+## 2026-10-13 11:50 — Geçici kurulum yönergesinin commit ve push sonucu
+
+- Çalışma birimi: K-036'nın onaylı beş belge kapsamı ve gerçek Git sonuç kaydı.
+- Yapılan iş ve nedeni: Yalnız README.md ve dört kaynak proje kaydı tek tek git add ile seçildi; indeks izin verilen beş dosyayla birebir karşılaştırıldı. Araştırma belgeleri indeks dışında kaldı. BOM'suz UTF-8 mesaj dosyasıyla git commit -F çalıştırıldı: **9a4ad46**, **Repo linkinden geçici kurulum ve güvenli temizlik yönergesini ekle**. **git push origin main** çıkış **0**, çıktı **972d433..9a4ad46 main -> main** verdi. README yöntemi GitHub'a gönderildi; otomatik kurulum veya silme yapılmadı.
+- Değişen dosyalar: Gönderilen beş belge K-036'da listeli. Bu gerçek sonuç kaydı için yalnız docs/PLAN.md, docs/GUNLUK.md ve docs/DEVIR.md güncellenir; aynı onaylı kapsamda kısa kayıt commit'iyle gönderilir. Gözlenen baz 9a4ad46; gelecekteki commit kimliği tahmin edilmez.
+- Doğrulama: Katı UTF-8/BOM/ayrıştırma, yerel bağlantı/kayıt kontrolleri **22 kaynak/82 bağlantı**, **111 hızlı dosya/121 bağlantı**, çıkış 0; ortak kurallar/AGENTS ve başlangıçlar değişmedi. git diff --check ve git diff --cached --check çıkış 0. Son git status yalnız iki özgün araştırma belgesini izlenmeyen gösterdi; izlenen dosyalar temizdi. git ls-tree .github için yapılandırma göstermedi; CI başarısı iddia edilmez.
+- Başarısız: Commit/push işleminde 0; mevcut Git ignore erişim/satır sonu uyarıları giderilmedi.
+- Atlanan: Ürün testleri yeniden çalıştırılmadı; bu işlem belge/Git kapsamıdır.
+- Çalıştırılamayan: Yeni yönergenin gerçek ajanla indirme/kurulum/temizlik davranışı denenmedi; gerçek projeye veya eski kaynak klasörlerine dokunulmadı.

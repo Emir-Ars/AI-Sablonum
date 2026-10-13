@@ -1,6 +1,6 @@
 # Güncel devir notu
 
-- Kayıt zamanı: 2026-10-13 11:48; kabuktan alındı. K-036 Git onayının ardından, işlem öncesinde hazırlanmıştır.
+- Kayıt zamanı: 2026-10-13 11:50; kabuktan alındı. K-036'nın README yönergesi commit/push sonucunun ardından hazırlanmıştır.
 - Proje: Codex–Claude şablon kaynağı; v0.1.0 geliştirme paketi, yayın/etiket yok.
 - Güncel çalışma birimi: **1.6.3 — İzole arşivleme akışı; doğrulandı**.
 - Belge haritası: [Plan](PLAN.md), [Kararlar](KARARLAR.md), [Günlük](GUNLUK.md), [Deneme kılavuzu](VS_CODE_DENEMELERI.md).
@@ -25,5 +25,5 @@
 
 - UYARI: Geliştirme/IDE, Git ignore/satır sonu ve tarihsel SVG uyarıları sürüyor; giderilmiş sayılmaz. kur.ps1, kontrol.ps1, surum.json, genel/KURALLAR.md, AGENTS.md, dört başlangıç belgesi, global/model/araç ayarı, araştırmalar ve özgün deneyler bu alt adımda korunur. Ortak kaynak SHA-256 `ade3d16041d8adda8c5d26c2f6f9ba8c0253608eed379d56ef9c3fa3bbdc1007` değişmez.
 - K-034'ün 15 onaylı dosyası `9236246` ile commit edildi ve `git push origin main` çıkış 0 ile `792d570..9236246 main -> main` verdi. İki araştırma belgesi indekse alınmadı ve yayımlanmadı; yalnız yerelde kaldı. Kontrolde izlenen dosyalar temizdi, yalnız bu iki belge izlenmiyordu. Desktop/Downloads'taki proje anlatımları ve yeni projeye kurulum kapsam dışıdır. Yayın/etiket oluşturulmadı; mevcut CI yapılandırması bulunmadığından CI başarısı iddia edilmez.
-- K-034 sonuç kaydı da 972d433 ile commit edildi ve origin/main'e gönderildi; iki push çıktısı önceki oturumda gözlendi. Gözlenen baz commit `972d433`; gelecekteki commit kimliği tahmin edilmez. K-036, K-035'in README ve dört kaynak kayıt dosyasını commit/push için seçti; bu kayıt yazılırken yeni işlem henüz yürütülmedi. Kullanıcının yerel araştırma belgeleri korunur.
+- K-034 sonuç kaydı da 972d433 ile gönderildi. K-036'nın beş belgeli yönergesi **9a4ad46** ile commit edildi; git push origin main çıkış 0 ve **972d433..9a4ad46 main -> main** gözlendi. README artık repo linkinden görülebilir. Son kontrolde izlenen dosyalar temizdi, yalnız iki yerel araştırma belgesi izlenmiyordu. Gözlenen baz commit **9a4ad46**; gelecekteki sonuç kaydı commit'i tahmin edilmez. Gerçek kurulum/silme, release veya CI başarısı iddia edilmez; mevcut repoda .github yapılandırması yok.
 - 1.6.3'ün altı dosyası önceki Günlük'tedir. K-034 Git kapsamı: AGENTS.md, README.md, genel/KURALLAR.md; docs/PLAN.md, docs/KARARLAR.md, docs/GUNLUK.md, docs/DEVIR.md, docs/VS_CODE_DENEMELERI.md; sablon/docs/PLAN.md, sablon/docs/KARARLAR.md, sablon/docs/GUNLUK.md, sablon/docs/DEVIR.md; sablon/.ai-sablon/kontrol.ps1, tests/Kurulum.Tests.ps1, tests/ornekler/1.7-kurallar.txt. Seçilen commit mesajı: **Proje davranış şablonunu ve güvenli aşama arşivini tamamla**. İki özgün araştırma belgesi yalnız yerelde korunur; otomatik eski proje güncellemesi yapılmaz.
