@@ -1,51 +1,28 @@
 # Güncel devir notu
 
-- Kayıt zamanı: 2026-10-02 13:55; kabuktan alındı.
-- Proje: Codex–Claude proje şablonu; `v0.1.0` geliştirme paketi. Sürüm etiketi/yayını yok.
-- Güncel durum: **1.1–1.3 doğrulandı; 1.4 kısmen doğrulandı (2/8). Mevcut sonuçlarla son yerel commit onaylandı.**
-- Durum: [Plan](PLAN.md). Kullanıcı tercihi/onayı: [Kararlar](KARARLAR.md). Gerçek kontrol geçmişi: [Günlük](GUNLUK.md). Kalan denemeler: [VS Code kılavuzu](VS_CODE_DENEMELERI.md).
+- Kayıt zamanı: 2026-10-13 10:44; kabuktan alındı. Bu Git kaydı commit öncesinde hazırlanmıştır.
+- Proje: Codex–Claude şablon kaynağı; v0.1.0 geliştirme paketi, yayın/etiket yok.
+- Güncel çalışma birimi: **1.6.3 — İzole arşivleme akışı; doğrulandı**.
+- Belge haritası: [Plan](PLAN.md), [Kararlar](KARARLAR.md), [Günlük](GUNLUK.md), [Deneme kılavuzu](VS_CODE_DENEMELERI.md).
 
-## Git durumu
+## Durum
 
-- Gözlenen baz commit: `a678ce9896e65a46b18ed04cd101332a84f11ddd` — **Elle kayıt denetimi ve bağımlılıksız kurulum testlerini ekle**.
-- 1.3 kullanıcının açık onayıyla commit/push edildi; HEAD ve `origin/main` eşleşti. Bu not son committen önce hazırlanır; yeni kimlik Git geçmişinden okunur, önceden tahmin edilmez.
-- Kullanıcı aşağıdaki sekiz dosyanın son yerel commitini istedi. Yeni push veya GitHub sürüm yayını onayı yok; kalan denemeler başarılı sayılmaz.
+- K-033 ile son 1.6.3 tamamlandı; seçilen davranış şablonu yerel kurulumla kullanılmaya hazır. 1.6'nın kural/denetim/izole akış kabulü kapandı. Genel yol haritası, tek adım uygulaması, mühendislik anlatımı, araştırma ve risk temelli inceleme davranışlarına yeni sınır/ayar eklenmedi.
+- Mevcut test dosyasına sekiz sentetik arşiv akışı eklendi: hazırlık/aşama ayrımı, aynı Plan ile ikinci aşama, kesinti/tekrar, kaynak veya arşiv farkı, kısmi aktarım ve yeniden açılma. Özgün tarih/kimlik/içerik, yaşayan genel karar/açık işler, bağlantılar ve eski kapanışın korunması sınandı. Yeni yardımcılar yalnız test örnekleri içindir; hedefe kurulan taşıma betiği değildir.
+- Zorunlu bağımsız tasarım/kod incelemesi ve önemli düzeltmenin yeniden incelemesi tamamlandı. Ortak bağlantı dönüşümündeki hata içerik karşılaştırmasına rağmen geçebiliyordu; aktif geçmiş çıkarılmadan önce bağımsız denetim eklendi. Karşı örnek önce başarısız, düzeltmeden sonra başarılı oldu; son incelemede açık önemli bulgu yok.
+- Yeni sekiz akış odaklı ve son tam turda **8/8** geçti. Son normal Windows PowerShell 5.1 turu **116 toplam, 115 geçen, 0 başarısız, 1 atlanan, çıkış 2**; dosya sembolik bağlantısı kontrolü yetki nedeniyle atlandı. RunAs isteği kullanıcı tarafından iptal edildi, tekrar istenmedi. Değişmemiş eski 108 test/üretim girdilerinin ayrı K-032 turunda **108/108, başarısız/atlanan 0, çıkış 0** kanıtı korunur; eski test dosyasının birebir SHA-256 eşitliği bellekten doğrulandı. Son atlama geçti diye gösterilmez; tek 116/116 koşu yoktur.
+- Kaynak depoda gerçek arşiv/geçmiş aktarımı yapılmadı. Karmaşık Markdown/HTML sınırları ve denetimin test yürütmesini/kapanışın anlamını kanıtlamaması korunur. İzole akış gerçek ajan davranışı garantisi değildir. Ana aşama 1'in tarihsel yayın/tam uyumluluk kapsamı bütünüyle doğrulandı sayılmaz.
+- K-027'nin üç görev/altı gerçek oturum değerlendirmesi kapandı. S-1 kurallı sayfa sınırı ve S-3 kontrol görünmez durum karakteri eksik düzeltmeleri, S-2 kontrol plan belirsizliği ve kayıt/biçim kusurları özgün haliyle korunur; ayrıntı ve kanıtlar kılavuz/Günlük'tedir. Genel zekâ/nedensel kalite/öğrenme veya tam Claude/kurulum uyumluluğu kanıtlanmış sayılmaz.
+- 1.8 seçilmiş kapanışı, tarihsel 1.4 (2/8) ve 1.9 değerlendirme kapanışı korunur. Araştırmalar, 111 hızlı/211 eski deney dosyası ve başlangıç fotoğrafları değiştirilmedi; mevcut projeler otomatik güncellenmez.
 
-## Doğrulananlar ve sınırlar
+## Sonraki Adım
 
-- Yerel kurucu ve salt okunur kayıt denetimi hazır. Son kod değişikliği, sayısal alt adım bulunmayan dolu genel görüşme kaydının yanlış eksik sayılmasını giderdi; tamamlanan adımın eşleşen Günlük şartı korundu.
-- Windows PowerShell 5.1.26100.9444: **64/64 kabul testi başarılı; başarısız 0, atlanan 0**. Üç betikte BOM/ayrıştırma kontrolü başarılı. Sonuç: `C:\Users\Emir\AppData\Local\Temp\ai-sablon-tests-4315dc8553d34c7a963c10359ed2ea7b\SONUCLAR.json`.
-- C-1: Codex yalnız genel yol haritasını hazırlayıp belgeleri güncelledi; ürün/test kodu yazmadan durdu.
-- C-2: Codex seçilen başlık doğrulama aşamasını kendi ürettiği üç alt adıma ayırdı; kapsam/kabul/doğrulama/durumları yazdı, önerileri kullanıcı kararı saymadı ve kod yazmadan durdu.
-- C-1/C-2 cevapları gerçek deneme dosyalarıyla karşılaştırıldı. Sekiz dosya dışında ürün/test kodu yok. Güncel kaynakla denetim 0 hata, yalnız 2 geliştirme uyarısı verdi; eski deneme kopyası/kayıtları değiştirilmedi.
-- **Yapılmayanlar:** Tek alt adım uygulaması/durma, Claude genel/ayrıntılı plan/uygulama ve iki yönlü devir: kalan 6 kontrol. Tam gerçek araç uyumluluğu veya 1.4 tamamlanması iddia edilmez.
-- Kullanıcı küçük alt adımları sevdiğini açıkladı. Mevcut çalışma kuralları korunur; başlıkları/numaraları ajan üretir, kullanıcı uygulanacak adımı seçer. Sadeleştirme önerisi uygulanmadı.
+- Seçilen şablon geliştirmesinde kalan uygulama adımı yok; burada duruldu. Kullanıcı özellikle süreci bitirmeyi istedi; yeni kural, uzun değerlendirme veya ek deney turu açılmaz.
+- Şablon yeni projeye mevcut yerel kurucuyla uygulanabilir. Yeni gerçek ajan denemesi, kaynak geçmişini taşıma, yayın, otomasyon/bağımlılık veya eski projeye aktarım seçilmedi; bu not uygulama izni değildir.
 
-## Uyarılar
+## Sınırlar Ve Git
 
-- UYARI: Paket `development`, bekleyen özellik `editor-behavior-validation`. Temiz denetim çıkışı 2 beklenen geliştirme uyarılarıdır; release yapılmadı.
-- UYARI: Önceki SVG önizlemesinin `Fontconfig error: No writable cache directories` mesajı giderilmiş sayılmadı; PNG üretimi/görsel inceleme başarılıydı.
-- Global skill, eklenti, ayar/kurulum dosyaları, eski projeler ve Windows görevleri değiştirilmedi. Yeni paket/Git yapılandırması kurulmadı.
-- Deneme alanları `C:\Users\Emir\AppData\Local\Temp\ai-sablon-1-4-a786651c2968443bb17472da81303f12` altında korunur. Deneme teknolojisi yalnız PowerShell 5.1; şablon genel amaçlıdır.
-
-## Onaylı son commit kapsamı
-
-Türkçe mesaj: **Genel plan kayıt denetimini düzelt ve VS Code deneme sonuçlarını kaydet**.
-
-```text
-README.md
-docs/PLAN.md
-docs/KARARLAR.md
-docs/GUNLUK.md
-docs/DEVIR.md
-docs/VS_CODE_DENEMELERI.md
-sablon/.ai-sablon/kontrol.ps1
-tests/Kurulum.Tests.ps1
-```
-
-## Devam yönlendirmesi
-
-1. Kurallar, Plan ve Devir'i oku; Git status/log ile karşılaştır. Bu commitin sonucunu Git'ten oku; tekrar commit yapma.
-2. Yeni ürün projesi kullanıcının seçtiği hedefe kurucuyla kurulur; buradaki şablon geliştirme geçmişi hedefe taşınmaz. Bu kapanış yeni ürün projesine yazma izni değildir.
-3. Kalan davranış denemeleri ileride yapılırsa kılavuzu gerçek Plan'a göre takip et; uygulanacak numarayı sabitleme. Gözlenen sonucu kaydetmeden 1.4 doğrulandı veya release oldu deme.
-4. Yeni push, etiket/yayın veya yeni kapsam için doğrudan kullanıcı yönlendirmesi esas alınır. Mevcut global kurulum dosyalarını değiştirme.
+- UYARI: Geliştirme/IDE, Git ignore/satır sonu ve tarihsel SVG uyarıları sürüyor; giderilmiş sayılmaz. kur.ps1, kontrol.ps1, surum.json, genel/KURALLAR.md, AGENTS.md, dört başlangıç belgesi, global/model/araç ayarı, araştırmalar ve özgün deneyler bu alt adımda korunur. Ortak kaynak SHA-256 `ade3d16041d8adda8c5d26c2f6f9ba8c0253608eed379d56ef9c3fa3bbdc1007` değişmez.
+- K-034 ile 14 değiştirilmiş şablon/kayıt dosyası ve tests/ornekler/1.7-kurallar.txt için commit/push onayı verildi; önceki K-028 kapsam belirsizliği giderildi. İki araştırma belgesi yerelde tutulur, Plan'ın bunlara dosya bağlantıları kaldırıldı. Desktop/Downloads'taki proje anlatımları ve yeni projeye kurulum kapsam dışıdır. Commit/push sonucu Git çıktısından kontrol edilir; bu commit öncesi kayıt gözlenmeyen sonucu başarılı saymaz. Sürüm yayını/etiket izni yoktur.
+- Gözlenen baz commit `792d570c75c560198375f87df042bcdd1727cf75`; mevcut kullanıcı değişiklikleri korunur.
+- 1.6.3'ün altı dosyası önceki Günlük'tedir. K-034 Git kapsamı: AGENTS.md, README.md, genel/KURALLAR.md; docs/PLAN.md, docs/KARARLAR.md, docs/GUNLUK.md, docs/DEVIR.md, docs/VS_CODE_DENEMELERI.md; sablon/docs/PLAN.md, sablon/docs/KARARLAR.md, sablon/docs/GUNLUK.md, sablon/docs/DEVIR.md; sablon/.ai-sablon/kontrol.ps1, tests/Kurulum.Tests.ps1, tests/ornekler/1.7-kurallar.txt. Seçilen commit mesajı: **Proje davranış şablonunu ve güvenli aşama arşivini tamamla**. İki özgün araştırma belgesi yalnız yerelde korunur; otomatik eski proje güncellemesi yapılmaz.

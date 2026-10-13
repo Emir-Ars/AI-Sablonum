@@ -22,6 +22,10 @@ Henüz başlatılmış iş yok.
 - Amaç, kapsam ve teknoloji kullanıcıyla netleştirilecek.
 - Bu projeye ait doğrulama henüz çalıştırılmadı.
 
+Proje ilerlediğinde bu bölümde açık kabul ölçütleri ve bekleyen kontroller kısa biçimde belirtilir; ayrıntılar ilgili Plan, Günlük ve Kararlar kayıtlarına bağlanır. Test sonuçları ve teknik gerekçeler burada bağımsız çoğaltılmaz. Belge kontrolü, gerçek ürün veya ajan davranışı denemesi olarak sunulmaz.
+
+Hazırlık/aşama arşivlendiğinde kısa sonuç ve ilgili arşiv bağlantısı Plan üzerinden bulunur. Açık işler, yürürlükteki kararlar ve kalan doğrulamalar bu güncel özette görünür kalır. Yarım aktarım veya yeniden açılan aşama varsa neyin eksik olduğu ve ilgili kayıt belirtilir; eski kapanış değiştirilmez. Geçmişi incelemek gerektiğinde ilgili bağlantı izlenir, her oturumda bütün arşiv okunmaz. Henüz yapılmayan aktarım yapılmış gibi yazılmaz.
+
 ## Sonraki görüşme
 
 Ortak kuralları ve mevcut dosyaları oku. Git deposu varsa durumunu kontrol et. Kullanıcıyla proje ihtiyacını netleştir ve yalnız genel yol haritasını hazırla.

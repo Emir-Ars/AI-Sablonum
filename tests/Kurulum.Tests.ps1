@@ -154,9 +154,9 @@ function Set-Handoff {
 }
 
 function Add-Log {
-    param($Fixture, [string]$Id = '1.1')
+    param($Fixture, [string]$Id = '1.1', [string]$RelativePath = 'docs/GUNLUK.md', [string]$Title = 'Sentetik çalışma kaydı', [string]$Time = '2020-01-02 03:04')
     $lines = @(
-        '## 2020-01-02 03:04 — Sentetik çalışma kaydı',
+        ('## ' + $Time + ' — ' + $Title),
         '',
         ('- Çalışma birimi: ' + $Id),
         '- Yapılan iş ve nedeni: Yalnız denetim testinin örnek verisi.',
@@ -166,8 +166,187 @@ function Add-Log {
         '- Atlanan: yok.',
         '- Çalıştırılamayan: yok.'
     )
-    $path = Join-Path $Fixture.target 'docs/GUNLUK.md'
+    $path = Join-Path $Fixture.target $RelativePath
     Write-TestFile $path ([IO.File]::ReadAllText($path) + [Environment]::NewLine + ($lines -join [Environment]::NewLine) + [Environment]::NewLine)
+}
+
+function Add-Archive {
+    param($Fixture, [string]$Folder = '01-asama', [string]$Id = '1.1', [string]$Status = 'Doğrulandı')
+    $relative = 'docs/arsiv/' + $Folder
+    $planPath = Join-Path $Fixture.target ($relative + '/PLAN.md')
+    $journalPath = Join-Path $Fixture.target ($relative + '/GUNLUK.md')
+    $lines = @('# Sentetik aşama arşivi', '', '## Seçilen aşamanın ayrıntıları', '', '| Alt adım | Beklenen davranış ve kapsam | Kabul ölçütü | Doğrulama | Durum |', '|---|---|---|---|---|')
+    if ($Id -ne '') { $lines += '| ' + $Id + ' | Sentetik iş | Sentetik kabul | Örnek kontrol | ' + $Status + ' |' }
+    $lines += @('', '## Hazırlık ve aşama kapanışı', '', '[Kapanış](GUNLUK.md#2020-01-02-0305--kapanış)', '')
+    Write-TestFile $planPath ($lines -join [Environment]::NewLine)
+    Write-TestFile $journalPath '# Sentetik arşiv günlüğü'
+    if ($Id -ne '') { Add-Log $Fixture $Id ($relative + '/GUNLUK.md') }
+    Add-Log $Fixture ('Hazırlık veya ana aşama kapanışı / ' + $Folder) ($relative + '/GUNLUK.md') 'Kapanış' '2020-01-02 03:05'
+    $activePlan = Join-Path $Fixture.target 'docs/PLAN.md'
+    Write-TestFile $activePlan ([IO.File]::ReadAllText($activePlan) + [Environment]::NewLine + '[Arşiv](arsiv/' + $Folder + '/PLAN.md)' + [Environment]::NewLine)
+    return [pscustomobject]@{relative=$relative; plan=$planPath; journal=$journalPath; decisions=(Join-Path $Fixture.target ($relative + '/KARARLAR.md'))}
+}
+
+function Add-Decision {
+    param([string]$Path, [string]$Id = 'K-001')
+    $prefix = ''
+    if (Test-Path -LiteralPath $Path) { $prefix = [IO.File]::ReadAllText($Path) }
+    $lines = @('', ('## ' + $Id + ' — Sentetik karar'), '', '- Karar: Sentetik tercih.', '- Gerekçe: Yalnız izole denetim örneği.', '- Etki: Sentetik aşama.', '')
+    Write-TestFile $Path ($prefix + ($lines -join [Environment]::NewLine))
+}
+
+function Get-TestSection {
+    param([string]$Text, [string]$Heading)
+    $match = [regex]::Match($Text, '(?ms)^## ' + [regex]::Escape($Heading) + '[ \t]*\r?\n.*?(?=^## |\z)')
+    Assert-True $match.Success ('Sentetik kaynak bölümü bulunmalı: ' + $Heading)
+    return $match.Value
+}
+
+function New-ArchiveFlowFixture {
+    $f = New-Fixture; Install-Fixture $f
+    $planPath = Join-Path $f.target 'docs/PLAN.md'
+    $core = '- Genel sözleşme: UTF-8 metin ve mevcut veri biçimi korunur.' + "`n" + '- Açık iş: İkinci aşamanın araştırması kullanıcı seçimini bekler.'
+    $plan = [IO.File]::ReadAllText($planPath).Replace('## Proje özeti', '## Proje özeti' + "`n`n" + $core)
+    $plan = $plan.Replace('|---|---|---|', "|---|---|---|`n| 1 | İlk aşama | Planlandı |`n| 2 | İkinci aşama | Planlandı |")
+    Write-TestFile $planPath $plan
+    Write-TestFile (Join-Path $f.target 'docs/GUNLUK.md') '# Yalnız sentetik akış günlüğü'
+    Write-TestFile (Join-Path $f.target 'docs/KARARLAR.md') '# Yalnız sentetik akış kararları'
+    Write-TestFile (Join-Path $f.target 'src/ornek.txt') 'Sentetik kaynak; arşivlenmez.'
+    Write-TestFile (Join-Path $f.target 'data/ornek.json') '{"sample":true}'
+    Add-Decision (Join-Path $f.target 'docs/KARARLAR.md')
+    $protected = @{}
+    foreach ($path in @('AGENTS.md','CLAUDE.md','.ai-sablon/kontrol.ps1','.ai-sablon/kurulum.json','src/ornek.txt','data/ornek.json')) { $protected[$path] = Get-Hash ([IO.File]::ReadAllBytes((Join-Path $f.target $path))) }
+    $f | Add-Member NoteProperty Core $core
+    $f | Add-Member NoteProperty Protected $protected
+    $f | Add-Member NoteProperty GlobalDecision (Get-TestSection ([IO.File]::ReadAllText((Join-Path $f.target 'docs/KARARLAR.md'))) 'K-001 — Sentetik karar')
+    $f | Add-Member NoteProperty Phase $null
+    return $f
+}
+
+function Set-ArchiveFlowPhase {
+    param($Fixture, [string]$Id, [string]$Day, [string]$Label, [string]$DecisionId, [string[]]$ExtraIds = @(), [string]$Previous = '', [string]$Status = 'Doğrulandı')
+    $planPath = Join-Path $Fixture.target 'docs/PLAN.md'
+    $plan = [IO.File]::ReadAllText($planPath)
+    $ids = @($Id) + $ExtraIds | Where-Object { $_ -ne '' }
+    $rows = @('## Seçilen aşamanın ayrıntıları', '', '| Alt adım | Beklenen davranış ve kapsam | Kabul ölçütü | Doğrulama | Durum |', '|---|---|---|---|---|')
+    $heads = @()
+    $minute = 0
+    foreach ($step in $ids) {
+        $rows += '| ' + $step + ' | Sentetik davranış | Beklenen sonuç korunur | Sentetik kontrol | ' + $Status + ' |'
+        if ($Status -eq 'Doğrulandı') {
+            $time = '2020-01-' + $Day + ' 03:' + $minute.ToString('00')
+            $title = $Label + ' / ' + $step
+            Add-Log $Fixture $step 'docs/GUNLUK.md' $title $time
+            $heads += $time + ' — ' + $title
+            $minute++
+        }
+    }
+    if ($Id -eq '') {
+        $time = '2020-01-' + $Day + ' 03:00'
+        Add-Log $Fixture 'Hazırlık planlama' 'docs/GUNLUK.md' $Label $time
+        $heads += $time + ' — ' + $Label
+    }
+    $rows += @('', '- Kabul: Kapanmış yerel geçmiş ve özgün hata metni korunur.', '[Geçerli sözleşme](KARARLAR.md#k-001--sentetik-karar)', '')
+    $plan = $plan.Replace((Get-TestSection $plan 'Seçilen aşamanın ayrıntıları'), ($rows -join "`n"))
+    $current = $Id
+    if ($current -eq '') { $current = 'Henüz seçilmedi.' }
+    $plan = [regex]::Replace($plan, '(?m)^- Güncel çalışma birimi:[^\r\n]*', ('- Güncel çalışma birimi: ' + $current))
+    if ($Status -eq 'Doğrulandı') {
+        $time = '2020-01-' + $Day + ' 03:10'
+        $title = $Label + ' kapanışı'
+        Add-Log $Fixture ($Label + ' kapanışı') 'docs/GUNLUK.md' $title $time
+        $heads += $time + ' — ' + $title
+        $anchor = ('2020-01-' + $Day + '-0310--' + $title.ToLowerInvariant().Replace(' ', '-'))
+        $closing = "## Hazırlık ve aşama kapanışı`n`n[Kapanış](GUNLUK.md#" + $anchor + ")`n`n"
+        $plan = $plan.Replace((Get-TestSection $plan 'Hazırlık ve aşama kapanışı'), $closing)
+    }
+    if ($Previous -ne '') { $plan += "`n## Yeniden açılma`n`n[Önceki kapanış](arsiv/" + $Previous + "/PLAN.md)`n" }
+    Write-TestFile $planPath $plan
+    $handoffPath = Join-Path $Fixture.target 'docs/DEVIR.md'
+    $handoff = [regex]::Replace([IO.File]::ReadAllText($handoffPath), '(?m)^- Güncel çalışma birimi:[^\r\n]*', ('- Güncel çalışma birimi: ' + $current))
+    $handoff = [regex]::Replace($handoff, '(?m)^- Kayıt zamanı:[^\r\n]*', ('- Kayıt zamanı: 2020-01-' + $Day + ' 03:10.'))
+    Write-TestFile $handoffPath $handoff
+    if ($DecisionId -ne '') { Add-Decision (Join-Path $Fixture.target 'docs/KARARLAR.md') $DecisionId }
+    $journalPath = Join-Path $Fixture.target 'docs/GUNLUK.md'
+    $journal = [IO.File]::ReadAllText($journalPath).Replace('Örnek belge.', '[Kaynak](../src/ornek.txt).').Replace('Yalnız denetim testinin örnek verisi.', 'Sentetik hata metni: E-ORNEK; yalnız akış verisi, gerçek hata değil.')
+    Write-TestFile $journalPath $journal
+    $Fixture.Phase = [pscustomobject]@{Heads=$heads;DecisionId=$DecisionId;Previous=$Previous}
+}
+
+function Get-ArchiveFlowPhoto {
+    param($Fixture)
+    $parts = @{}
+    $hashes = @{}
+    foreach ($name in @('PLAN','GUNLUK','KARARLAR')) { $hashes[$name] = Get-Hash ([IO.File]::ReadAllBytes((Join-Path $Fixture.target ('docs/' + $name + '.md')))) }
+    $plan = [IO.File]::ReadAllText((Join-Path $Fixture.target 'docs/PLAN.md'))
+    $parts['PLAN'] = (Get-TestSection $plan 'Seçilen aşamanın ayrıntıları') + (Get-TestSection $plan 'Hazırlık ve aşama kapanışı')
+    if ($Fixture.Phase.Previous -ne '') { $parts['PLAN'] += Get-TestSection $plan 'Yeniden açılma' }
+    $journal = [IO.File]::ReadAllText((Join-Path $Fixture.target 'docs/GUNLUK.md'))
+    $parts['GUNLUK'] = (@($Fixture.Phase.Heads | ForEach-Object { Get-TestSection $journal $_ }) -join '')
+    $parts['KARARLAR'] = Get-TestSection ([IO.File]::ReadAllText((Join-Path $Fixture.target 'docs/KARARLAR.md'))) ($Fixture.Phase.DecisionId + ' — Sentetik karar')
+    return [pscustomobject]@{Parts=$parts;Hashes=$hashes;Heads=$Fixture.Phase.Heads;DecisionId=$Fixture.Phase.DecisionId;Previous=$Fixture.Phase.Previous}
+}
+
+function Get-ArchiveFlowText {
+    param($Photo, [string]$Name, [string]$Folder)
+    $up = '../' * (($Folder -split '/').Count + 2)
+    $text = '# Sentetik arşiv belgesi' + "`n`n" + $Photo.Parts[$Name]
+    $text = $text.Replace('../src/ornek.txt', $up + 'src/ornek.txt').Replace('KARARLAR.md#k-001--sentetik-karar', $up + 'docs/KARARLAR.md#k-001--sentetik-karar')
+    if ($Photo.Previous -ne '') { $text = $text.Replace('arsiv/' + $Photo.Previous + '/PLAN.md', $up + 'docs/arsiv/' + $Photo.Previous + '/PLAN.md') }
+    return $text
+}
+
+function Assert-ArchiveFlowCopy {
+    param($Fixture, $Photo, [string]$Folder)
+    foreach ($name in @('PLAN','GUNLUK','KARARLAR')) {
+        $path = Join-Path $Fixture.target ('docs/arsiv/' + $Folder + '/' + $name + '.md')
+        Assert-True (Test-Path -LiteralPath $path -PathType Leaf) ('Arşiv parçası eksik: ' + $name)
+        Assert-Equal ([IO.File]::ReadAllText($path)) (Get-ArchiveFlowText $Photo $name $Folder) ('Özgün kapsam/kimlik/tarih/kanıt/hata metni: ' + $name)
+    }
+}
+
+function Write-ArchiveFlowCopy {
+    param($Fixture, $Photo, [string]$Folder)
+    $path = Join-Path $Fixture.target ('docs/arsiv/' + $Folder)
+    if (Test-Path -LiteralPath $path) { Assert-ArchiveFlowCopy $Fixture $Photo $Folder; return }
+    foreach ($name in @('PLAN','GUNLUK','KARARLAR')) { Write-TestFile (Join-Path $path ($name + '.md')) (Get-ArchiveFlowText $Photo $name $Folder) }
+    Assert-ArchiveFlowCopy $Fixture $Photo $Folder
+}
+
+function Remove-ArchiveFlowSource {
+    param($Fixture, $Photo, [string]$Folder)
+    # Bu yordam yalnız test fixture'ını değiştirir; hedef projeye kurulmaz.
+    Assert-ArchiveFlowCopy $Fixture $Photo $Folder
+    $check = Invoke-Check $Fixture
+    Assert-Equal $check.data.errors 0 'Arşiv bağlantıları doğrulanmadan geçmiş çıkarılmaz'
+    foreach ($name in @('PLAN','GUNLUK','KARARLAR')) {
+        Assert-Equal (Get-Hash ([IO.File]::ReadAllBytes((Join-Path $Fixture.target ('docs/' + $name + '.md'))))) $Photo.Hashes[$name] 'Aktif kaynak değişti; geçmiş çıkarılmadı'
+    }
+    $planPath = Join-Path $Fixture.target 'docs/PLAN.md'
+    $plan = [IO.File]::ReadAllText($planPath)
+    $plan = $plan.Replace((Get-TestSection $plan 'Seçilen aşamanın ayrıntıları'), "## Seçilen aşamanın ayrıntıları`n`n| Alt adım | Beklenen davranış ve kapsam | Kabul ölçütü | Doğrulama | Durum |`n|---|---|---|---|---|`n`n")
+    $plan = $plan.Replace((Get-TestSection $plan 'Hazırlık ve aşama kapanışı'), "## Hazırlık ve aşama kapanışı`n`nKapanmış yerel geçmiş aşağıdaki arşiv bağlantısında.`n`n")
+    if ($Photo.Previous -ne '') { $plan = $plan.Replace((Get-TestSection $plan 'Yeniden açılma'), '') }
+    $plan = [regex]::Replace($plan, '(?m)^- Güncel çalışma birimi:[^\r\n]*', '- Güncel çalışma birimi: Henüz seçilmedi.')
+    $plan += "`n[Arşiv](arsiv/" + $Folder + "/PLAN.md)`n"
+    Write-TestFile $planPath $plan
+    $journalPath = Join-Path $Fixture.target 'docs/GUNLUK.md'
+    $journal = [IO.File]::ReadAllText($journalPath)
+    foreach ($heading in $Photo.Heads) { $journal = $journal.Replace((Get-TestSection $journal $heading), '') }
+    Write-TestFile $journalPath $journal
+    $decisionPath = Join-Path $Fixture.target 'docs/KARARLAR.md'
+    Write-TestFile $decisionPath ([IO.File]::ReadAllText($decisionPath).Replace($Photo.Parts['KARARLAR'], ''))
+    $handoffPath = Join-Path $Fixture.target 'docs/DEVIR.md'
+    Write-TestFile $handoffPath ([regex]::Replace([IO.File]::ReadAllText($handoffPath), '(?m)^- Güncel çalışma birimi:[^\r\n]*', '- Güncel çalışma birimi: Henüz seçilmedi.'))
+}
+
+function Assert-ArchiveFlowLiving {
+    param($Fixture)
+    $plan = [IO.File]::ReadAllText((Join-Path $Fixture.target 'docs/PLAN.md'))
+    Assert-True $plan.Contains($Fixture.Core) 'Genel sözleşme ve açık iş aktif kalmalı.'
+    Assert-True ($plan.Contains('| 1 | İlk aşama |') -and $plan.Contains('| 2 | İkinci aşama |')) 'Genel yol haritası korunmalı.'
+    Assert-Equal (Get-TestSection ([IO.File]::ReadAllText((Join-Path $Fixture.target 'docs/KARARLAR.md'))) 'K-001 — Sentetik karar').TrimEnd() $Fixture.GlobalDecision.TrimEnd() 'Geçerli karar değiştirilmez'
+    foreach ($path in $Fixture.Protected.Keys) { Assert-Equal (Get-Hash ([IO.File]::ReadAllBytes((Join-Path $Fixture.target $path)))) $Fixture.Protected[$path] ('Kod/veri/kurulum korunur: ' + $path) }
 }
 
 function Test-Case {
@@ -675,6 +854,540 @@ Test-Case 'Kod bloğundaki HTML yorum açılışı sonraki gerçek kaydı gizlem
     $check = Invoke-Check $f
     Assert-Code $check 'W_LOG_MISSING' $false
     Assert-Code $check 'W_LOG_FIELDS' $false
+}
+
+Test-Case 'Kararlar dosyası olmayan geçerli aşama arşivi denetlenir' {
+    $f = New-Fixture; Install-Fixture $f
+    $a = Add-Archive $f
+    $check = Invoke-Check $f
+    Assert-Equal $check.data.errors 0 'Geçerli arşiv'
+    Assert-Equal $check.data.warnings 2 'Yalnız geliştirme/IDE uyarıları'
+    Assert-Code $check 'I_ARCHIVES'
+    Assert-Code $check 'W_LOG_MISSING' $false
+    Assert-Code $check 'W_ARCHIVE_CLOSURE' $false
+    Assert-True (-not (Test-Path -LiteralPath $a.decisions)) 'Boş Kararlar zorunlu değildir.'
+}
+
+Test-Case 'Hazırlık arşivi numaralı alt adım olmadan kapanış kaydına bağlanır' {
+    $f = New-Fixture; Install-Fixture $f
+    $a = Add-Archive $f '00-hazirlik' ''
+    $check = Invoke-Check $f
+    Assert-Equal $check.data.errors 0 'Hazırlık arşivi'
+    Assert-Equal $check.data.warnings 2 'Numaralı hazırlık alt adımı dayatılmaz'
+}
+
+Test-Case 'Arşiv denetimi hiçbir dosyayı değiştirmez veya Git oluşturmaz' {
+    $f = New-Fixture; Install-Fixture $f
+    $a = Add-Archive $f
+    Add-Decision $a.decisions
+    $before = Get-Snapshot $f.target
+    $check = Invoke-Check $f
+    Assert-Equal (Get-Snapshot $f.target) $before 'Arşivli denetim salt okunur'
+    Assert-Equal $check.data.errors 0 'Salt okunur arşiv'
+    Assert-True (-not (Test-Path -LiteralPath (Join-Path $f.target '.git'))) 'Git oluşturulmaz.'
+}
+
+Test-Case 'Yeni aktif işin kaydını eski arşiv karşılayamaz' {
+    $f = New-Fixture; Install-Fixture $f
+    $a = Add-Archive $f
+    Set-Plan $f; Set-Handoff $f
+    $check = Invoke-Check $f
+    Assert-Code $check 'W_LOG_MISSING'
+    Assert-True (@($check.data.findings | Where-Object { $_.code -eq 'W_LOG_MISSING' -and $_.message.StartsWith('docs/PLAN.md:') }).Count -eq 1) 'Aktif eksik kanıt açık olmalı.'
+}
+
+Test-Case 'İlişkisiz Plan kimlik tekrarları inceleme uyarısıdır' {
+    $f = New-Fixture; Install-Fixture $f
+    $a = Add-Archive $f
+    Set-Plan $f; Set-Handoff $f; Add-Log $f '1.1' 'docs/GUNLUK.md' 'Yeni çalışma' '2020-01-03 04:05'
+    $check = Invoke-Check $f
+    Assert-Code $check 'W_STEP_DUPLICATE'
+    Assert-Code $check 'W_LOG_MISSING' $false
+}
+
+Test-Case 'Açık önceki Plan bağlantısı ve yeni yerel kanıt yeniden açılmayı ayırır' {
+    $f = New-Fixture; Install-Fixture $f
+    $a = Add-Archive $f
+    Set-Plan $f; Set-Handoff $f; Add-Log $f '1.1' 'docs/GUNLUK.md' 'Yeniden açılan çalışma' '2020-01-03 04:05'
+    $path = Join-Path $f.target 'docs/PLAN.md'
+    Write-TestFile $path ([IO.File]::ReadAllText($path) + "`n## Yeniden açılma`n`n[Önceki kapanış](arsiv/01-asama/PLAN.md)`n")
+    $check = Invoke-Check $f
+    Assert-Equal $check.data.warnings 2 'İlişkili sürüm yanlış kimlik çakışması değildir'
+    Assert-Code $check 'I_REOPEN_LINK'
+    Assert-Code $check 'W_STEP_DUPLICATE' $false
+}
+
+Test-Case 'Yeniden açılma bağlantısı yeni yerel kanıt eksikliğini gizlemez' {
+    $f = New-Fixture; Install-Fixture $f
+    $a = Add-Archive $f
+    Set-Plan $f; Set-Handoff $f
+    $path = Join-Path $f.target 'docs/PLAN.md'
+    Write-TestFile $path ([IO.File]::ReadAllText($path) + "`n## Yeniden açılma`n`n[Önceki kapanış](arsiv/01-asama/PLAN.md)`n")
+    $check = Invoke-Check $f
+    Assert-Code $check 'W_LOG_MISSING'
+    Assert-Code $check 'W_STEP_DUPLICATE'
+    Assert-Code $check 'I_REOPEN_LINK' $false
+}
+
+Test-Case 'Genel yönergedeki yeniden açılma sözcüğü ilişki sayılmaz' {
+    $f = New-Fixture; Install-Fixture $f
+    $a = Add-Archive $f
+    Set-Plan $f; Set-Handoff $f; Add-Log $f '1.1' 'docs/GUNLUK.md' 'Yeni çalışma' '2020-01-03 04:05'
+    $check = Invoke-Check $f
+    Assert-Code $check 'W_STEP_DUPLICATE'
+    Assert-Code $check 'I_REOPEN_LINK' $false
+}
+
+Test-Case 'Aktif ve arşiv karar kimliği tekrarları görünür' {
+    $f = New-Fixture; Install-Fixture $f
+    $a = Add-Archive $f
+    Add-Decision $a.decisions
+    Add-Decision (Join-Path $f.target 'docs/KARARLAR.md')
+    $check = Invoke-Check $f
+    Assert-Code $check 'W_DECISION_DUPLICATE'
+}
+
+Test-Case 'Arşiv kararındaki eksik alan denetlenir' {
+    $f = New-Fixture; Install-Fixture $f
+    $a = Add-Archive $f
+    Add-Decision $a.decisions
+    Write-TestFile $a.decisions ([IO.File]::ReadAllText($a.decisions).Replace('- Gerekçe:', '- Eksik alan:'))
+    $check = Invoke-Check $f
+    Assert-Code $check 'W_DECISION_FIELDS'
+}
+
+Test-Case 'Aynı işin farklı tarihli günlüğü meşru birden çok kayıttır' {
+    $f = New-Fixture; Install-Fixture $f
+    $a = Add-Archive $f
+    Add-Log $f '1.1' ($a.relative + '/GUNLUK.md') 'Sonraki inceleme' '2020-01-03 04:05'
+    $check = Invoke-Check $f
+    Assert-Equal $check.data.warnings 2 'Farklı tarihli kayıtlar tekrar değildir'
+    Assert-Code $check 'W_LOG_DUPLICATE' $false
+}
+
+Test-Case 'Göreli bağlantısı düzeltilmiş yarım Günlük kopyası görünür' {
+    $f = New-Fixture; Install-Fixture $f
+    $a = Add-Archive $f
+    Write-TestFile (Join-Path $f.target 'src/Ornek.ps1') '# Sentetik dosya'
+    Write-TestFile $a.journal ([IO.File]::ReadAllText($a.journal).Replace('Örnek belge.', '[Örnek](../../../src/Ornek.ps1).'))
+    Add-Log $f
+    $path = Join-Path $f.target 'docs/GUNLUK.md'
+    Write-TestFile $path ([IO.File]::ReadAllText($path).Replace('Örnek belge.', '[Örnek](../src/Ornek.ps1).'))
+    $check = Invoke-Check $f
+    Assert-Code $check 'W_LOG_DUPLICATE'
+    Assert-Code $check 'E_BROKEN_LINK' $false
+    Assert-Code $check 'E_LINK_PATH' $false
+}
+
+Test-Case 'Arşivden kod ve aktif kararlara proje içi bağlantı geçerlidir' {
+    $f = New-Fixture; Install-Fixture $f
+    $a = Add-Archive $f
+    Write-TestFile (Join-Path $f.target 'src/Ornek.ps1') '# Sentetik dosya'
+    Add-Decision (Join-Path $f.target 'docs/KARARLAR.md')
+    Write-TestFile $a.journal ([IO.File]::ReadAllText($a.journal) + "`n[Kaynak](../../../src/Ornek.ps1)`n[Geçerli karar](../../KARARLAR.md#k-001--sentetik-karar)`n")
+    $check = Invoke-Check $f
+    Assert-Equal $check.data.errors 0 'Arşiv dışı proje içi hedefler geçerli'
+    Assert-Equal $check.data.warnings 2 'Proje içi bağlantı dış kaynak değildir'
+}
+
+Test-Case 'Arşivden proje dışındaki Markdown dosyası okunmaz' {
+    $f = New-Fixture; Install-Fixture $f
+    $a = Add-Archive $f
+    $outside = Join-Path $f.folder 'disarida.md'
+    Assert-True ($outside.StartsWith($testRoot + '\')) 'Dış örnek test kökünde kalmalı.'
+    [IO.File]::WriteAllBytes($outside, [byte[]]@(255, 255))
+    Write-TestFile $a.journal ([IO.File]::ReadAllText($a.journal) + "`n[Dışarı](<$outside#baslik>)`n")
+    $check = Invoke-Check $f
+    Assert-Code $check 'W_EXTERNAL_LINK'
+    Assert-Code $check 'E_FILE_READ' $false
+}
+
+Test-Case 'Arşivde kırık dosya bağlantısı bulunur' {
+    $f = New-Fixture; Install-Fixture $f
+    $a = Add-Archive $f
+    Write-TestFile $a.journal ([IO.File]::ReadAllText($a.journal) + "`n[Eksik](eksik.md)`n")
+    $check = Invoke-Check $f
+    Assert-Code $check 'E_BROKEN_LINK'
+    Assert-Equal $check.exitCode 1 'Kırık dosya hata çıkışı'
+}
+
+Test-Case 'Dosya bulunsa da yanlış başlık bağlantısı hata verir' {
+    $f = New-Fixture; Install-Fixture $f
+    $a = Add-Archive $f
+    Write-TestFile $a.plan ([IO.File]::ReadAllText($a.plan).Replace('#2020-01-02-0305--kapanış', '#olmayan-kapanis'))
+    $check = Invoke-Check $f
+    Assert-Code $check 'E_BROKEN_ANCHOR'
+    Assert-Code $check 'W_ARCHIVE_CLOSURE'
+}
+
+Test-Case 'Kapanış yalnız dosya bağlantısıyla veya başka paket kaydıyla karşılanmaz' {
+    $f = New-Fixture; Install-Fixture $f
+    $a = Add-Archive $f
+    $b = Add-Archive $f '02-asama' '2.1'
+    Write-TestFile $a.plan ([IO.File]::ReadAllText($a.plan).Replace('GUNLUK.md#2020-01-02-0305--kapanış', '../02-asama/GUNLUK.md#2020-01-02-0305--kapanış'))
+    $check = Invoke-Check $f
+    Assert-Code $check 'W_ARCHIVE_CLOSURE'
+    Assert-Code $check 'E_BROKEN_ANCHOR' $false
+    Write-TestFile $a.plan ([IO.File]::ReadAllText($a.plan).Replace('../02-asama/GUNLUK.md#2020-01-02-0305--kapanış', 'GUNLUK.md'))
+    Assert-Code (Invoke-Check $f) 'W_ARCHIVE_CLOSURE'
+}
+
+Test-Case 'Dolu olmayan kapanış doğrulaması kanıt sayılmaz' {
+    $f = New-Fixture; Install-Fixture $f
+    $a = Add-Archive $f
+    Write-TestFile $a.journal ([IO.File]::ReadAllText($a.journal).Replace('- Doğrulama: örnek-komut; sentetik sonuç. Gerçek ürün testi çalıştırıldığı iddia edilmez.', '- Doğrulama: Henüz çalıştırılmadı.'))
+    $check = Invoke-Check $f
+    Assert-Code $check 'W_LOG_FIELDS'
+    Assert-Code $check 'W_LOG_MISSING'
+    Assert-Code $check 'W_ARCHIVE_CLOSURE'
+}
+
+Test-Case 'Arşiv Plan eksik Günlük kaydını kendi dizininde arar' {
+    $f = New-Fixture; Install-Fixture $f
+    $a = Add-Archive $f
+    Remove-TestFile $a.journal
+    Add-Log $f
+    $check = Invoke-Check $f
+    Assert-Code $check 'W_LOG_MISSING'
+    Assert-Code $check 'W_ARCHIVE_CLOSURE'
+    Assert-Code $check 'E_BROKEN_LINK'
+}
+
+Test-Case 'Plan olmadan kalmış arşiv Günlüğü kısmi kapsamı bildirir' {
+    $f = New-Fixture; Install-Fixture $f
+    Write-TestFile (Join-Path $f.target 'docs/arsiv/01-asama/GUNLUK.md') '# Sentetik günlük'
+    $check = Invoke-Check $f
+    Assert-Code $check 'W_ARCHIVE_PLAN'
+}
+
+Test-Case 'Aktif Plan arşive ulaşamıyorsa geçmiş bağlantısı uyarılır' {
+    $f = New-Fixture; Install-Fixture $f
+    $a = Add-Archive $f
+    $path = Join-Path $f.target 'docs/PLAN.md'
+    Write-TestFile $path ([IO.File]::ReadAllText($path).Replace('[Arşiv](arsiv/01-asama/PLAN.md)', 'Arşiv bağlantısı çıkarılmış sentetik örnek.'))
+    $check = Invoke-Check $f
+    Assert-Code $check 'W_ARCHIVE_REFERENCE'
+}
+
+Test-Case 'Arşivde örnek kod ve yorumlar gerçek kayıt veya bağlantı sayılmaz' {
+    $f = New-Fixture; Install-Fixture $f
+    $a = Add-Archive $f
+    $tick = [string][char]96
+    $example = @('', ($tick * 3), '## K-001 — Gerçek olmayan karar', '[Sahte](eksik.md#baslik)', ($tick * 3), '<!-- [Sahte](eksik.md) -->', '') -join [Environment]::NewLine
+    Write-TestFile $a.decisions $example
+    $check = Invoke-Check $f
+    Assert-Equal $check.data.warnings 2 'Örnekler gerçek kayıt değildir'
+    Assert-Equal $check.data.errors 0 'Örnek bağlantı okunmaz'
+}
+
+Test-Case 'Arşiv Markdown BOM ve bozuk UTF-8 görünür' {
+    $f = New-Fixture; Install-Fixture $f
+    $a = Add-Archive $f
+    Write-TestFile $a.journal ([IO.File]::ReadAllText($a.journal)) $true
+    Assert-Code (Invoke-Check $f) 'E_FILE_READ'
+    $path = Join-Path $f.target 'docs/arsiv/01-asama/bozuk.md'
+    Assert-True ($path.StartsWith($testRoot + '\')) 'Bozuk örnek test kökünde kalmalı.'
+    [IO.File]::WriteAllBytes($path, [byte[]]@(255, 255))
+    $check = Invoke-Check $f
+    Assert-True (@($check.data.findings | Where-Object { $_.code -eq 'E_FILE_READ' -and $_.message.StartsWith('docs/arsiv/01-asama/bozuk.md:') }).Count -gt 0) 'Bozuk UTF-8 dosyası adlandırılmalı.'
+}
+
+foreach ($location in @('docs/arsiv', 'docs/arsiv/01-asama/yonlendirme')) {
+    Test-Case ('Arşiv keşfi yönlendirilmiş klasöre girmez: ' + $location) {
+        $f = New-Fixture; Install-Fixture $f
+        $outside = Join-Path $f.folder 'baglanti-hedefi'
+        Write-TestFile (Join-Path $outside 'gizli-ornek.md') '# Yalnız izole bağlantı hedefi'
+        $link = Join-Path $f.target $location
+        [IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($link)) | Out-Null
+        New-TestJunction $link $outside
+        $before = [IO.File]::ReadAllBytes((Join-Path $outside 'gizli-ornek.md'))
+        $check = Invoke-Check $f
+        Assert-Code $check 'E_ARCHIVE_PATH'
+        Assert-Code $check 'I_ARCHIVES' $false
+        Assert-Equal (Get-Hash ([IO.File]::ReadAllBytes((Join-Path $outside 'gizli-ornek.md')))) (Get-Hash $before) 'Yönlendirme hedefi değişmez'
+    }
+}
+
+Test-Case 'Başlık bağlantıları Türkçe, biçim ve tekrar ekini destekler' {
+    $f = New-Fixture; Install-Fixture $f
+    $path = Join-Path $f.target 'README.md'
+    $tick = [string][char]96
+    $lines = @('# Örnek', '', '## Kapanış', '## Kapanış', ('## **Doğrulama** ' + $tick + 'test' + $tick), '[İlk](#kapanış)', '[İkinci](#kapanış-1)', '[Biçim](#doğrulama-test)', '')
+    Write-TestFile $path ($lines -join [Environment]::NewLine)
+    $check = Invoke-Check $f
+    Assert-Equal $check.data.errors 0 'Desteklenen başlık bağlantıları'
+}
+
+foreach ($scenario in @('farklı-kimlik', 'eksik-kanıt', 'dolu-zincir', 'döngü')) {
+    Test-Case ('Yeniden açılma zinciri aynı işin yerel kanıtlarına bağlıdır: ' + $scenario) {
+        $f = New-Fixture; Install-Fixture $f
+        $middleId = '1.1'
+        if ($scenario -eq 'farklı-kimlik') { $middleId = '2.1' }
+        $b = Add-Archive $f '01-asama/yeniden-acilma' $middleId
+        $c = Add-Archive $f '01-asama/ilk-kapanis'
+        Write-TestFile $b.journal ([IO.File]::ReadAllText($b.journal).Replace('Sentetik çalışma kaydı', 'Ara sürümün çalışması'))
+        Write-TestFile $c.journal ([IO.File]::ReadAllText($c.journal).Replace('Sentetik çalışma kaydı', 'İlk sürümün çalışması'))
+        Write-TestFile $b.plan ([IO.File]::ReadAllText($b.plan) + "`n## Yeniden açılma`n`n[Önceki Plan](../ilk-kapanis/PLAN.md)`n")
+        if ($scenario -eq 'döngü') {
+            Write-TestFile $c.plan ([IO.File]::ReadAllText($c.plan) + "`n## Yeniden açılma`n`n[Döngü](../yeniden-acilma/PLAN.md)`n")
+        } else {
+            Set-Plan $f; Set-Handoff $f; Add-Log $f '1.1' 'docs/GUNLUK.md' 'Aktif yeni çalışma' '2020-01-03 04:05'
+            $path = Join-Path $f.target 'docs/PLAN.md'
+            Write-TestFile $path ([IO.File]::ReadAllText($path) + "`n## Yeniden açılma`n`n[Önceki Plan](arsiv/01-asama/yeniden-acilma/PLAN.md)`n")
+        }
+        if ($scenario -eq 'eksik-kanıt') {
+            Write-TestFile $b.journal ([IO.File]::ReadAllText($b.journal).Replace('- Doğrulama: örnek-komut; sentetik sonuç. Gerçek ürün testi çalıştırıldığı iddia edilmez.', '- Doğrulama: Henüz çalıştırılmadı.'))
+        }
+        $check = Invoke-Check $f
+        Assert-Equal $check.data.errors 0 'Zincir dosya/başlık bağlantıları'
+        if ($scenario -eq 'dolu-zincir') {
+            Assert-Equal $check.data.warnings 2 'Geçerli iç içe tarihsel zincir'
+            Assert-Code $check 'I_REOPEN_LINK'
+            Assert-Code $check 'W_STEP_DUPLICATE' $false
+        } else {
+            Assert-Code $check 'W_STEP_DUPLICATE'
+            Assert-Code $check 'I_REOPEN_LINK' $false
+        }
+        if ($scenario -eq 'eksik-kanıt') { Assert-Code $check 'W_LOG_MISSING' }
+    }
+}
+
+Test-Case 'Aynı başlıklı başka dolu kayıt eksik kapanış hedefinin yerine geçmez' {
+    $f = New-Fixture; Install-Fixture $f
+    $a = Add-Archive $f '00-hazirlik' ''
+    Write-TestFile $a.journal ([IO.File]::ReadAllText($a.journal).Replace('- Doğrulama: örnek-komut; sentetik sonuç. Gerçek ürün testi çalıştırıldığı iddia edilmez.', '- Doğrulama: Henüz çalıştırılmadı.'))
+    Add-Log $f 'Başka dolu kayıt' ($a.relative + '/GUNLUK.md') 'Kapanış' '2020-01-02 03:05'
+    $check = Invoke-Check $f
+    Assert-Code $check 'W_LOG_FIELDS'
+    Assert-Code $check 'W_ARCHIVE_CLOSURE'
+    Write-TestFile $a.plan ([IO.File]::ReadAllText($a.plan).Replace('#2020-01-02-0305--kapanış', '#2020-01-02-0305--kapanış-1'))
+    $second = Invoke-Check $f
+    Assert-Code $second 'W_ARCHIVE_CLOSURE' $false
+    Assert-Code $second 'W_LOG_FIELDS'
+}
+
+Test-Case 'Kapanış başlığının isteğe bağlı ATX son belirteci geçerlidir' {
+    $f = New-Fixture; Install-Fixture $f
+    $a = Add-Archive $f
+    Write-TestFile $a.journal ([IO.File]::ReadAllText($a.journal).Replace('— Kapanış', '— Kapanış ##'))
+    $check = Invoke-Check $f
+    Assert-Equal $check.data.errors 0 'Son belirteçli başlık bağlantısı'
+    Assert-Code $check 'W_ARCHIVE_CLOSURE' $false
+}
+
+Test-Case 'Geçersiz takvim tarihi dolu çalışma kaydı sayılmaz' {
+    $f = New-Fixture; Install-Fixture $f
+    Set-Plan $f; Set-Handoff $f; Add-Log $f '1.1' 'docs/GUNLUK.md' 'Geçersiz tarih' '2020-02-30 03:04'
+    $check = Invoke-Check $f
+    Assert-Code $check 'W_LOG_TIME'
+    Assert-Code $check 'W_LOG_MISSING'
+}
+
+Test-Case 'Altı çizgili başlık ve özel HTML bağlantı hedefi yanlış kırık sayılmaz' {
+    $f = New-Fixture; Install-Fixture $f
+    $path = Join-Path $f.target 'README.md'
+    $lines = @('# Örnek', '', 'Altı çizgili başlık', '------------------', '', '<a name="ozel-hedef"></a>', '## Başlık <em>deneme</em>', '[Başlık](#altı-çizgili-başlık)', '[Özel](#ozel-hedef)', '[Biçim](#başlık-deneme)', '')
+    Write-TestFile $path ($lines -join [Environment]::NewLine)
+    $check = Invoke-Check $f
+    Assert-Equal $check.data.errors 0 'Desteklenen ek bağlantı hedefleri'
+}
+
+Test-Case 'Eksik Plan kabul ölçütü yeniden açılma ilişkisini geçerli göstermez' {
+    $f = New-Fixture; Install-Fixture $f
+    $a = Add-Archive $f
+    Set-Plan $f; Set-Handoff $f; Add-Log $f '1.1' 'docs/GUNLUK.md' 'Aktif çalışma' '2020-01-03 04:05'
+    $path = Join-Path $f.target 'docs/PLAN.md'
+    Write-TestFile $path ([IO.File]::ReadAllText($path).Replace('Sentetik kabul ölçütü', '') + "`n## Yeniden açılma`n`n[Önceki Plan](arsiv/01-asama/PLAN.md)`n")
+    $check = Invoke-Check $f
+    Assert-Code $check 'W_PLAN_FIELDS'
+    Assert-Code $check 'W_STEP_DUPLICATE'
+    Assert-Code $check 'I_REOPEN_LINK' $false
+}
+
+foreach ($length in @(1, 2)) {
+    Test-Case ('Inline kod içindeki kapanış bağlantısı gerçek kanıt sayılmaz: ' + $length) {
+        $f = New-Fixture; Install-Fixture $f
+        $a = Add-Archive $f
+        $fence = ([string][char]96) * $length
+        $link = '[Kapanış](GUNLUK.md#2020-01-02-0305--kapanış)'
+        Write-TestFile $a.plan ([IO.File]::ReadAllText($a.plan).Replace($link, $fence + $link + $fence))
+        $check = Invoke-Check $f
+        Assert-Code $check 'W_ARCHIVE_CLOSURE'
+        Assert-Code $check 'W_LOG_MISSING' $false
+        Assert-Equal $check.data.errors 0 'Örnek bağlantı gerçek hedef olarak denetlenmez'
+    }
+    Test-Case ('Inline kod içindeki yeniden açılma bağlantısı ilişki sayılmaz: ' + $length) {
+        $f = New-Fixture; Install-Fixture $f
+        $a = Add-Archive $f
+        Set-Plan $f; Set-Handoff $f; Add-Log $f '1.1' 'docs/GUNLUK.md' 'Aktif çalışma' '2020-01-03 04:05'
+        $fence = ([string][char]96) * $length
+        $path = Join-Path $f.target 'docs/PLAN.md'
+        $link = $fence + '[Önceki Plan](arsiv/01-asama/PLAN.md)' + $fence
+        Write-TestFile $path ([IO.File]::ReadAllText($path) + "`n## Yeniden açılma`n`n" + $link + "`n")
+        $check = Invoke-Check $f
+        Assert-Code $check 'W_STEP_DUPLICATE'
+        Assert-Code $check 'I_REOPEN_LINK' $false
+        Assert-Code $check 'W_LOG_MISSING' $false
+    }
+    Test-Case ('Inline kod içindeki HTML başlık metni olarak korunur: ' + $length) {
+        $f = New-Fixture; Install-Fixture $f
+        $fence = ([string][char]96) * $length
+        $lines = @('# Örnek', '', ('## ' + $fence + '<dosya>' + $fence + ' kullanımı'), '[Başlık](#dosya-kullanımı)', '')
+        Write-TestFile (Join-Path $f.target 'README.md') ($lines -join [Environment]::NewLine)
+        $check = Invoke-Check $f
+        Assert-Equal $check.data.errors 0 'Kod metni gerçek HTML değildir'
+    }
+    Test-Case ('Inline kod içindeki HTML sahte bağlantı hedefi oluşturmaz: ' + $length) {
+        $f = New-Fixture; Install-Fixture $f
+        $fence = ([string][char]96) * $length
+        $lines = @('# Örnek', '', ($fence + '<a id="sahte"></a>' + $fence), '<a id="gercek"></a>', '[Sahte](#sahte)', '[Gerçek](#gercek)', '')
+        Write-TestFile (Join-Path $f.target 'README.md') ($lines -join [Environment]::NewLine)
+        $check = Invoke-Check $f
+        Assert-Equal $check.data.errors 1 'Yalnız gerçek hedef geçerli'
+        Assert-Code $check 'E_BROKEN_ANCHOR'
+        Assert-True (@($check.data.findings | Where-Object { $_.code -eq 'E_BROKEN_ANCHOR' -and $_.message.EndsWith('#sahte') }).Count -eq 1) 'Sahte hedef adlandırılmalı.'
+    }
+}
+
+Test-Case 'Arşiv keşfi yönlendirilmiş Markdown dosyasını okumaz' {
+    $f = New-Fixture; Install-Fixture $f
+    $outside = Join-Path $f.folder 'baglanti-hedefi.md'
+    Write-TestFile $outside 'Yalnız izole bağlantı hedefi'
+    [IO.File]::WriteAllBytes($outside, [byte[]]@(255, 255))
+    $link = Join-Path $f.target 'docs/arsiv/01-asama/GUNLUK.md'
+    Assert-True ([IO.Path]::GetFullPath($link).StartsWith($testRoot + '\', [StringComparison]::OrdinalIgnoreCase)) 'Bağlantı test kökünde kalmalı.'
+    [IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($link)) | Out-Null
+    try { New-Item -ItemType SymbolicLink -Path $link -Target $outside -ErrorAction Stop | Out-Null }
+    catch { throw ('ATLANDI: Ortamda örnek dosya bağlantısı oluşturulamadı: ' + $_.Exception.Message) }
+    $before = Get-Hash ([IO.File]::ReadAllBytes($outside))
+    $check = Invoke-Check $f
+    Assert-Code $check 'E_ARCHIVE_PATH'
+    Assert-Code $check 'E_FILE_READ' $false
+    Assert-Code $check 'I_ARCHIVES' $false
+    Assert-Equal (Get-Hash ([IO.File]::ReadAllBytes($outside))) $before 'Dosya bağlantısı hedefi değişmez'
+}
+
+Test-Case 'Arşiv akışı: hazırlık ve aşama 1 geçmişi ayrılır, aynı Plan aşama 2 ile sürer' {
+    $f = New-ArchiveFlowFixture
+    Set-ArchiveFlowPhase $f '' '02' 'Hazırlık' 'K-002'
+    $prep = Get-ArchiveFlowPhoto $f
+    Write-ArchiveFlowCopy $f $prep '00-hazirlik'
+    Remove-ArchiveFlowSource $f $prep '00-hazirlik'
+    Assert-ArchiveFlowLiving $f
+    Set-ArchiveFlowPhase $f '1.1' '03' 'Aşama 1' 'K-003' @('1.2')
+    $first = Get-ArchiveFlowPhoto $f
+    Write-ArchiveFlowCopy $f $first '01-ilk'
+    Remove-ArchiveFlowSource $f $first '01-ilk'
+    $planPath = Join-Path $f.target 'docs/PLAN.md'
+    $plan = [IO.File]::ReadAllText($planPath).Replace('| 1 | İlk aşama | Planlandı |', '| 1 | İlk aşama | Doğrulandı |')
+    Write-TestFile $planPath $plan
+    Set-ArchiveFlowPhase $f '2.1' '04' 'Aşama 2' '' -Status 'Planlandı'
+    Assert-ArchiveFlowLiving $f
+    Assert-ArchiveFlowCopy $f $prep '00-hazirlik'
+    Assert-ArchiveFlowCopy $f $first '01-ilk'
+    Assert-True ([IO.File]::ReadAllText($planPath).Contains('| 2.1 |')) 'Aynı aktif Plan yeni seçilen ayrıntıyı taşımalı.'
+    Assert-True (-not [IO.File]::ReadAllText($planPath).Contains('| 1.1 |')) 'Kapanmış yerel ayrıntı aktif tabloda birikmez.'
+    Assert-True (-not [IO.File]::ReadAllText((Join-Path $f.target 'docs/GUNLUK.md')).Contains('2020-01-03')) 'Eski tarihli günlük tek asıl kaynakta.'
+    Assert-True (-not [IO.File]::ReadAllText((Join-Path $f.target 'docs/KARARLAR.md')).Contains('## K-003')) 'Yerel karar aktif dosyadan ayrılmış olmalı.'
+    $archiveSource = [IO.Path]::GetFullPath((Join-Path (Join-Path $f.target 'docs/arsiv/01-ilk') '../../../src/ornek.txt'))
+    Assert-Equal $archiveSource (Join-Path $f.target 'src/ornek.txt') 'Düzeltilmiş bağlantı özgün somut dosyaya gider'
+    $check = Invoke-Check $f
+    Assert-Equal $check.data.errors 0 'İki yönlü kaynak/karar/arşiv başlık bağlantıları'
+    Assert-Equal $check.data.warnings 2 'Yalnız geliştirme/IDE uyarıları'
+}
+
+Test-Case 'Arşiv akışı: kopya sonrası kesinti ve eşit içerikle tekrar eski arşivi ezmez' {
+    $f = New-ArchiveFlowFixture
+    Set-ArchiveFlowPhase $f '1.1' '03' 'Aşama 1' 'K-003'
+    $photo = Get-ArchiveFlowPhoto $f
+    Write-ArchiveFlowCopy $f $photo '01-ilk'
+    $directory = Join-Path $f.target 'docs/arsiv/01-ilk'
+    $before = Get-Snapshot $directory
+    $interrupted = Invoke-Check $f
+    Assert-Code $interrupted 'W_LOG_DUPLICATE'
+    Assert-Code $interrupted 'W_STEP_DUPLICATE'
+    Assert-Code $interrupted 'W_DECISION_DUPLICATE'
+    Write-ArchiveFlowCopy $f $photo '01-ilk'
+    Assert-Equal (Get-Snapshot $directory) $before 'Yeniden deneme mevcut arşivi yazmaz'
+    Remove-ArchiveFlowSource $f $photo '01-ilk'
+    Assert-ArchiveFlowLiving $f
+    $final = Invoke-Check $f
+    Assert-Equal $final.data.errors 0 'Toparlanmış akış'
+    Assert-Equal $final.data.warnings 2 'Yarım kopya çakışmaları kapanmalı'
+}
+
+foreach ($fault in @('kaynak-degisti','arsiv-farkli','kismi-cikarim','eksik-kopya')) {
+    Test-Case ('Arşiv akışı: belirsiz aktarım tamamlandı sayılmaz: ' + $fault) {
+        $f = New-ArchiveFlowFixture
+        Set-ArchiveFlowPhase $f '1.1' '03' 'Aşama 1' 'K-003'
+        $photo = Get-ArchiveFlowPhoto $f
+        Write-ArchiveFlowCopy $f $photo '01-ilk'
+        $archivePath = Join-Path $f.target 'docs/arsiv/01-ilk'
+        $journalPath = Join-Path $f.target 'docs/GUNLUK.md'
+        if ($fault -eq 'kaynak-degisti') { Write-TestFile $journalPath ([IO.File]::ReadAllText($journalPath) + "`nKaynakta sonradan eklenen sentetik bilgi.`n") }
+        elseif ($fault -eq 'arsiv-farkli') {
+            $path = Join-Path $archivePath 'GUNLUK.md'
+            Write-TestFile $path ([IO.File]::ReadAllText($path).Replace('E-ORNEK', 'DEGISTIRILMIS'))
+        } elseif ($fault -eq 'kismi-cikarim') { Write-TestFile $journalPath ([IO.File]::ReadAllText($journalPath).Replace((Get-TestSection ([IO.File]::ReadAllText($journalPath)) $photo.Heads[0]), '')) }
+        else { Remove-TestFile (Join-Path $archivePath 'KARARLAR.md') }
+        $sourceBefore = @{}
+        foreach ($name in @('PLAN','GUNLUK','KARARLAR')) { $sourceBefore[$name] = Get-Hash ([IO.File]::ReadAllBytes((Join-Path $f.target ('docs/' + $name + '.md')))) }
+        $archiveBefore = Get-Snapshot $archivePath
+        $stopped = $false
+        try { Remove-ArchiveFlowSource $f $photo '01-ilk' } catch { $stopped = $true }
+        Assert-True $stopped 'Farklı/eksik kaynak veya arşivde çıkarım durmalı.'
+        foreach ($name in $sourceBefore.Keys) { Assert-Equal (Get-Hash ([IO.File]::ReadAllBytes((Join-Path $f.target ('docs/' + $name + '.md'))))) $sourceBefore[$name] 'Kalan aktif kayıtlar korunur' }
+        Assert-Equal (Get-Snapshot $archivePath) $archiveBefore 'Var olan arşiv ezilmez'
+        if ($fault -in @('arsiv-farkli','eksik-kopya')) {
+            $stopped = $false
+            try { Write-ArchiveFlowCopy $f $photo '01-ilk' } catch { $stopped = $true }
+            Assert-True $stopped 'Yeniden deneme farklı/eksik arşivi kör tamamlamaz.'
+            Assert-Equal (Get-Snapshot $archivePath) $archiveBefore 'Tekrar mevcut arşivi değiştirmez'
+        }
+        foreach ($path in @('docs/PLAN.md','docs/DEVIR.md')) { $absolute = Join-Path $f.target $path; Write-TestFile $absolute ([IO.File]::ReadAllText($absolute) + "`nAktarım yarım; eksiksizlik ve kaynak karşılaştırması açık.`n") }
+        Assert-True ([IO.File]::ReadAllText((Join-Path $f.target 'docs/DEVIR.md')).Contains('Aktarım yarım')) 'Yarım durum devirde açık olmalı.'
+        Assert-ArchiveFlowLiving $f
+    }
+}
+
+Test-Case 'Arşiv akışı: aynı iş yeniden açılıp ayrı kapanır, eski kapanış değişmez' {
+    $f = New-ArchiveFlowFixture
+    Set-ArchiveFlowPhase $f '1.1' '03' 'Aşama 1' 'K-003'
+    $old = Get-ArchiveFlowPhoto $f
+    Write-ArchiveFlowCopy $f $old '01-ilk'
+    Remove-ArchiveFlowSource $f $old '01-ilk'
+    $oldHashes = @{}
+    foreach ($name in @('PLAN','GUNLUK','KARARLAR')) { $oldHashes[$name] = Get-Hash ([IO.File]::ReadAllBytes((Join-Path $f.target ('docs/arsiv/01-ilk/' + $name + '.md')))) }
+    Set-ArchiveFlowPhase $f '1.1' '04' 'Aşama 1 yeniden' 'K-004' @() '01-ilk'
+    $opened = Invoke-Check $f
+    Assert-Equal $opened.data.errors 0 'Açık tarihsel ilişki'
+    Assert-Equal $opened.data.warnings 2 'Yeni kanıt eski kapanışla çakışmaz'
+    Assert-Code $opened 'I_REOPEN_LINK'
+    $fresh = Get-ArchiveFlowPhoto $f
+    Write-ArchiveFlowCopy $f $fresh '01-ilk/yeniden-1'
+    Remove-ArchiveFlowSource $f $fresh '01-ilk/yeniden-1'
+    foreach ($name in $oldHashes.Keys) { Assert-Equal (Get-Hash ([IO.File]::ReadAllBytes((Join-Path $f.target ('docs/arsiv/01-ilk/' + $name + '.md'))))) $oldHashes[$name] 'Eski kapanış byte özeti korunur' }
+    Assert-ArchiveFlowCopy $f $fresh '01-ilk/yeniden-1'
+    Assert-ArchiveFlowLiving $f
+    $closed = Invoke-Check $f
+    Assert-Equal $closed.data.errors 0 'Ayrı tekrar kapanışı bağlantıları'
+    Assert-Equal $closed.data.warnings 2 'İki ilişkili tarihsel sürüm'
+    Assert-Code $closed 'I_REOPEN_LINK'
+}
+
+Test-Case 'Arşiv akışı: ortak dönüşüm bozuk bağlantı üretirse aktif geçmiş çıkarılmaz' {
+    $f = New-ArchiveFlowFixture
+    Set-ArchiveFlowPhase $f '1.1' '03' 'Aşama 1' 'K-003'
+    $photo = Get-ArchiveFlowPhoto $f
+    # Yazım ve beklenen metin aynı hatayı paylaşsa bile bağlantı ayrıca sınanmalı.
+    $photo.Parts['GUNLUK'] = $photo.Parts['GUNLUK'].Replace('../src/ornek.txt', '../src/olmayan.txt')
+    Write-ArchiveFlowCopy $f $photo '01-ilk'
+    $before = Get-Snapshot $f.target
+    $stopped = $false
+    try { Remove-ArchiveFlowSource $f $photo '01-ilk' } catch { $stopped = $true }
+    Assert-True $stopped 'Bozuk bağlantıda aktif geçmiş çıkarılmamalı.'
+    Assert-Equal (Get-Snapshot $f.target) $before 'Kırık bağlantıda kaynak ve arşiv korunur'
+    Assert-Code (Invoke-Check $f) 'E_BROKEN_LINK'
 }
 
 $passed = @($results | Where-Object { $_.status -eq 'passed' }).Count

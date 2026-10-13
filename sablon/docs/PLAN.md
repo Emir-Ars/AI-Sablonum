@@ -24,6 +24,22 @@ Henüz aşama seçilmedi. Yalnız kullanıcının seçtiği aşama için kararl�
 
 Durumlar: Planlandı, Uygulanıyor, Uygulandı — doğrulama bekliyor, Doğrulandı, Kullanıcı kararı bekliyor. Durum değişikliği uygulama izni değildir.
 
+Seçilen aşamanın amacı, kapsamı, gerekli kalite koşulları ve sonucu etkileyen bilinmeyenler açıklanır. Kapsam dışı işler, kısıtlar ve bağımlılıklar gerektiğinde bu tablonun altında kısa metinle tutulur. Her alt adım için inceleme katmanı ve kısa gerekçesi belirtilir; yeni sütun veya zorunlu form eklenmez. Ayrıntılar yalnız seçilen dal için hazırlanır; gerekli araştırma ve etki incelemesi devam eder.
+
+Önemli kabul ölçütü ilgili test veya gözlem kanıtıyla ilişkilendirilir; gerçek sonuç [Günlük](GUNLUK.md) kaydına bağlanır. Testlerin geçmesi karşılanmayan gereksinimi kapatmaz. Üst aşama kendi kabul ölçütleri, gerekli alt sonuçlar ve bütünleşme kontrolleri tamamlanınca kapanır.
+
+Başlangıçta kısa sorumluluk ve ilişki haritası hazırlanır; README varsa orada, yoksa bu belgenin Proje özeti altında tutulur. Seçilen aşamada somut girdinin başarı ve önemli hata yolları açıklanır; aynı harita ayrı belgelerde bağımsız çoğaltılmaz.
+
+## Hazırlık ve aşama kapanışı
+
+Genel yol haritası üzerinde anlaşılınca hazırlığın yalnız kapanmış yerel geçmişi; ana aşamanın kabul ölçütleri, gerekli alt sonuçları ve bütünleşme kontrolleri tamamlanınca o aşamanın yerel geçmişi arşive ayrılabilir. Yol haritası, yürürlükteki kararlar/sözleşmeler, açık işler ve sorunlar aktif kalır. Sabit aşama veya alt adım sayısı yoktur; son sıra numarası kapanış ölçütü değildir.
+
+Bu Plan sıfırlanmaz. Kapanmış aşama için genel yol haritasında kısa sonuç/durum ve arşivdeki Plan'a bağlantı kalır. Yalnız yeni seçilen aşamanın ayrıntıları yukarıdaki aynı başlık ve beş sütunla hazırlanır; alt adım kimlikleri yeniden kullanılmaz. Açık veya karışık kapsamlı ayrıntı bütünüyle arşivlenmez.
+
+Arşiv yerleri hazırlık için `docs/arsiv/00-hazirlik/`, aşama için `docs/arsiv/01-asama-adi/` gibi kararlı adlardır; bunlar proje köküne göre örnek yollardır, henüz oluşturulmuş kayıt değildir. Özgün kayıt biçimi ve kapanış kanıtı korunur. Aktarım, bağlantılar ve kesinti/yeniden deneme kontrolleri AGENTS.md içindeki ortak kurallara göre yapılır; yarım aktarım burada ve Devir'de açık tutulur. Yeniden açılan aşama yeni kayıtla izlenir, eski kapanış değiştirilmez. Arşiv veya bu plan sonraki çalışma biriminin izni değildir.
+
+Arşivde bu bölüm veya `## Kapanış`, aynı dizindeki Günlük'ün alanları dolu tarihli kapanış kaydına başlık bağlantısı içerir; yalnız dosyaya bağlantı yeterli değildir. Hazırlığa yapay alt adım numarası eklenmez; arşivlenecek karar yoksa boş Kararlar gerekmez. Aktif Plan arşiv Plan'ına ulaşan kısa bağlantıyı korur. Yeniden açılma varsa `## Yeniden açılma` altında aynı işin önceki arşiv Plan'ına açık bağlantı tutulur; yeni kayıt kendi Günlük'üne dayanır. Bu yönerge gerçekleşmiş kapanış veya yeniden açılma kaydı değildir.
+
 ## Doğrulama düzeni
 
 - Projeye özel test araçları ve komutları: Henüz belirlenmedi.
@@ -43,6 +59,7 @@ Projenin amacı, sınırları ve teknolojisi netleştirilecek. Kullanıcının v
 - Ortak kurallar bir teknik yetki kilidi değildir.
 - Şablon sürümü, model veya eklenti sürümünü sabitlemez.
 - Araçlar arasındaki devam bilgisi repo belgelerinde tutulur; sohbetlerin otomatik aktarıldığı varsayılmaz.
+- Elle denetim aktif/arşiv kayıtları ve bağlantıları yapısal olarak inceler; kapanışın anlamını, gerçek test yürütmesini veya her izi silinmiş geçmişin kayıpsızlığını kanıtlamaz. İzole tam aktarım akışı doğrulanmadan gerçek geçmiş taşınmaz; kayıt denetimi öncesi/sonrası eksiksizlik karşılaştırmasının yerine geçmez.
 
 ## İlgili kayıtlar
 

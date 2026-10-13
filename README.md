@@ -2,23 +2,33 @@
 
 **Amaç:** Her yeni projede aynı çalışma düzenini kullanmak; planı birlikte hazırlamak, tek alt adımı uygulamak ve Codex ile Claude arasında repo kayıtlarıyla devam etmek.
 
-> 🚧 **Hedef sürüm: v0.1.0 — geliştirme paketi.** **1.1–1.3 tamamlandı; 4 adımın 3'ü doğrulandı.** Yerel kurucu, elle denetim ve bağımlılıksız test betiği hazırdır; gerçek VS Code davranış denemeleri 1.4'tedir. Tamamlanmış `v0.1.0` sürüm etiketi/yayını henüz yoktur.
+> **Seçilen davranış şablonu tamamlandı ve yerel kurulumla kullanılabilir.** Planlama, araştırma, mühendislik anlatımı, bağımsız inceleme ve aşama arşivi kuralları hazır; 1.6.1–1.6.3'ün kural, denetim ve izole aktarım kontrolleri tamamlandı. Model veya muhakeme ayarı değiştirilmez. Paket hâlâ **v0.1.0 geliştirme paketi**: yayın/etiket ve tam Codex–Claude uyumluluk iddiası yoktur; yapılmayan tarihsel deneyler sınır olarak korunur.
 
 ## 🧭 Çalışma düzeni
 
 Genel yol haritası projenin yönünü gösterir. Ardından yalnız seçtiğin ana aşama alt adımlara ayrılır. Bir alt adım için açık uygulama yönlendirmesi verdiğinde ajan gerekli kodu, ilgili kontrolleri, hata düzeltmelerini ve kayıt güncellemelerini tamamlar; özet ve commit önerisinden sonra durur.
 
+Bir alt adım bağımsız tamamlanıp doğrulanabilen birden fazla sonuç içeriyorsa `1.2.1` gibi daha küçük adımlara bölünebilir. Ayrıntılı plan yalnız seçilen dalı anlatır; gerekli bağımlılık araştırması ve etki incelemesi devam eder. Üst adım, kendi kabul ölçütleri ve gerekli birlikte çalışma kontrolleri doğrulanınca kapanır. Alt adımlara bölmek toplu uygulama izni değildir.
+
 **Planı kabul etmek, kod yazma izni değildir.** Örneğin “Plan uygun” dediğinde ajan bütün planı uygulamaya başlamaz. “Yalnız 1.1'i uygula” dediğinde o adımın birden fazla dosyayı kapsayan gerekli işlerini bitirebilir; 1.2'ye geçmez.
 
 ![Genel plan, seçilen aşama ve tek adım çalışma akışı](gorseller/is-akisi.svg)
 
-Ajanın problem çözme yeteneğine sınır konmaz; uygulama kapsamı senin seçtiğin adımla sınırlanır. Bu, metinle tanımlanan bir çalışma kuralıdır. Talimatlara uyulması gerçek araç denemeleriyle kontrol edilecektir; teknik bir yetki kilidi veya kusursuz hatırlama garantisi değildir.
+Ajanın gerekli araştırma, analiz, problem çözme ve tasarım yöntemlerine yapay sınır konmaz; uygulama kapsamı senin seçtiğin adımla sınırlanır. Öncelik doğruluk, güvenlik ve projenin gerektirdiği teknik kalitedir; anlaşılır yapı ve anlatım bunlar korunarak sağlanır. Model, muhakeme ayarı veya araç yapılandırması değiştirilmez. Bu, metinle tanımlanan bir çalışma kuralıdır; teknik bir yetki kilidi veya gerçek çıktı kalitesinin korunduğuna ilişkin garanti değildir. Etkisi gerçek araç denemeleriyle değerlendirilir.
+
+## Araştırma ve bağımsız inceleme
+
+Ajan, bir kararı veya beklenen sonucu etkileyen teknik belirsizliği önce proje dosyaları ve salt okunur kontrollerle araştırır. Bunlar yetersizse uygun sürüm ve platforma ait resmî veya birincil kaynağa bakar; kaynakta yazan bilgiyle kendi çıkarımını ayırır. Çözülemeyen bilgi "doğrulanmadı" diye belirtilir; yalnız bu bilgiye bağlı iş bekler. Araştırma yeni bağımlılık, kapsam veya mimari seçim için uygulama izni değildir.
+
+Bağımsız inceleme, değişikliği yazan ajandan ayrı salt okunur bir alt ajanın değerlendirmesidir. Veri kaybı, güvenlik, gerçek para, geri alınması zor işlem veya sessiz kritik yanlış sonuç riski varsa **zorunlu**; birden fazla davranış ya da ortak bölümlere etki varsa **hafif**; düşük etkili işlerde **yok** seçilir. Katman her değişikliğin etkisine göre kısa gerekçeyle belirlenir. Kanıtlı bulgulara uygun doğrulama yapılır; önemli düzeltmeler yeniden incelenir. İnceleme testlerin yerine geçmez; araç yoksa yapılmış sayılmaz.
+
+Ayrıntılı ölçütler [ortak kurallarda](genel/KURALLAR.md) bulunur. Bu iki davranış yeni kurulumların kendi kopyasına taşınır; mevcut projelere otomatik uygulanmaz. Belge/kopyalama kontrolü, yeni davranışların gerçek Codex ve Claude oturumlarında doğrulandığını göstermez; bu denemeler henüz yapılmadı.
 
 ## 📦 Proje içine kurulum
 
 ![Sabit şablon sürümünden proje içine yerel kurulum hedefi](gorseller/kurulum.svg)
 
-Akış: GitHub'dan seçilen paketi indir → yerel kaynak paketinden hedef klasöre kur → o projede aynı dosya kopyasını kullan. Yayımlanmış sürüm etiketi hazır olduğunda onu seçebilirsin. Şu anki paket geliştirme durumundadır; şablonun tamamı bitmiş değildir. Her proje kendi kopyasını taşır. Global skill, eklenti veya kurulum dosyası değişmez; eski projeler kendiliğinden güncellenmez.
+Akış: GitHub'dan seçilen paketi indir → yerel kaynak paketinden hedef klasöre kur → o projede aynı dosya kopyasını kullan. Yayımlanmış sürüm etiketi hazır olduğunda onu seçebilirsin. Seçilen davranış düzeni hazırdır; paket geliştirme durumunu ve mevcut doğrulama sınırlarını korur. Her proje kendi kopyasını taşır. Global skill, eklenti veya kurulum dosyası değişmez; eski projeler kendiliğinden güncellenmez.
 
 Komutu, indirdiğin şablon paketinin kökünde Windows PowerShell 5.1 ile çalıştır. `TargetDirectory` kurulacak proje klasörüdür; yeni veya mevcut olabilir. Göreli yol verirsen PowerShell'de bulunduğun klasöre göre çözülür:
 
@@ -78,6 +88,7 @@ Proje içinde kopya kullanmak, mevcut global veya üst klasör talimatlarını o
 | [kur.ps1](kur.ps1), [surum.json](surum.json) | Yerel kurucu ve kaynak sürüm/kapsam bilgisi | Mevcut; geliştirme paketi |
 | [sablon/.ai-sablon/kontrol.ps1](sablon/.ai-sablon/kontrol.ps1) | Kurulan hedef projenin salt okunur kayıt denetimi | Mevcut |
 | [tests/Kurulum.Tests.ps1](tests/Kurulum.Tests.ps1) | Ek paket gerektirmeyen kurulum ve denetim kabul testleri | Mevcut; kaynak depoda çalışır |
+| [tests/ornekler/1.7-kurallar.txt](tests/ornekler/1.7-kurallar.txt) | Uygulama öncesi 1.7 kurallarının karşılaştırma örneği | Yalnız kaynak depoda; hedefe kurulmaz |
 
 `docs/` ve `sablon/docs/` aynı geçmişin iki kopyası değildir: ilki bu şablonun gerçek çalışmasını, ikincisi kurulacak yeni projenin boş başlangıcını taşır. Kurulumdan sonra hedef projede belgeler `docs/` altında bulunur.
 
@@ -97,6 +108,36 @@ Bu kayıtları aynı oturumda ajan günceller; ayrıca “günlüğü yaz” dem
 Dosyaların varlığı, içeriklerinin her oturumda otomatik okunduğunu kanıtlamaz. Yeni oturumda ajan Plan ve Devir'i, ilgili kararları ve Git durumunu okur; tutarsızlıkları bildirir. Salt okunur planlama modunda kayıt yazılamıyorsa bunu bildirir; yazılmış gibi davranmaz.
 
 Proje durumu, karar ve devir bilgisi yalnız repo belgelerine yazılır; aracın özel hafızasına proje durumu kaydedilmez. Sohbet geçmişleri otomatik birleştirilmez. Ortak devam noktası dosyalardır. Devir'de yazan “sonraki adım”, o adımı uygulama izni değildir.
+
+## Hazırlık ve aşama geçmişini arşivlemek
+
+**Arşivleme kuralları, denetim ve izole aktarım akışı tamamlandı.** Yeni kurulumda hazırlık veya ana aşama gerçekten kapandığında aşağıdaki güvenli sırayla ilgili geçmiş ayrılabilir. Bu depoda gerçek geçmiş taşınmadı; örnek aktarım yalnız sentetik geçici projelerde yapıldı. Eski kurulmuş kopyalar kendiliğinden güncellenmez; o kopyanın denetim ve izole akış uyumu ayrıca sağlanmadan geçmişi taşınmaz.
+
+Araştırma belgenle önce genel yol haritası hazırlanır. Hazırlık kapandığında yalnız artık aktif olmayan yerel geçmiş arşive ayrılır; genel yol haritası ve projeyi yöneten kararlar kalır. Ardından seçtiğin birinci aşama, o aşamanın araştırmasıyla alt adımlara bölünür. Sabit 10 veya 13 adım şartı yoktur; gerektiğinde kullanılmamış kimlikle yeni adım eklenebilir.
+
+```text
+docs/
+  PLAN.md          genel yol haritası + seçili aşamanın ayrıntıları
+  KARARLAR.md      yürürlükteki kararlar + aktif aşamanın kararları
+  GUNLUK.md        aktif çalışma ve aktarım kayıtları
+  DEVIR.md        güncel durum, açık işler ve bekleyen seçim
+  arsiv/
+    00-hazirlik/   yalnız kapanmış yerel hazırlık geçmişi
+    01-asama-adi/
+      PLAN.md      aşamanın ayrıntıları ve kapanış kanıtına bağlantı
+      KARARLAR.md  yalnız bu aşamaya ait kapanmış karar geçmişi
+      GUNLUK.md    özgün çalışma ve doğrulama kayıtları
+```
+
+Birinci aşama son alt adım bittiği için değil, kendi kabul ölçütleri ve gerekli birlikte çalışma kontrolleri karşılandığında kapanır. Aktif Plan'da birinci aşamanın kısa sonucu, durumu ve arşiv Plan'ına bağlantı kalır. İkinci aşama seçildiğinde **aynı aktif PLAN.md** kullanılır; yalnız seçili aşamanın ayrıntıları değişir, genel yol haritası silinmez. Aşama/alt adım/karar kimlikleri yeniden kullanılmaz.
+
+Örneğin bütün projede geçerli veri biçimi kararı aktif Kararlar'da kalır; yalnız biten aşamanın artık kullanılmayan yerel tercihi arşive gidebilir. Açık sorun, geçerli teknik sözleşme ve doğrulama komutu aşama bitti diye kaldırılmaz. Karışık kaydı yalnız tarihine göre taşımak yanlış olur. Arşive uygun kayıt yoksa boş klasör veya belge gerekmez; tarihsel ayrıntının asıl kaydı tek yerde, aktif belgede kısa bağlantı bulunur.
+
+Güvenli sıra: kapsamı belirle, arşiv kopyasını oluştur, özgün içerik/kimlikler ve taşınan veya ona gelen bağlantılar aynı kayda ulaşıyor mu doğrula, kaynağın değişmediğini tekrar kontrol et; ancak sonra ilgili aktif geçmişi çıkar. Kesinti olursa doğrulanmış arşiv ve kalan aktif kayıtlar korunur, yarım iş bildirilir; yeniden deneme eski arşivin üzerine yazmaz. Aşama yeniden açılırsa yeni kayıt eklenir, eski kapanış değiştirilmez. Yeni oturum aktif Plan/Devir ile başlar; yalnız gerektiğinde ilgili arşive bakılır.
+
+Arşivleme kapanışın belge işidir, sonraki aşamayı uygulama izni değildir. Yeni taşıma betiği, global ayar veya otomatik güncelleme eklenmez. Kurallar yeni kurulumun yerel kopyasında bulunur; eski projeler kendiliğinden değişmez. Ayrıntılar [ortak kuralların arşiv bölümündedir](genel/KURALLAR.md#hazırlık-ve-aşama-arşivi).
+
+Sekiz izole akış kontrolü; hazırlık/aşama ayrımını, aynı aktif Plan ile devamı, özgün içerik ve bağlantıları, kaynak değişiminde durmayı, yarım aktarım/yeniden denemeyi ve eski kapanışı ezmeden yeniden açılmayı sınadı. Son normal test turunda **116 toplam, 115 geçen, 0 başarısız, 1 atlanan** gözlendi; yeni sekiz kontrolün tamamı geçti. Yetki nedeniyle atlanan dosya yönlendirmesi testi, değişmemiş eski test/üretim koduyla önceki ayrı turda geçmişti (108/108, atlanan 0). Bu iki koşu tek bir 116/116 sonucu sayılmaz. Kanıtlar [Günlük](docs/GUNLUK.md) içindedir; testler gerçek ajanın her aktarımda kurala uyacağını garanti etmez.
 
 ## 📚 Örnek: Kitap takip uygulamasına başlamak
 
@@ -134,6 +175,28 @@ Codex'ten Claude'a veya ters yönde geçtiğinde aynı proje klasörünü açars
 
 Bu mesajlar doğal dildir; yeni bir slash komutu veya global skill kurulmasına ihtiyaç duymaz.
 
+## Proje geliştirirken mühendisliği öğrenmek
+
+Ajan seçilen aşamanın amacını, gerekli kalite koşullarını ve sonucu değiştirecek bilinmeyenleri açıklığa kavuşturur. Cevabı projede bulunan soruyu önce araştırır. Örneğin “Arama daha iyi olsun” isteğinde mevcut aramayı inceler; ihtiyaç hız mı, sonuçların doğruluğu mu, yazım hatalarını tolere etmek mi belirsizse kullanıcıya sorar. Ardından kabul ölçütünü gözlenebilir davranış olarak yazar.
+
+Önemli bir tasarım kararında gerçek seçenekler varsa yararlarını, bedellerini ve tercih gerekçesini anlatır. Örneğin bir arama sorununda indeks, uygulama içi önbellek ve mevcut sorgunun düzeltilmesi aynı ihtiyacı çözmeyebilir. Ajan önce mevcut kanıtı inceleyip uygun yolları karşılaştırır; kalıp adı veya sabit seçenek sayısı gerekçe yerine geçmez. Yeni mimari seçim mevcut onay düzenine tabidir.
+
+Seçilen aşamada ilgili sorumluluklar ve somut akış açıklanır: `arama girdisi -> doğrulama -> sorgu -> sonuç`. Geçersiz girdi veya depolama hatası gibi önemli hata yolları da gösterilir. Küçük bir işte kısa gerekçe yeterlidir; önemli karar ve hata anlarında açıklama derinleşir. Zorunlu ders, sınav veya ayrı öğrenme klasörü yoktur.
+
+Hata çıktığında ajan geçmiş kayıt ve mevcut kanıtı inceler, mümkünse sorunu tekrar üretir. “Olası neden” ile doğrulanan nedeni ayırır, uygun kontrolle hipotezini sınar ve düzeltmenin kanıtını gösterir. Yöntem ve kontrol araçları projeye göre seçilir; her hatada aynı teşhis sırası veya önce test yazma zorunluluğu yoktur. Kontrolü kapatıp hatayı görünmez yapmak çözüm sayılmaz.
+
+Aşağıdaki tablo yalnız açıklama örneğidir; çalıştırılmış test sonucu değildir:
+
+| Kabul ölçütü | Uygun kanıt örneği | Açık kalabilecek sınır |
+|---|---|---|
+| Boş arama reddedilir | Boş girdiyi sınayan davranış testi | Diğer geçersiz girdi türleri |
+| Başlığa göre eşleşen kayıtlar döner | Örnek veride beklenen kayıtları karşılaştırma | Gerçek veri büyüklüğü ve yük |
+| Depolama hatası kullanıcıya kontrollü aktarılır | İzole hata benzetimi | Canlı ortamın hata davranışı |
+
+Kapanışta önemli kabul ölçütü gerçek test veya gözlemle ilişkilendirilir. Testler geçse bile istenen davranış eksikse adım doğrulanmış sayılmaz. Anlamlı teknik kararın seçenekleri ve sonuçları Kararlar'da, gerçek kontroller Günlük'te, açık ölçütler Plan'da tutulur; Devir ilgili kayıtlara bağlanır. Kullanıcının gerekçesi ile ajanın teknik değerlendirmesi ayrı yazılır.
+
+Bu davranış kuralları ve dört [başlangıç belgesi](sablon/docs/PLAN.md) mevcut yerel kurulumla hedef projeye taşınır. Kaynak depodaki README örnekleri veya araştırma raporları kurulum dosyası değildir. Yeni davranışların yararı [gerçek ajan senaryolarıyla](docs/VS_CODE_DENEMELERI.md#18-mühendislik-anlatımı-ve-kanıt-senaryoları) ayrıca değerlendirilir.
+
 ## 🧪 Testler nasıl seçilecek?
 
 Her ayrıntılı adım başlamadan doğrulama yöntemi belirlenir. Davranış değişikliğinde gerekli test yazılır veya mevcut test güncellenir. Alt adım sonunda ilgili testler, ana aşama kapanırken mevcut testlerin tamamı ve gerekli bütünleşme kontrolleri çalıştırılır. Hata düzeltmesinde uygun olduğunda aynı hatayı yeniden yakalayan test eklenir.
@@ -157,6 +220,10 @@ Başarısız, atlanan (`skipped`) veya çalıştırılamayan kontroller ayrı ya
 ## 🧱 Dosya bütünlüğü ve mimari
 
 Alt başlıklar iş sırasını yönetir; dosyalar sorumluluğuna göre düzenlenir. Aynı alt adım birden fazla dosyada değişiklik gerektirebilir. Ajan, değişikliğin kullanan modüllere etkisini inceleyip uygun kontrollerle bütünlüğü korumaya çalışır.
+
+Mimari mevcut proje, teknoloji ve gereksinimler incelenerek önerilir. Genel bir klasör sayısı, dosya uzunluğu veya katman sayısı sınırı yoktur. Dosya ayırma/birleştirme anlaşılabilirlik, bağımlılıklar ve değişiklik etkisiyle gerekçelendirilir. Daha kapsamlı bir yapı gerekiyorsa karşıladığı somut ihtiyaç açıklanır; sadelik uğruna gerekli güvenlik, hata yönetimi, doğrulama, test veya modülerlik çıkarılmaz.
+
+Başlangıçta kısa bir yapı haritası hazırlanır; README varsa orada, yoksa Plan'ın Proje özeti altında tutulur. Yapı değişince aynı harita güncellenir. Yalnız seçilen aşamada ilgili dosyaların görevleri ve ilişkileri somut bir akışla açıklanır: `girdi -> doğrulama -> işlem -> sonuç`. Anlatım sadeleşirken teknik doğruluk ve gerekli ayrıntı korunur. Mimari seçim kullanıcıyla belirlenir; yetkili adım içindeki normal dosya ve yardımcı fonksiyon düzenlemeleri yeniden izin gerektirmez.
 
 Bu düzen Singleton tasarım desenini otomatik sağlamaz ve her projeye Singleton dayatmaz. Singleton, bir sınıfın tek örneğinin kullanılmasını amaçlayan bir tasarım tercihidir. Gerekirse proje mimarisi görüşülür; karar ve sınırlar kaydedilir.
 
@@ -184,9 +251,15 @@ powershell.exe -NoProfile -File .\sablon\.ai-sablon\kontrol.ps1 -ProjectDirector
 
 Şu anki geliştirme paketinde temiz kurulumdan sonra bile **2 beklenir**: paket geliştirme durumundadır ve 1.4 araç denemeleri beklemektedir. Uyarı, kurulumun başarısız olduğu anlamına gelmez. Hata varsa 1 önceliklidir. JSON çıktısındaki `status`, `errors`, `warnings` ve `findings` alanları aynı ayrımı taşır.
 
-Denetim sekiz zorunlu dosyayı, varsa README'yi, CLAUDE içe aktarımını, UTF-8/BOM düzenini, yerel bağlantıları ve kurulum kaydının biçim/tutarlılığını inceler. Plan'ın gerçek alt adımlarını Günlük ve Devir ile karşılaştırır. Planlanmış işe tamamlanmış kayıt şartı koymaz; boş başlangıç, kod blokları ve HTML yorumlarını çalışma kaydı saymaz. Yerel bağlantının dosya hedefini kontrol eder; başlık parçalarını, dış URL'leri ve proje dışındaki yerel dosyaları denetlemez. Tam bir Markdown çözümleyicisi değildir.
+Denetim sekiz zorunlu dosyayı, varsa README'yi ve `docs/arsiv/` altındaki Markdown belgelerini salt okunur inceler. CLAUDE içe aktarımı, UTF-8/BOM düzeni, yerel dosya/başlık bağlantıları ve kurulum kaydı kontrol edilir. Her aktif veya arşiv Plan'ındaki uygulanmış/doğrulanmış alt adım, **aynı dizindeki** Günlük'ün alanları dolu, geçerli tarihli kaydıyla eşleştirilir; eski arşiv yeni işin kanıtı olamaz. Devir yalnız aktif Plan ile karşılaştırılır. Planlanmış işe tamamlanmış kayıt şartı konmaz; boş başlangıç, kod çitleri ve HTML yorumları kayıt sayılmaz.
 
-Belgelerin otomatik düzeltilmesi yoktur. Ajan bulguları değerlendirir; yetkili çalışma adımı içindeki eksik kayıtları tamamlar. **Kullanıcı onayının gerçekliğini, testlerin gerçekten çalıştığını veya kodun doğru olduğunu kanıtlamaz.** Git deposu oluşturmaz; dosya yazmaz veya ağ işlemi yapmaz. İlk sürümde hook, otomatik engelleme ve yeni paket yoktur.
+Arşiv Plan'ının `## Hazırlık ve aşama kapanışı` veya `## Kapanış` bölümünden kendi Günlük'ündeki dolu tarihli kaydın **başlığına** bağlantı beklenir. Yalnız dosyaya veya başka aşamanın kaydına bağlantı yeterli değildir. Hazırlık için yapay alt adım numarası, arşivde karar yoksa boş KARARLAR.md gerekmez. Aktif Plan'dan doğrudan veya yerel belge bağlantıları üzerinden erişilemeyen arşiv, eksik kapanış, ilişkisiz alt adım/karar kimliği tekrarları ve aynı tarihli başlık–çalışma birimi çakışmaları uyarılır. Aynı tarihli kayıt uyarısı kesin kopya hükmü değildir; kayıtlar elle karşılaştırılır.
+
+Yeniden açılan işte `## Yeniden açılma` altında önceki ilgili arşiv Plan'ına açık bağlantı tutulur. Denetim, aynı alt adımın düzgün Plan satırları ve durumu gerektiriyorsa kendi yerel Günlük kayıtları üzerinden tek yönlü tarihsel zinciri ayırır; farklı iş veya eksik kanıtlı ara sürüm bu ilişkiyi sağlayamaz. Döngü ve belirsiz tekrar uyarı olarak kalır. Bu bağlantı yeni uygulama izni ya da tamamlanma kanıtı değildir.
+
+Yerel Markdown başlık hedeflerinde `#` biçimli başlıklar, tek satırlı altı çizgili başlıklar ve basit tırnaklı HTML `id`/`a name` hedefleri tanınır. Başlıkların basit biçim işaretleri kaldırılır; tekrarlar `-1` gibi ek alır. Başlık bağlantısı yaklaşımı [GitHub belge kuralları](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#section-links), altı çizgili biçim [CommonMark başlık tanımı](https://spec.commonmark.org/0.31.2/#setext-headings) üzerinden kontrol edildi. **Tam Markdown çözümleyicisi değildir:** çok satırlı/karmaşık başlıklar, referans biçimli bağlantılar ve tüm HTML/kod bağlamları kapsam dışıdır. Örneğin HTML özniteliğinin tırnaklı metni içindeki `id=...` yanlış hedef sayılabilir; satır içi koddaki `<!--...-->` yorum işaretleri temizlenebilir. Bu biçimlerde başlık/bağlantı geçerliliği ayrıca elle incelenir; otomatik sonuç yeterli değildir. Kodla gösterilen örnek bağlantı kapanış veya yeniden açılma kanıtı sayılmaz. Dış URL'ler, Markdown dışındaki başlık parçaları ve proje dışındaki yerel dosyalar okunmaz. Arşivden proje içindeki kod veya aktif karara bağlantı geçerlidir; yönlendirilmiş dosya/klasörler izlenmez.
+
+Belgelerin otomatik düzeltilmesi yoktur. Ajan bulguları değerlendirir; yetkili çalışma adımı içindeki eksik kayıtları tamamlar. **Kullanıcı onayının gerçekliğini, kapanışın anlamını, testlerin gerçekten çalıştığını veya kodun doğru olduğunu kanıtlamaz.** Kaydı ve bütün bağlantıları birlikte silinmiş geçmiş bu taramayla bulunamaz; aktarım öncesi/sonrası karşılaştırma ayrıca gerekir. Git deposu oluşturmaz; dosya yazmaz veya ağ işlemi yapmaz. İlk sürümde hook, otomatik engelleme ve yeni paket yoktur.
 
 Kayıtlar başlangıç belgelerindeki standart alanları kullanır. Günlük'te gerçek kayıt başlığı `## yyyy-MM-dd HH:mm — açıklama`; alanlar `Çalışma birimi`, `Yapılan iş ve nedeni`, `Değişen dosyalar`, `Doğrulama`, `Başarısız`, `Atlanan`, `Çalıştırılamayan` biçimindedir. Kararlar `## K-001 — açıklama` gibi başlıklar ve `Karar`, `Gerekçe`, `Etki` alanlarıyla; Devir, Plan ile aynı `Güncel çalışma birimi` alanıyla yazılır. Serbest biçimli bir metnin anlamı veya onayın gerçekliği bu alanlardan çıkarılmaz.
 
@@ -212,6 +285,11 @@ Git deposunu, GitHub uzak adresini ve Git kimliğini sen kurarsın. Ajan yerel d
 | 1.2 | Kurucu ve kaynak sürüm kaydı | Doğrulandı — 41 kabul kontrolü |
 | 1.3 | Elle denetim ve bağımlılıksız test betiği | Doğrulandı — Windows PowerShell 5.1'de 60 kabul kontrolü |
 | 1.4 | Codex/Claude VS Code davranış denemeleri | Kısmen doğrulandı — Codex planlama 2/8; diğer 6 kontrol yapılmadı |
+| 1.5 | Genel araştırma ve risk temelli bağımsız inceleme kuralları | Uygulandı; belge/kurulum doğrulandı — 64/64, başarısız 0, atlanan 0; gerçek ajan denemesi bekliyor |
+| 1.6 | Hazırlık ve ana aşama kapanışında ilgili geçmişi arşivleme | Kural/denetim/izole akış kapsamı doğrulandı; yeni akışlar 8/8. Son normal tur 115 geçen/0 başarısız/1 atlanan; değişmemiş eski güvenlik kontrollerinin önceki turu 108/108. Gerçek geçmiş taşınmadı |
+| 1.7 | Teknik kaliteyi koruyan mimari, küçük adımlar ve aşama bazında anlatım | Uygulandı; belge/kurulum doğrulandı — 64/64, başarısız 0, atlanan 0; Q-1–Q-6 gerçek ajan denemesi bekliyor |
+| 1.8 | Karar, hata teşhisi ve kabul–kanıt ilişkisiyle mühendislik anlatımı; dört başlangıç belgesi ve karşılaştırmalı senaryolar | 1.8.1–1.8.3 seçilmiş kapsamı doğrulandı; T-1–T-5 ilk Codex karşılaştırmaları kayıtlı. Claude/Q/ek tekrar yapılmadı; genel zekâ veya öğrenme etkisi kanıtı değil |
+| 1.9 | Üç görevde kontrol/kurallı hızlı tarama | Altı gerçek sonuç değerlendirildi; seçilmiş kapsam tamamlandı. Görevlerdeki eksik düzeltmeler ve kayıt kusurları gizlenmedi; uzun tur eklenmez |
 
 Ayrıntılı durum ve kabul ölçütleri [Plan](docs/PLAN.md), gerçek kontrol sonuçları [Günlük](docs/GUNLUK.md), sonraki oturumun başlangıcı [Devir](docs/DEVIR.md) dosyasındadır. Genel planın kabulü sonraki adımların uygulama izni değildir.
 
