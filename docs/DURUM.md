@@ -1,8 +1,8 @@
 # Durum
 
-- Son güncelleme: 2026-11-04 10:48
-- Sürüm: v0.2.0 (geliştirme)
-- Dal: v0.2-sade
+- Son güncelleme: 2026-11-04 10:55
+- Sürüm: v0.2.1 (geliştirme)
+- Dal: main (v0.2-sade dalı main'e birleştirildi)
 
 ## Kısa özet
 
@@ -35,15 +35,12 @@
 - K3 yükü boş şablonlarla ölçüldü; uzun bir aşamanın dolu `PLAN.md` dosyasıyla yükü ölçülmedi.
 - K4'ün Git içindeki hâli (`git mv`, commit adımı) denenmedi; senaryo Git deposu olmayan klasörde yapıldı.
 - D4 de arşivleme prosedürünü yazıldığı gibi izleyen aynı ajan tarafından yürütüldü; bağımsız bir deneme değildir ve Git içindeki hâli (`git mv`, commit adımı) yine denenmedi.
-- Görev dosyası sürüm numarasını değiştirmediği için `surum.json` hâlâ `0.2.0`; yama `v0.2.1` diye anılıyor ama kurulum kaydına `0.2.0` yazılıyor.
-- D4'te yeni belirsizlikler (bildirim için, uygulanmadı): `ARSIVLEME.md` "Kurallar" bölümü kapanmış aşamadaki hatanın gerekçesini "o aşamanın günlüğüne" yazmayı söylüyor, ama o günlük arşivdedir ve değiştirilmez; senaryoda yeni aktif `GUNLUK.md` kullanıldı. Adım 7'deki `../` bağlantı düzeltmesi, `../` ile başlayan bütün bağlantıların klasör dışını gösterdiğini varsayar.
-- Geçici test klasörleri silinmedi (aşağıdaki "Temizlik" bölümüne bakın).
+- Sürüm numarası `0.2.1` yapıldı (`surum.json`, `README.md`) ve `ARSIVLEME.md` içindeki iki belirsizlik (kapanmış aşama hatasının gerekçesinin yazılacağı günlük, adım 7'deki `../` bağlantı düzeltmesi) metin olarak giderildi. Bu iki metin değişikliği için arşivleme senaryosu yeniden yürütülmedi; yalnız yeni geçici kurulum `0.2.1` kaydıyla denendi (çıkış 0, "dosya sayısı: 22", 20 kopya SHA-256 aynı, `templateVersion: 0.2.1`, tekrar kurulum çıkış 1).
 
-## Temizlik (kullanıcı onayı bekliyor)
+## Temizlik (silme otomatik denetimde reddedildi; kullanıcı elle yapacak)
 
-- `%TEMP%` altında 5 geçici test klasörü: `ai-sablon-v02-test-20261104-092038`, `ai-sablon-v02-test-20261104-092050`, `ai-sablon-v021-test-20261104-104223`, `ai-sablon-v021-d4-20261104-104310` (D4'te betik hatasıyla kirlenmiş, geçersiz), `ai-sablon-v021-d4b-20261104-104414`.
-- `GOREV_v0.2.md` ve `GOREV_v0.2.1_DUZELTME.md` commit edilmez; silmek için kullanıcı onayı gerekir.
-
+- `%TEMP%` altında `ai-sablon-v02*` ile başlayan 6 geçici test klasörü (`ai-sablon-v02-test-20261104-092038`, `...-092050`, `ai-sablon-v021-test-20261104-104223`, `...-104806`, `ai-sablon-v021-d4-20261104-104310` (D4'te betik hatasıyla kirlenmiş, geçersiz), `ai-sablon-v021-d4b-20261104-104414`).
+- `GOREV_v0.2.md` ve `GOREV_v0.2.1_DUZELTME.md` Git'te izlenmiyor, commit edilmez; silinmedi.
 ## Sıradaki seçim
 
 Kullanıcının seçimi bekleniyor. Bu bölüm uygulama izni değildir.
