@@ -6,7 +6,7 @@ Bu belge yalnız şablon reposunda durur, projelere kurulmaz. v0.1'deki kurallar
 
 | | v0.1 | v0.2 |
 |---|---|---|
-| Her oturumda yüklenen kural (`AGENTS.md`) | ~25.000 karakter, 110 madde | ~11.000 karakter, ~60 madde |
+| Her oturumda yüklenen kural (`AGENTS.md`) | ~25.000 karakter, 110 madde | ~10.800 karakter, 55 madde |
 | Her oturumda okunan belgeler | Plan + Devir (proje büyüdükçe uzar) | `DURUM.md` (en fazla 30 satır) + aktif aşamanın `PLAN.md` dosyası |
 | Yalnız gerektiğinde okunan kural | Yok | `docs/kurallar/ARSIVLEME.md`, `docs/kurallar/INCELEME.md` |
 

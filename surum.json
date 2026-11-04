@@ -79,6 +79,10 @@
     {
       "source": "sablon/docs/kurallar/sablonlar/TASARIM.md",
       "target": "docs/kurallar/sablonlar/TASARIM.md"
+    },
+    {
+      "source": "sablon/docs/aktif-asama/arastirma/BENIOKU.md",
+      "target": "docs/kurallar/sablonlar/arastirma-BENIOKU.md"
     }
   ],
   "generatedFiles": [
