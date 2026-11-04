@@ -123,27 +123,24 @@ try {
     [byte[]]$versionBytes = [IO.File]::ReadAllBytes($versionPath)
     if ($versionBytes.Length -ge 3 -and $versionBytes[0] -eq 239 -and $versionBytes[1] -eq 187 -and $versionBytes[2] -eq 191) { throw 'surum.json UTF-8 BOM olmadan kaydedilmeli.' }
     $version = $utf8.GetString($versionBytes) | ConvertFrom-Json
-    if ($version.schemaVersion -ne 1 -or $version.version -notmatch '^\d+\.\d+\.\d+$' -or $version.packageStatus -notin @('development', 'release') -or $version.minimumPowerShellVersion -ne '5.1') { throw 'Sürüm kaydının biçimi veya alanları geçersiz.' }
-    if (@($version.copyFiles).Count -lt 5 -or @($version.copyFiles).Count -gt 6) { throw 'Sürüm kaydının kaynak dosya listesi geçersiz.' }
-    $requiredCopies = @{
-        'AGENTS.md' = 'genel/KURALLAR.md'
-        'docs/PLAN.md' = 'sablon/docs/PLAN.md'
-        'docs/KARARLAR.md' = 'sablon/docs/KARARLAR.md'
-        'docs/GUNLUK.md' = 'sablon/docs/GUNLUK.md'
-        'docs/DEVIR.md' = 'sablon/docs/DEVIR.md'
-    }
-    $allowedCopies = @{} + $requiredCopies
-    $allowedCopies['.ai-sablon/kontrol.ps1'] = 'sablon/.ai-sablon/kontrol.ps1'
+    if ($version.schemaVersion -ne 2 -or $version.version -notmatch '^\d+\.\d+\.\d+$' -or $version.packageStatus -notin @('development', 'release') -or $version.minimumPowerShellVersion -ne '5.1') { throw 'Sürüm kaydının biçimi veya alanları geçersiz.' }
+    if (@($version.copyFiles).Count -lt 1 -or @($version.copyFiles).Count -gt 100) { throw 'Sürüm kaydının kaynak dosya listesi geçersiz.' }
+    # Kaynaklar yalnız şablon klasörlerinden gelir; hedefler araç ve Git ayar klasörlerine yazılamaz.
+    $allowedSourcePrefixes = @('genel/', 'sablon/')
+    $blockedTargetPrefixes = @('.git/', '.claude/', '.codex/', '.agents/', '.vscode/', '.ai-sablon/')
+    $requiredTargets = @('AGENTS.md', 'docs/DURUM.md', 'docs/aktif-asama/PLAN.md')
     $expectedGenerated = @('CLAUDE.md', '.ai-sablon/kurulum.json')
     if (@($version.generatedFiles).Count -ne 2 -or @(Compare-Object ($version.generatedFiles | Sort-Object) ($expectedGenerated | Sort-Object)).Count -ne 0) { throw 'Üretilecek dosya listesi geçersiz.' }
-    $pendingFeatures = @($version.pendingFeatures)
-    if (@($pendingFeatures | Where-Object { $_ -notin @('manual-validation', 'editor-behavior-validation') }).Count -gt 0 -or @($pendingFeatures | Select-Object -Unique).Count -ne $pendingFeatures.Count) { throw 'Bekleyen bileşen listesi geçersiz.' }
+    $pendingFeatures = @($version.pendingFeatures | Where-Object { $null -ne $_ })
+    if (@($pendingFeatures | Where-Object { $_ -isnot [string] -or $_ -notmatch '^[a-z0-9-]+$' }).Count -gt 0 -or @($pendingFeatures | Select-Object -Unique).Count -ne $pendingFeatures.Count) { throw 'Bekleyen bileşen listesi geçersiz.' }
 
     $payload = New-Object 'Collections.Generic.List[object]'
     $sourceFiles = New-Object 'Collections.Generic.List[object]'
     $seenTargets = @{}
     foreach ($copy in $version.copyFiles) {
-        if ($copy.source -isnot [string] -or $copy.target -isnot [string] -or -not $allowedCopies.ContainsKey($copy.target) -or $allowedCopies[$copy.target] -cne $copy.source -or $seenTargets.ContainsKey($copy.target)) { throw 'Kaynak/hedef dosya eşlemesi geçersiz veya tekrarlı.' }
+        if ($copy.source -isnot [string] -or $copy.target -isnot [string] -or $seenTargets.ContainsKey($copy.target)) { throw 'Kaynak/hedef dosya eşlemesi geçersiz veya tekrarlı.' }
+        if (@($allowedSourcePrefixes | Where-Object { $copy.source.StartsWith($_, [StringComparison]::Ordinal) }).Count -eq 0) { throw ('Kaynak şablon klasörlerinin dışında: ' + $copy.source) }
+        if (@($blockedTargetPrefixes | Where-Object { $copy.target.StartsWith($_, [StringComparison]::OrdinalIgnoreCase) }).Count -gt 0 -or $copy.target -in $expectedGenerated) { throw ('Bu hedefe dosya kopyalanamaz: ' + $copy.target) }
         $sourcePath = Get-PackagePath $sourceRoot $copy.source
         $targetPath = Get-PackagePath $targetRoot $copy.target
         Assert-UnredirectedPath $sourcePath
@@ -154,19 +151,17 @@ try {
             if ($sourceBytes.Length -ge 3 -and $sourceBytes[0] -eq 239 -and $sourceBytes[1] -eq 187 -and $sourceBytes[2] -eq 191) { throw ('Markdown kaynağı BOM içeriyor: ' + $copy.source) }
             $utf8.GetString($sourceBytes) | Out-Null
         }
-        if ($copy.source.EndsWith('.ps1') -and ($sourceBytes.Length -lt 3 -or $sourceBytes[0] -ne 239 -or $sourceBytes[1] -ne 187 -or $sourceBytes[2] -ne 191)) { throw 'Kontrol betiği UTF-8 BOM içermeli.' }
+        if ($copy.source.EndsWith('.ps1') -and ($sourceBytes.Length -lt 3 -or $sourceBytes[0] -ne 239 -or $sourceBytes[1] -ne 187 -or $sourceBytes[2] -ne 191)) { throw ('PowerShell betiği UTF-8 BOM içermeli: ' + $copy.source) }
         $sourceFiles.Add([pscustomobject]@{path=$copy.source; sha256=$sourceHash})
         $payload.Add([pscustomobject]@{relativePath=$copy.target; path=$targetPath; bytes=$sourceBytes; sha256=$sourceHash})
         $seenTargets[$copy.target] = $true
     }
-    foreach ($requiredTarget in $requiredCopies.Keys) { if (-not $seenTargets.ContainsKey($requiredTarget)) { throw ('Zorunlu kurulum dosyası eksik: ' + $requiredTarget) } }
-    $hasControlScript = $seenTargets.ContainsKey('.ai-sablon/kontrol.ps1')
-    if ($hasControlScript -eq ($pendingFeatures -contains 'manual-validation')) { throw 'Kontrol betiği ile bekleyen bileşen kaydı tutarsız.' }
+    foreach ($requiredTarget in $requiredTargets) { if (-not $seenTargets.ContainsKey($requiredTarget)) { throw ('Zorunlu kurulum dosyası eksik: ' + $requiredTarget) } }
     if ($version.packageStatus -eq 'release' -and $pendingFeatures.Count -gt 0) { throw 'Yayımlanmış paket bekleyen bileşen içeremez.' }
     $sourceFiles.Add([pscustomobject]@{path='surum.json'; sha256=(Get-BytesHash $versionBytes)})
     $sourceFiles.Add([pscustomobject]@{path='kur.ps1'; sha256=(Get-BytesHash ([IO.File]::ReadAllBytes($PSCommandPath)))})
 
-    $claudeText = "@AGENTS.md`n`n# Claude için proje girişi`n`nOrtak çalışma kuralları ve belge haritası AGENTS.md içindedir.`nYeni oturumda ortak kayıtlardaki durumu oku; uygulama için kullanıcının seçtiği alt adımı bekle.`n"
+    $claudeText = "@AGENTS.md`n`n# Claude için proje girişi`n`nÇalışma kuralları yukarıdaki AGENTS.md içindedir. Oturuma docs/DURUM.md ile başla; uygulama için kullanıcının seçtiği alt adımı bekle.`n"
     [byte[]]$claudeBytes = $utf8.GetBytes($claudeText)
     $payload.Add([pscustomobject]@{relativePath='CLAUDE.md'; path=(Get-PackagePath $targetRoot 'CLAUDE.md'); bytes=$claudeBytes; sha256=(Get-BytesHash $claudeBytes)})
     $recordPath = Get-PackagePath $targetRoot '.ai-sablon/kurulum.json'

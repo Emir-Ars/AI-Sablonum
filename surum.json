@@ -1,16 +1,91 @@
 {
-  "schemaVersion": 1,
-  "version": "0.1.0",
+  "schemaVersion": 2,
+  "version": "0.2.0",
   "packageStatus": "development",
   "minimumPowerShellVersion": "5.1",
   "copyFiles": [
-    { "source": "genel/KURALLAR.md", "target": "AGENTS.md" },
-    { "source": "sablon/docs/PLAN.md", "target": "docs/PLAN.md" },
-    { "source": "sablon/docs/KARARLAR.md", "target": "docs/KARARLAR.md" },
-    { "source": "sablon/docs/GUNLUK.md", "target": "docs/GUNLUK.md" },
-    { "source": "sablon/docs/DEVIR.md", "target": "docs/DEVIR.md" },
-    { "source": "sablon/.ai-sablon/kontrol.ps1", "target": ".ai-sablon/kontrol.ps1" }
+    {
+      "source": "genel/KURALLAR.md",
+      "target": "AGENTS.md"
+    },
+    {
+      "source": "sablon/docs/DURUM.md",
+      "target": "docs/DURUM.md"
+    },
+    {
+      "source": "sablon/docs/YOL_HARITASI.md",
+      "target": "docs/YOL_HARITASI.md"
+    },
+    {
+      "source": "sablon/docs/KARARLAR.md",
+      "target": "docs/KARARLAR.md"
+    },
+    {
+      "source": "sablon/docs/PROJE.md",
+      "target": "docs/PROJE.md"
+    },
+    {
+      "source": "sablon/docs/arastirma/BENIOKU.md",
+      "target": "docs/arastirma/BENIOKU.md"
+    },
+    {
+      "source": "sablon/docs/kurallar/sablonlar/PLAN.md",
+      "target": "docs/aktif-asama/PLAN.md"
+    },
+    {
+      "source": "sablon/docs/kurallar/sablonlar/KARARLAR.md",
+      "target": "docs/aktif-asama/KARARLAR.md"
+    },
+    {
+      "source": "sablon/docs/kurallar/sablonlar/GUNLUK.md",
+      "target": "docs/aktif-asama/GUNLUK.md"
+    },
+    {
+      "source": "sablon/docs/aktif-asama/arastirma/BENIOKU.md",
+      "target": "docs/aktif-asama/arastirma/BENIOKU.md"
+    },
+    {
+      "source": "sablon/docs/arsiv/BENIOKU.md",
+      "target": "docs/arsiv/BENIOKU.md"
+    },
+    {
+      "source": "sablon/docs/kurallar/ARSIVLEME.md",
+      "target": "docs/kurallar/ARSIVLEME.md"
+    },
+    {
+      "source": "sablon/docs/kurallar/INCELEME.md",
+      "target": "docs/kurallar/INCELEME.md"
+    },
+    {
+      "source": "sablon/docs/kurallar/sablonlar/PLAN.md",
+      "target": "docs/kurallar/sablonlar/PLAN.md"
+    },
+    {
+      "source": "sablon/docs/kurallar/sablonlar/KARARLAR.md",
+      "target": "docs/kurallar/sablonlar/KARARLAR.md"
+    },
+    {
+      "source": "sablon/docs/kurallar/sablonlar/GUNLUK.md",
+      "target": "docs/kurallar/sablonlar/GUNLUK.md"
+    },
+    {
+      "source": "sablon/docs/ACIK_KONULAR.md",
+      "target": "docs/ACIK_KONULAR.md"
+    },
+    {
+      "source": "sablon/docs/kurallar/sablonlar/TASARIM.md",
+      "target": "docs/aktif-asama/TASARIM.md"
+    },
+    {
+      "source": "sablon/docs/kurallar/sablonlar/TASARIM.md",
+      "target": "docs/kurallar/sablonlar/TASARIM.md"
+    }
   ],
-  "generatedFiles": [ "CLAUDE.md", ".ai-sablon/kurulum.json" ],
-  "pendingFeatures": [ "editor-behavior-validation" ]
+  "generatedFiles": [
+    "CLAUDE.md",
+    ".ai-sablon/kurulum.json"
+  ],
+  "pendingFeatures": [
+    "windows-validation"
+  ]
 }
