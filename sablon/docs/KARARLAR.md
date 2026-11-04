@@ -1,26 +1,23 @@
-# Kullanıcı kararları
+# Proje geneli kararlar
 
-Henüz bu projeye ait karar kaydı yok. Ortak şablon kuralları AGENTS.md içindedir; şablon deposunun geliştirme geçmişi bu belgeye taşınmaz.
+> Bu dosya iki bölümden oluşur: kısa **Karar dizini** (bütün kararlar, tek satır) ve **proje geneli kararların tam metni**. Yalnız aktif aşamayı ilgilendiren kararların tam metni `aktif-asama/KARARLAR.md` dosyasındadır; dizinde yine satırı bulunur. Karar numaraları bütün proje boyunca artar ve yeniden kullanılmaz. Değişen karar silinmez: eski kayıtta ilgili cümle düzeltilir, dizinde durumu güncellenir.
+
+Henüz karar yok.
+
+## Karar dizini
+
+Durumlar: Geçerli, Kısmen değişti: K-xxx, Yerine geçildi: K-xxx, Arşivde (tam metin arşiv bağlantısıyla).
+
+| No | Başlık | Kapsam | Durum |
+|---|---|---|---|
 
 ## Kayıt biçimi
 
-Yeni kararlar aşağıdaki alanlarla bu dosyanın sonuna eklenir:
-
-- Kayıt başlığı: Kararlı karar numarası ve kabuktan alınan tarih/saat.
+```text
+## K-001 — yyyy-MM-dd — Kısa başlık
 - Karar: Kullanıcının seçtiği yaklaşım.
-- Gerekçe: Kullanıcının bildirdiği gerekçe; bildirilmediyse açıkça belirtilir.
-- Etki: Etkilenen aşama, alt adım, davranış veya proje kuralı.
-
-Anlamlı teknik kararda gerektiğinde aynı kayda şu bilgiler eklenebilir: gerçek seçenekler ve bedelleri, ajanın teknik değerlendirmesi, kararın sonuçları, ilgili kanıt bağlantıları ve somut bir yeniden değerlendirme koşulu. Bunlar her küçük karar için zorunlu alan değildir; ayrı karar dosyası açmak gerekmez.
-
-Gerekçe alanı kullanıcının bildirdiği gerekçeyi taşır. Ajanın teknik değerlendirmesi ayrıca belirtilir; kullanıcı söylemediyse onun gerekçesi gibi yazılmaz.
-
-Ajanın önerisi karar gibi kaydedilmez. Karar ilgiliyse [Plan](PLAN.md) ve [Devir](DEVIR.md) içindeki bekleyen madde de güncellenir.
-
-## Aktif kararlar ve arşiv
-
-Yürürlükteki proje geneli veya hâlâ gerekli kararların asıl kaydı aktif kalır; yalnız kapanmış yerel karar geçmişi ilgili hazırlık/aşama arşivine ayrılır. Kayıt tarihi tek başına kapsamı belirlemez; karışık veya belirsiz kapsam bütünüyle taşınmaz. Arşivlenen gerekçe, etki, özgün tarih ve karar numarası korunur; aktif belgede gerekli kısa bağlantı bulunur. Kimlikler sıfırlanmaz: yeni karar numarası vermeden aktif ve arşiv kayıtları kontrol edilir.
-
-Aktarım ortak kurallardaki doğrulama ve denetim hazırlığı koşullarına tabidir. Daha sonra karar değişirse yeni karar kaydı önceki kayda bağlanır; tarihsel seçim geriye dönük değiştirilmez. Bu yönergeler gerçek karar veya yapılmış arşiv kaydı değildir.
-
-Elle denetim gerçek kararları `## K-001 — açıklama` gibi numaralı başlıklardan tanır. Gerçek kayıtta `- Karar:`, `- Gerekçe:` ve `- Etki:` alanları kullanılır; bu açıklama bölümü karar kaydı sayılmaz.
+- Gerekçe: Kullanıcının söylediği gerekçe; söylemediyse "belirtilmedi".
+- Ajan değerlendirmesi: Varsa seçenekler ve bedelleri (isteğe bağlı).
+- Etki: Etkilenen aşamalar, dosyalar veya kurallar.
+- Kaynak: Aşamadan taşındıysa arşiv bağlantısı (isteğe bağlı).
+```
