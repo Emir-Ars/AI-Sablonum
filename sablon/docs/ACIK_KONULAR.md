@@ -11,7 +11,7 @@ Henüz verilmemiş kararlar; "En geç" sütunu hangi aşamaya kadar beklenebilec
 
 ## Bilinen sınırlar (proje düzeyi)
 
-Bileşene özgü teknik sınırlar `docs/PROJE.md` dosyasındadır; burada yalnız bütün projeyi ilgilendiren sınırlar tutulur.
+Bileşene özgü teknik sınırlar `docs/PROJE.md` dosyasındadır; burada yalnız bütün projeyi ilgilendiren sınırlar tutulur. Sınır giderildiğinde satırı silinir ve nedeni günlüğe yazılır.
 
 - Henüz yok.
 

@@ -6,7 +6,7 @@ Henüz karar yok.
 
 ## Karar dizini
 
-Durumlar: Geçerli, Kısmen değişti: K-xxx, Yerine geçildi: K-xxx, Arşivde (tam metin arşiv bağlantısıyla).
+Durumlar: Geçerli, Kısmen değişti: K-xxx, Yerine geçildi: K-xxx, Arşivde (tam metin arşiv bağlantısıyla). Dizin satırı kısa tutulur (en çok ~120 karakter); ayrıntı tam metindedir.
 
 | No | Başlık | Kapsam | Durum |
 |---|---|---|---|

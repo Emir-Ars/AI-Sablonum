@@ -1,6 +1,6 @@
 # Proje bilgisi
 
-> Kodun **şu anki** hâli; geçmiş değil. Bir aşama bittiğinde sonraki aşamanın bilmesi gereken her teknik bilgi buradadır. Davranış, komut veya yapı değiştiğinde ilgili bölüm yeniden yazılır. Dosya yaklaşık 150 satırı geçerse kullanıcı onayıyla bileşen dosyalarına (`docs/proje/<bileşen>.md`) bölünür ve bu dosya kısa dizin olarak kalır.
+> Kodun **şu anki** hâli; geçmiş değil. Bir aşama bittiğinde sonraki aşamanın bilmesi gereken her teknik bilgi buradadır. Davranış, komut veya yapı değiştiğinde ilgili bölüm yeniden yazılır. Dosya yaklaşık 150 satırı geçerse kullanıcı onayıyla bileşen dosyalarına (`docs/proje/<bileşen>.md`) bölünür ve bu dosya kısa dizin olarak kalır. Bir bileşen dosyası yaklaşık 30 bin karakteri geçerse o da bölünür.
 
 ## Amaç
 
