@@ -1,8 +1,8 @@
 # Durum
 
-- Son güncelleme: 2026-11-04 10:55
+- Son güncelleme: 2026-11-04 10:53
 - Sürüm: v0.2.1 (geliştirme)
-- Dal: main (v0.2-sade dalı main'e birleştirildi)
+- Dal: main
 
 ## Kısa özet
 
@@ -26,6 +26,8 @@
   - D2 (commit `ffaf580`): `ARSIVLEME.md` 10, `ACIK_KONULAR.md` 1, `KARARLAR.md` 1, `PROJE.md` 1 değişiklik. `ARSIVLEME.md` Değişiklik 2'nin "Eski" metni görev dosyasında "Tam metni" yazıyordu, dosyada ise "Tam metnini" vardı (0 eşleşme); kullanıcı onayıyla "Eski" arama metni dosyadaki ifadeye çevrilip "Yeni" metin aynen uygulandı. `ARSIVLEME.md` adımları 1–9 sıralı; BOM yok.
   - D3 (commit `5b226dc`): `KURAL_ESLEME.md` "~10.800 karakter, 55 madde" oldu; `surum.json` 20 kopya girdisi. Geçici klasörde kurulum çıkış 0 ve "dosya sayısı: 22"; 20 kopya dosyanın 20'si SHA-256 ile kaynağıyla aynı; `docs/kurallar/sablonlar/arastirma-BENIOKU.md` oluştu; aynı hedefe tekrar kurulum çıkış 1 ve dosya listesi/zaman/boyut değişmedi (22 dosya).
   - D4 (yeni geçici kurulum, Git deposu değil, `Move-Item`): 1 test komutu boşken adım 1 durup soru üretti, onaylanan komut `PROJE.md`'ye yazıldı; 2 K-003 tam metni yalnız `docs/KARARLAR.md` içinde, arşivdeki `KARARLAR.md` içinde yalnız yönlendirme satırı, `aktif-asama/TASARIM.md` bağlantısı `arsiv/01-veri-katmani/TASARIM.md` yoluna çözüldü; 3 arşivdeki 3 yerel bağlantıdan 1'i (`../PROJE.md`) kırıktı, düzeltildikten sonra kırık 0; 4 `KARARLAR_ESKI.md` `# Yerine geçilmiş kararlar (arşiv)` başlığıyla açıldı, dizinde "Yerine geçildi: K-002" kaldı; 5 yeni `aktif-asama/arastirma/BENIOKU.md` var; 6 `DURUM.md` "Aktif aşama: Yok (Aşama 1 kapandı)", "Güncel alt adım: Yok", 28 satır; 7 ertelenen karar satırında "En geç" Aşama 2 ve gerekçe, devreden notun başında `[Aşama 2]`, Aşama 3 satırı aynen; 8 aktif `PLAN.md` içinde `1.11` açıldı, arşivdeki `PLAN.md` değişmedi; 9 `genel/`, `sablon/`, `AGENTS.md`, `CLAUDE.md`, `README.md`, `kur.ps1`, `surum.json` ve kurulu projede "15 bin" geçen dosya 0 (`git grep` de v0.1 arşivi dışında eşleşme bulmadı).
+- Yayın ve temizlik (kullanıcı yaptı, ben `git fetch` sonrası doğruladım): `origin/main` ile yerel `main` aynı commit'te (`88ea860`, ahead=0 behind=0); `%TEMP%` altında `ai-sablon-v02*` klasörü kalmadı; `GOREV_v0.2.md` ve `GOREV_v0.2.1_DUZELTME.md` yok. Yerel `v0.2-sade` dalı `main` ile birleşmişti ve silindi.
+- Git'te izlenmeyen iki yerel araştırma raporu (`compass_artifact_*.md`, `deep-research-report*.md`) `.gitignore` ile Git dışında tutuluyor.
 
 ## Doğrulanmayanlar
 
@@ -37,10 +39,6 @@
 - D4 de arşivleme prosedürünü yazıldığı gibi izleyen aynı ajan tarafından yürütüldü; bağımsız bir deneme değildir ve Git içindeki hâli (`git mv`, commit adımı) yine denenmedi.
 - Sürüm numarası `0.2.1` yapıldı (`surum.json`, `README.md`) ve `ARSIVLEME.md` içindeki iki belirsizlik (kapanmış aşama hatasının gerekçesinin yazılacağı günlük, adım 7'deki `../` bağlantı düzeltmesi) metin olarak giderildi. Bu iki metin değişikliği için arşivleme senaryosu yeniden yürütülmedi; yalnız yeni geçici kurulum `0.2.1` kaydıyla denendi (çıkış 0, "dosya sayısı: 22", 20 kopya SHA-256 aynı, `templateVersion: 0.2.1`, tekrar kurulum çıkış 1).
 
-## Temizlik (silme otomatik denetimde reddedildi; kullanıcı elle yapacak)
-
-- `%TEMP%` altında `ai-sablon-v02*` ile başlayan 6 geçici test klasörü (`ai-sablon-v02-test-20261104-092038`, `...-092050`, `ai-sablon-v021-test-20261104-104223`, `...-104806`, `ai-sablon-v021-d4-20261104-104310` (D4'te betik hatasıyla kirlenmiş, geçersiz), `ai-sablon-v021-d4b-20261104-104414`).
-- `GOREV_v0.2.md` ve `GOREV_v0.2.1_DUZELTME.md` Git'te izlenmiyor, commit edilmez; silinmedi.
 ## Sıradaki seçim
 
 Kullanıcının seçimi bekleniyor. Bu bölüm uygulama izni değildir.
