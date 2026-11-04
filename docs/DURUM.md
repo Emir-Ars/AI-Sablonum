@@ -1,6 +1,6 @@
 # Durum
 
-- Son güncelleme: 2026-11-04 09:29
+- Son güncelleme: 2026-11-04 10:48
 - Sürüm: v0.2.0 (geliştirme)
 - Dal: v0.2-sade
 
@@ -20,6 +20,12 @@
   - K3: oturum başı yükü (boş şablonlarla) `AGENTS.md` 10843 + `DURUM.md` 689 + `aktif-asama/PLAN.md` 1073 = 12605 karakter, yaklaşık 4202 token (karakter/3); `CLAUDE.md` 188 bayt ayrıca. Listede `docs/arsiv/` dosyası yok.
   - K4: `ARSIVLEME.md` adımları (Git yok, `Move-Item`) sahte "Aşama 1" üzerinde uygulandı; K-003 `docs/KARARLAR.md` dosyasına ("Proje geneli"), K-004 arşivde ("Arşivde" + bağlantı), K-001 `docs/arsiv/KARARLAR_ESKI.md` dosyasına taşındı ve dizinde "Yerine geçildi: K-002" kaldı; sözleşme `PROJE.md` dosyasına işlendi; yeni `aktif-asama/` dört şablonla SHA-256 aynı; `DURUM.md` 28 satır; arşiv dışında `aktif-asama/` bağlantısı kalmadı. Arşivlenen `KARARLAR.md` içinde bir kırık bağlantı kaldı (bulgu). Ayrıntı: G5 raporu.
   - Ölçüm: v0.1 `AGENTS.md` (commit `5712047`) 25021 karakter, ortak kısmında 110 madde (`- `); v0.2 `genel/KURALLAR.md` 10264 karakter, 55 madde (46 `- ` + 9 numaralı). `KURAL_ESLEME.md` içindeki "~11.000 karakter, ~60 madde" kaba yuvarlama; ölçülen değerlerden biraz yüksek.
+- v0.2.1 düzeltme yaması (`GOREV_v0.2.1_DUZELTME.md`; 2026-11-04, Windows PowerShell 5.1):
+  - D0: G5'ten kalan `docs/DURUM.md` değişikliği kullanıcı onayıyla commit edildi (`4da5de1`).
+  - D1 (commit `7ae6568`): `genel/KURALLAR.md` ve `AGENTS.md` içinde üç değişiklik, her "Eski" metin tam bir kez bulundu. `AGENTS.md` ortak kısmı `genel/KURALLAR.md` ile karakter duyarlı karşılaştırmada aynı; `genel/KURALLAR.md` 10840 karakter; BOM yok.
+  - D2 (commit `ffaf580`): `ARSIVLEME.md` 10, `ACIK_KONULAR.md` 1, `KARARLAR.md` 1, `PROJE.md` 1 değişiklik. `ARSIVLEME.md` Değişiklik 2'nin "Eski" metni görev dosyasında "Tam metni" yazıyordu, dosyada ise "Tam metnini" vardı (0 eşleşme); kullanıcı onayıyla "Eski" arama metni dosyadaki ifadeye çevrilip "Yeni" metin aynen uygulandı. `ARSIVLEME.md` adımları 1–9 sıralı; BOM yok.
+  - D3 (commit `5b226dc`): `KURAL_ESLEME.md` "~10.800 karakter, 55 madde" oldu; `surum.json` 20 kopya girdisi. Geçici klasörde kurulum çıkış 0 ve "dosya sayısı: 22"; 20 kopya dosyanın 20'si SHA-256 ile kaynağıyla aynı; `docs/kurallar/sablonlar/arastirma-BENIOKU.md` oluştu; aynı hedefe tekrar kurulum çıkış 1 ve dosya listesi/zaman/boyut değişmedi (22 dosya).
+  - D4 (yeni geçici kurulum, Git deposu değil, `Move-Item`): 1 test komutu boşken adım 1 durup soru üretti, onaylanan komut `PROJE.md`'ye yazıldı; 2 K-003 tam metni yalnız `docs/KARARLAR.md` içinde, arşivdeki `KARARLAR.md` içinde yalnız yönlendirme satırı, `aktif-asama/TASARIM.md` bağlantısı `arsiv/01-veri-katmani/TASARIM.md` yoluna çözüldü; 3 arşivdeki 3 yerel bağlantıdan 1'i (`../PROJE.md`) kırıktı, düzeltildikten sonra kırık 0; 4 `KARARLAR_ESKI.md` `# Yerine geçilmiş kararlar (arşiv)` başlığıyla açıldı, dizinde "Yerine geçildi: K-002" kaldı; 5 yeni `aktif-asama/arastirma/BENIOKU.md` var; 6 `DURUM.md` "Aktif aşama: Yok (Aşama 1 kapandı)", "Güncel alt adım: Yok", 28 satır; 7 ertelenen karar satırında "En geç" Aşama 2 ve gerekçe, devreden notun başında `[Aşama 2]`, Aşama 3 satırı aynen; 8 aktif `PLAN.md` içinde `1.11` açıldı, arşivdeki `PLAN.md` değişmedi; 9 `genel/`, `sablon/`, `AGENTS.md`, `CLAUDE.md`, `README.md`, `kur.ps1`, `surum.json` ve kurulu projede "15 bin" geçen dosya 0 (`git grep` de v0.1 arşivi dışında eşleşme bulmadı).
 
 ## Doğrulanmayanlar
 
@@ -28,7 +34,15 @@
 - Eski `tests/` kaldırıldığı için kurucunun otomatik testi yok; G3 denemeleri elle ve tek seferlik yapıldı.
 - K3 yükü boş şablonlarla ölçüldü; uzun bir aşamanın dolu `PLAN.md` dosyasıyla yükü ölçülmedi.
 - K4'ün Git içindeki hâli (`git mv`, commit adımı) denenmedi; senaryo Git deposu olmayan klasörde yapıldı.
-- G5'te bulunan prosedür belirsizlikleri ve düzeltme önerileri henüz uygulanmadı; kullanıcı onayı bekliyor.
+- D4 de arşivleme prosedürünü yazıldığı gibi izleyen aynı ajan tarafından yürütüldü; bağımsız bir deneme değildir ve Git içindeki hâli (`git mv`, commit adımı) yine denenmedi.
+- Görev dosyası sürüm numarasını değiştirmediği için `surum.json` hâlâ `0.2.0`; yama `v0.2.1` diye anılıyor ama kurulum kaydına `0.2.0` yazılıyor.
+- D4'te yeni belirsizlikler (bildirim için, uygulanmadı): `ARSIVLEME.md` "Kurallar" bölümü kapanmış aşamadaki hatanın gerekçesini "o aşamanın günlüğüne" yazmayı söylüyor, ama o günlük arşivdedir ve değiştirilmez; senaryoda yeni aktif `GUNLUK.md` kullanıldı. Adım 7'deki `../` bağlantı düzeltmesi, `../` ile başlayan bütün bağlantıların klasör dışını gösterdiğini varsayar.
+- Geçici test klasörleri silinmedi (aşağıdaki "Temizlik" bölümüne bakın).
+
+## Temizlik (kullanıcı onayı bekliyor)
+
+- `%TEMP%` altında 5 geçici test klasörü: `ai-sablon-v02-test-20261104-092038`, `ai-sablon-v02-test-20261104-092050`, `ai-sablon-v021-test-20261104-104223`, `ai-sablon-v021-d4-20261104-104310` (D4'te betik hatasıyla kirlenmiş, geçersiz), `ai-sablon-v021-d4b-20261104-104414`.
+- `GOREV_v0.2.md` ve `GOREV_v0.2.1_DUZELTME.md` commit edilmez; silmek için kullanıcı onayı gerekir.
 
 ## Sıradaki seçim
 
