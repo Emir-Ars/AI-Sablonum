@@ -73,7 +73,7 @@ Kayıtlar arasında çelişki veya eskimiş bilgi varsa uygulamaya başlamadan k
 - Bütün proje için kalıcı kural: bu dosyanın sonundaki "Projeye özel kurallar" bölümüne tek madde olarak eklenir.
 - Yalnız aktif aşama için kural: `docs/aktif-asama/PLAN.md` içindeki "Aşama kuralları" bölümüne eklenir ve aşamayla birlikte arşive gider.
 - Yeni kural mevcut bir kuralla çelişiyorsa eklemeden önce sor.
-- Her oturumda bilinmesi gereken kritik yasaklar bu dosyada kalır. Yalnız belirli işlerde gereken ayrıntılı kurallar `docs/kurallar/proje-<konu>.md` dosyasına yazılır; bu dosyada tek satırlık işaretçi bırakılır ("X işlerinde `docs/kurallar/proje-x.md` oku"). Bu dosya yaklaşık 15 bin karakteri geçerse veya tekrar/çelişen madde oluşursa aşama kapanışında düzenleme öner; kullanıcı onaylamadan kural silinmez.
+- Her oturumda bilinmesi gereken kritik yasaklar bu dosyada kalır. Yalnız belirli işlerde gereken ayrıntılı kurallar `docs/kurallar/proje-<konu>.md` dosyasına yazılır; bu dosyada tek satırlık işaretçi bırakılır ("X işlerinde `docs/kurallar/proje-x.md` oku"). Bu dosya (`AGENTS.md`) yaklaşık 20 bin karakteri geçmemeli: her yeni kural eklerken dosyanın boyutunu ölç; eşik aşılıyorsa kuralı `proje-<konu>.md` dosyasına yaz veya kullanıcıya düzenleme öner. Tekrar veya çelişen madde oluşursa aşama kapanışında da düzenleme öner. Kullanıcı onaylamadan kural silinmez.
 - Bütün projelerde geçerli ortak kural şablon deposundaki `genel/KURALLAR.md` dosyasında değiştirilir; kurulmuş projeler kendiliğinden değişmez.
 
 ## 7. Aşama kapanışı ve arşiv
@@ -81,6 +81,8 @@ Kayıtlar arasında çelişki veya eskimiş bilgi varsa uygulamaya başlamadan k
 Aşama; bütün alt adımları ve kapanış ölçütleri doğrulanınca, kullanıcının "aşamayı kapat" demesiyle kapanır. Kapanışta `docs/kurallar/ARSIVLEME.md` okunur ve adım adım uygulanır.
 
 Özü: sonraki aşamaları etkileyen her şey aktif belgelere taşınır, `docs/aktif-asama/` klasörünün geri kalanı bütünüyle `docs/arsiv/NN-ad/` altına taşınır ve yerine boş bir aşama klasörü açılır. Böylece sonraki aşamada eski aşamanın yazıları okunmaz. Kapanış, sonraki aşamaya başlama izni değildir.
+
+Kapanmış bir aşamada sonradan hata çıkarsa arşiv değiştirilmez. Düzeltme aktif aşamada yeni alt adım olarak yapılır; yeni aşama henüz seçilmediyse (aktif `PLAN.md` boştur) kapanmış aşamanın numarasıyla devam eden bir alt adım açılır (ör. aşama 1 kapandıysa `1.11`). Ayrıntı `docs/kurallar/ARSIVLEME.md` "Kurallar" bölümündedir.
 
 ## 8. Teknik kalite
 
@@ -94,7 +96,7 @@ Aşama; bütün alt adımları ve kapanış ölçütleri doğrulanınca, kullan�
 ## 9. Test ve doğrulama
 
 - Davranış değişince test yaz veya güncelle. Test, uygulamanın kopyası değil beklenen sonuç üzerinden kurulur.
-- Alt adımda ilgili testler, aşama kapanışında bütün testler çalıştırılır. Test komutları `docs/PROJE.md` içindedir.
+- Alt adımda ilgili testler, aşama kapanışında bütün testler çalıştırılır. Test komutları `docs/PROJE.md` içindedir; komut ilk kez çalıştırıldığında oraya yazılır, komut yoksa uydurulmaz, kullanıcıya sorulur.
 - Başarısız, atlanan ve çalıştırılamayan kontroller ayrı yazılır; atlanan varsa "hepsi geçti" denmez.
 - Hata düzeltmeden önce hata mesajını aktif `GUNLUK.md` ve gerekiyorsa `docs/arsiv/` içinde ara. Nedeni doğrulamadan "çözüldü" deme; kontrolü kapatıp hatayı gizlemek çözüm değildir.
 - Yeni test aracı veya bağımlılık için önce sor.
