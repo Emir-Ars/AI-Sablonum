@@ -30,6 +30,51 @@ Ajana repo bağlantısını verip kurdurmak istersen şunu söyleyebilirsin:
 
 > Bu şablon reposunu geçici bir klasöre indir, kur.ps1 ile şu anki projeme kur, kurulum sonucunu göster ve geçici klasörü yalnız benim onayımla sil.
 
+## Var olan projeye kurulum
+
+Hedefte `AGENTS.md`, `CLAUDE.md` veya `docs/` altında kurulacak dosyalardan aynı adlı biri varsa kurucu hiçbir şey yazmadan durur. Elle birleştirmek için:
+
+1. Şablonu boş bir geçici klasöre kur.
+2. Projendeki mevcut `AGENTS.md` / `CLAUDE.md` içeriğini kurulan `AGENTS.md` dosyasının "Projeye özel kurallar" bölümüne taşı.
+3. Projendeki `CLAUDE.md` dosyasının ilk satırına `@AGENTS.md` ekle.
+4. Çakışmayan `docs/` dosyalarını projene kopyala.
+
+Uyarı: projen `docs/` klasörünü MkDocs, Docusaurus veya GitHub Pages gibi bir belge sitesi için kullanıyorsa şablon belgeleri o sitede yayımlanabilir; site ayarında bu dosyaları dışarıda bırak.
+
+## Önerilen araç izin ayarları
+
+`AGENTS.md` içindeki kurallar düz metindir; ajanın bunlara uyması model davranışına bağlıdır. Asıl teknik koruma ve gereksiz izin pencerelerinin azaltılması aracın kendi izin ayarlarıyla yapılır. Aşağıdakiler yalnız öneridir; kurucu ve ajan bu dosyalara yazmaz, onları sen oluşturursun.
+
+**Claude Code.** Proje düzeyinde `.claude/settings.json` (söz dizimi [Claude Code ayar belgesinden](https://code.claude.com/docs/en/settings) ve [izin belgesinden](https://code.claude.com/docs/en/permissions) doğrulandı):
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Bash(git status *)",
+      "Bash(git log *)",
+      "Bash(git diff *)"
+    ],
+    "deny": [
+      "Bash(git push --force *)",
+      "Bash(git reset --hard *)",
+      "Bash(git clean *)",
+      "Read(./.env)",
+      "Read(./.env.*)"
+    ]
+  }
+}
+```
+
+- `allow` listesine projenin yerel test komutunu da ekleyebilirsin (ör. `Bash(npm run test *)`); komutu projene göre sen yaz.
+- Bash kuralları komut metnini eşler: belgeye göre `git -C . push` gibi farklı yazılmış bir komut `Bash(git push *)` kuralına uymaz. Bu liste ek bir güvenlik katmanıdır, tek başına kesin engel değildir. `git push --force` yerine `-f` kısaltmasını ayrıca yasaklamak istersen `Bash(git push -f *)` ekle.
+
+**Codex.** Onay ve sandbox ayarları `config.toml` dosyasında yapılır: kullanıcı düzeyinde `~/.codex/config.toml`, proje düzeyinde `.codex/config.toml` (yalnız güvenilen projelerde yüklenir). İlgili anahtarlar `approval_policy` (ör. `"on-request"`) ve `sandbox_mode` (ör. `"workspace-write"`) anahtarlarıdır. Geçerli değerlerin tam listesini [Codex belgesinden](https://developers.openai.com/codex/config-basic) kontrol et; bu README'de yalnız belgede örnek olarak geçenler anılmıştır.
+
+## Kurulu projeyi güncelleme
+
+Bu bölüm C3 ile eklenecek.
+
 ## Kurulan dosyalar
 
 ```text

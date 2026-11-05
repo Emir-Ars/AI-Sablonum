@@ -123,5 +123,5 @@ Kapanmış bir aşamada sonradan hata çıkarsa arşiv değiştirilmez. Düzeltm
 - Bu depo AI proje şablonunun kaynağıdır; örnek ürün uygulaması değildir.
 - Hedef projeye kurulan kuralların kaynağı `genel/KURALLAR.md` dosyasıdır. Ortak kural değişince önce orada yapılır; bu dosyanın üst kısmı aynı adımda ona eşitlenir, bu bölüm korunur.
 - Kurulan başlangıç belgeleri `sablon/docs/` altındadır; buraya bu deponun geliştirme kaydı yazılmaz. Kurulacak dosya listesi `surum.json` içindedir.
-- Bu deponun kendi durumu `docs/DURUM.md` dosyasındadır. v0.1 geliştirme geçmişi `docs/arsiv/v0.1-gelistirme/` altındadır ve her oturumda okunmaz.
+- Bu deponun kendi durumu `docs/DURUM.md` dosyasındadır (en fazla 30 satır). v0.1 geliştirme geçmişi `docs/arsiv/v0.1-gelistirme/`, v0.2 doğrulama kayıtları `docs/arsiv/v0.2-gelistirme/DOGRULAMA.md` içindedir; bunlar her oturumda okunmaz.
 - Kurucu değişikliği Windows PowerShell 5.1 ile geçici bir hedef klasörde denenir; gerçek proje klasörü kullanılmaz.
