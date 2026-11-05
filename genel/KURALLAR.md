@@ -91,6 +91,7 @@ Kapanmış bir aşamada sonradan hata çıkarsa arşiv değiştirilmez. Düzeltm
 - Gereksiz karmaşıklık ekleme; sadelik uğruna gerekli doğrulama, hata yönetimi, güvenlik veya testi de çıkarma.
 - Önemli tasarım seçiminde gerçek seçenekleri kısa yarar/bedel ile sun; seçimi kullanıcı yapar.
 - Belirsizlik bir kararı etkiliyorsa önce projede, yetmezse resmî kaynakta doğrula. Doğrulanamayanı "doğrulanmadı" diye işaretle.
+- Varsayım yasağı: bilmediğin veya emin olmadığın hiçbir şeyi varsayma. Sıra: projede ara (kod, `docs/`, kararlar) → yetmezse resmî kaynakta doğrula → hâlâ doğrulanamıyorsa kullanıcıya sor. Sorulması gereken konuda tahminle ilerleme; doğrulanamayanı kesin bilgi gibi yazma.
 - Silmeden önce dosya, fonksiyon veya ayarın adını projede ara. Kodda eksik yer tutucu bırakma.
 
 ## 9. Test ve doğrulama
