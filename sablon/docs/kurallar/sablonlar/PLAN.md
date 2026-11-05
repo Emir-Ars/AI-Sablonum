@@ -26,7 +26,7 @@ Yalnız bu aşamada geçerli kurallar. Aşamayla birlikte arşive gider.
 | No | Kapsam | Kabul ölçütü | Doğrulama | İnceleme | Durum |
 |---|---|---|---|---|---|
 
-Alt adım "Doğrulandı" olunca satır yaklaşık 1 KB'a indirilir (kısa kapsam, kısa kabul ölçütü, doğrulama özeti: commit ve test sayısı, `GUNLUK.md` bağlantısı). Durumlar: Planlandı, Uygulanıyor, Doğrulama bekliyor, Doğrulandı, Karar bekliyor. İnceleme: Zorunlu / Hafif / Yok ve kısa gerekçe. Durum değişikliği uygulama izni değildir.
+Alt adım "Doğrulandı" olunca satır yaklaşık 300 karaktere indirilir (tek cümlelik kapsam, doğrulama özeti: commit ve test sayısı, `GUNLUK.md` bağlantısı). Durumlar: Planlandı, Uygulanıyor, Doğrulama bekliyor, Doğrulandı, Karar bekliyor. İnceleme: Zorunlu / Hafif / Yok ve kısa gerekçe. Durum değişikliği uygulama izni değildir.
 
 ## Aşama kapanış ölçütleri
 

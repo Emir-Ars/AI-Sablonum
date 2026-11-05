@@ -12,7 +12,7 @@ Bunlardan biri eksikse kapatma; eksik olanı kullanıcıya söyle.
 
 ## Adımlar
 
-1. **Kapanış kontrolü.** `docs/PROJE.md` "Test komutları" bölümü boşsa dur, komutu kullanıcıya sor ve onaylanan komutu önce oraya yaz; komut uydurma. Sonra `docs/PROJE.md` içindeki bütün testleri çalıştır, kapanış ölçütlerini tek tek kontrol et. Sonucu aşamanın `GUNLUK.md` dosyasına yaz. Başarısız test varsa dur.
+1. **Kapanış kontrolü.** `docs/PROJE.md` "Test komutları" bölümü boşsa `AGENTS.md` §9'daki keşif sırasını uygula; komut yine belirlenemezse dur, kullanıcıya sor ve onaylanan komutu önce oraya yaz; komut uydurma. Sonra `docs/PROJE.md` içindeki bütün testleri çalıştır, kapanış ölçütlerini tek tek kontrol et. Sonucu aşamanın `GUNLUK.md` dosyasına yaz. Başarısız test varsa dur.
 
 2. **Kalıcı bilgiyi ayıkla.** Aşama klasöründeki her şeyi şu soruyla gözden geçir: "Sonraki aşamalarda buna ihtiyaç olacak mı?"
 

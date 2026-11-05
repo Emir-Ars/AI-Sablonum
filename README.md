@@ -4,7 +4,7 @@ Codex ve Claude ile VS Code'da proje geliştirirken aynı çalışma düzenini k
 
 Hedefler:
 - **Token tasarrufu:** her oturumda yalnız kısa kurallar, durum notu ve aktif aşamanın planı okunur.
-- **Düzenli ilerleme:** genel plan → aşama planı → tek alt adım; her adım ayrı onayla.
+- **Düzenli ilerleme:** genel plan → aşama planı → alt adım; ajan yalnız senin yetkilendirdiğin adımı veya adım aralığını uygular.
 - **Unutmama:** bütün bilgi repo dosyalarında; araç değişse de kaldığın yerden devam edilir.
 - **Eski aşamaları okumama:** biten aşama arşive taşınır, kalıcı bilgisi ana belgelere aktarılır.
 
@@ -64,6 +64,8 @@ ProjeAdi/
 | Başlangıç | Genel araştırma belgelerini `docs/arastirma/` altına koy | "Araştırma belgelerini oku, yalnız yol haritasını hazırla." |
 | Aşamaya başlarken | O aşamanın araştırma belgelerini `docs/aktif-asama/arastirma/` altına koy | "2. aşamayı başlat: araştırmayı oku, alt adımları planla, uygulama yapma." |
 | Uygulama | Tek adım seç | "Yalnız 2.3'ü uygula." |
+| Uygulama (aralık) | Birden fazla adımı birlikte yetkilendir | "2.3–2.5'i uygula." |
+| Küçük düzeltme | Plan açmadan küçük iş iste | "README'deki yazım hatasını düzelt." |
 | Yeni kural | Çalışırken söyle | "Bundan sonra bütün tarihler UTC olsun, kurallara ekle." |
 | Oturum sonu / araç değişimi | Durumu kaydettir | "DURUM.md'yi güncelle." |
 | Yeni oturum | Durumu okut | "Durumu oku ve özetle, uygulamaya başlama." |

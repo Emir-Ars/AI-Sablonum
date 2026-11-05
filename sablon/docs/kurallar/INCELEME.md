@@ -11,15 +11,15 @@ Alt adım planlanırken katman ve tek cümlelik gerekçesi `PLAN.md` tablosundak
 | Katman | Ne zaman | Ne yapılır |
 |---|---|---|
 | Zorunlu | Veri kaybı, güvenlik veya gizli bilgi, gerçek para, geri alınması zor işlem, kritik hesapta sessiz yanlış sonuç riski | Kod yazılmadan önce tasarım, yazıldıktan sonra kod incelenir |
-| Hafif | Birden fazla davranış yolu, ortak kullanılan bölümlere etki, mevcut korumaya istisna | İş bitince bir inceleme |
-| Yok | Belge, görünüm veya davranış değiştirmeyen düzenleme | Ek inceleme yok; normal kontrol yeterli |
+| Hafif | Birden fazla modülün kullandığı ortak koda veya arayüze etki, mevcut bir doğrulama ya da güvenlik korumasına istisna ekleme, hatası testlerle kolay yakalanmayacak karmaşık mantık | İş bitince bir inceleme |
+| Yok | Yukarıdakilere girmeyen her şey: belge düzenlemesi, görünüm değişikliği, testlerle doğrulanan yerel davranış değişikliği, yeniden adlandırma | Ek inceleme yok; normal kontrol ve testler yeterli |
 
 Uygulama sırasında risk büyürse katmanı yükselt ve kullanıcıya bildir.
 
 ## Nasıl yapılır
 
-- İnceleyene kapsam, kabul ölçütleri, ilgili kod ve gerekli kararları ver. Yazarın "çalışıyor" yorumunu verme.
+- İnceleyene kapsam, kabul ölçütleri, ilgili diff, gerekli arayüzler ve kararları ver; bütün repoyu verme. Yazarın "çalışıyor" yorumunu verme.
 - Bulgu kanıt, somut karşı örnek veya tekrar adımı içermelidir. Kanıtsız bulgu doğrudan uygulanmaz.
-- Doğrulanan bulguyu kapsam içindeyse düzelt; önemli düzeltmeden sonra ilgili bölümü yeniden incelet. Kapsamı genişleten bulguda kullanıcıya danış.
+- Doğrulanan bulguyu kapsam içindeyse düzelt. Yeniden inceleme yalnız önemli bir bulgunun düzeltmesinden sonra ve yalnız düzeltilen bölüm için yapılır; değişmemiş kod tekrar incelenmez. Kapsamı genişleten bulguda kullanıcıya danış.
 - Bulguları ve sonucu aşamanın `GUNLUK.md` dosyasına kısa yaz; çözülemeyenleri `PLAN.md` "Bilinen sınırlar" bölümüne ekle.
 - Araç alt ajanı desteklemiyorsa veya inceleme yapılamadıysa bunu kullanıcıya söyle ve günlüğe "Çalıştırılamayan" olarak yaz. Kendi kontrolünü bağımsız inceleme gibi sunma. Zorunlu inceleme yapılamadıysa adım "Doğrulandı" sayılmaz.
