@@ -68,6 +68,20 @@ function Get-BytesHash {
     finally { $hasher.Dispose() }
 }
 
+# guncelle.ps1 ile aynı tutulmalı
+function Split-AgentsBytes {
+    param([byte[]]$Bytes)
+    $text = $utf8.GetString($Bytes)
+    $found = [regex]::Matches($text, '(?m)^## Projeye özel kurallar\r?$')
+    if ($found.Count -ne 1) { return $null }
+    $offset = $utf8.GetByteCount($text.Substring(0, $found[0].Index))
+    $common = New-Object byte[] $offset
+    [Array]::Copy($Bytes, 0, $common, 0, $offset)
+    $tail = New-Object byte[] ($Bytes.Length - $offset)
+    [Array]::Copy($Bytes, $offset, $tail, 0, $tail.Length)
+    return [pscustomobject]@{ Common = $common; Tail = $tail }
+}
+
 function New-InstallDirectory {
     param([string]$Path)
     if (Test-Path -LiteralPath $Path) {
@@ -158,6 +172,11 @@ try {
     }
     foreach ($requiredTarget in $requiredTargets) { if (-not $seenTargets.ContainsKey($requiredTarget)) { throw ('Zorunlu kurulum dosyası eksik: ' + $requiredTarget) } }
     if ($version.packageStatus -eq 'release' -and $pendingFeatures.Count -gt 0) { throw 'Yayımlanmış paket bekleyen bileşen içeremez.' }
+    # AGENTS.md ortak kısmının hash'i kayda yazılır; guncelle.ps1 ortak kısmı yalnız bu hash tutuyorsa değiştirir.
+    $agentsPayload = @($payload | Where-Object { $_.relativePath -eq 'AGENTS.md' })[0]
+    $agentsSplit = Split-AgentsBytes $agentsPayload.bytes
+    if ($null -eq $agentsSplit) { throw 'AGENTS.md kaynağında "## Projeye özel kurallar" başlığı tam bir kez bulunmalı.' }
+    $agentsCommonSha256 = Get-BytesHash $agentsSplit.Common
     $sourceFiles.Add([pscustomobject]@{path='surum.json'; sha256=(Get-BytesHash $versionBytes)})
     $sourceFiles.Add([pscustomobject]@{path='kur.ps1'; sha256=(Get-BytesHash ([IO.File]::ReadAllBytes($PSCommandPath)))})
 
@@ -189,6 +208,7 @@ try {
         pendingFeatures = $pendingFeatures
         sourceFiles = $sourceFiles.ToArray()
         installedFiles = $installedFiles
+        agentsCommonSha256 = $agentsCommonSha256
     }
     [byte[]]$recordBytes = $utf8.GetBytes((ConvertTo-Json -InputObject $record -Depth 8) + [Environment]::NewLine)
     Write-NewInstallFile $recordPath $recordBytes

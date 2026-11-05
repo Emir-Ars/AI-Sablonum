@@ -1,0 +1,28 @@
+name: kurucu-smoke
+
+on:
+  push:
+    paths:
+      - 'kur.ps1'
+      - 'guncelle.ps1'
+      - 'surum.json'
+      - 'genel/**'
+      - 'sablon/**'
+      - 'tests/**'
+  pull_request:
+    paths:
+      - 'kur.ps1'
+      - 'guncelle.ps1'
+      - 'surum.json'
+      - 'genel/**'
+      - 'sablon/**'
+      - 'tests/**'
+
+jobs:
+  smoke:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Kurucu duman testi (Windows PowerShell 5.1)
+        shell: powershell
+        run: .\tests\kur-smoke.ps1

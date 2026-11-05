@@ -73,7 +73,30 @@ Uyarı: projen `docs/` klasörünü MkDocs, Docusaurus veya GitHub Pages gibi bi
 
 ## Kurulu projeyi güncelleme
 
-Bu bölüm C3 ile eklenecek.
+Daha önce `kur.ps1` ile kurduğun bir projeyi yeni şablon sürümüne getirmek için paketin kökünde:
+
+```powershell
+# Önce kuru çalıştırma: yalnız rapor verir, hiçbir dosya yazmaz
+powershell.exe -NoProfile -File .\guncelle.ps1 -TargetDirectory "C:\Projeler\ProjeAdi"
+
+# Raporu beğendiysen uygula
+powershell.exe -NoProfile -File .\guncelle.ps1 -TargetDirectory "C:\Projeler\ProjeAdi" -Uygula
+```
+
+| Durum | Ne olur |
+|---|---|
+| Yeni şablonda olan, projede ve kurulum kaydında olmayan dosya | Eklenir |
+| Dosya kurulumdan beri değişmemiş, şablondaki hâli farklı | Güncellenir |
+| Dosya şablonla zaten aynı | İşlem yok |
+| Dosyayı kurulumdan sonra sen değiştirmişsin | Dokunulmaz, raporlanır |
+| Kurulum kaydında olup projede olmayan dosya | Sildiğin sayılır, geri yazılmaz |
+| Kurulum kaydında olup yeni şablonda olmayan dosya | Silinmez, raporlanır |
+| `AGENTS.md` | "Projeye özel kurallar" başlığından önceki ortak kısım, kurulumdan beri değişmemişse yenilenir; başlık ve sonrası aynen korunur |
+
+- **Eski kurulumlar:** `kurulum.json` içinde `agentsCommonSha256` alanı yoksa (yalnız bu özellikten önce kurulmuş projeler) `AGENTS.md` ortak kısmına dokunulmaz. `-Uygula` ile yeni ortak kısım `.ai-sablon/yeni-AGENTS-ortak.md` dosyasına yazılır; elle birleştirirsin. Ortak kısmı sen değiştirdiysen de aynısı olur.
+- **Güvenlik:** üzerine yazılan her dosyanın eski hâli önce `.ai-sablon/yedek/<tarih-saat>/` altına kopyalanır. Hiçbir dosya silinmez. Yedek alınamazsa hiçbir dosya değiştirilmez. Kurulu sürüm paketten yeniyse güncelleme reddedilir.
+- **Sınırlar:** karşılaştırma bayt düzeyindedir. Satır sonu (CRLF/LF) veya BOM değişmiş bir dosya "sen değiştirmişsin" diye raporlanır ve güvenli tarafta kalınır. Hedefte `.ai-sablon/kurulum.json` yoksa betik çıkış kodu 1 ile durur.
+- Betik yalnız `kur.ps1` ile kurulmuş projeler içindir ve yedekten geri yükleme yapmaz; geri almak için yedek klasöründeki dosyayı kendin kopyalarsın.
 
 ## Kurulan dosyalar
 
@@ -143,6 +166,8 @@ Sonuç: 3. aşamada çalışırken ajan 2. aşamanın günlüğünü ve kararlar
 | `genel/KURALLAR.md` | Hedef projeye `AGENTS.md` olarak kurulan kurallar |
 | `sablon/docs/` | Hedef projeye kurulan başlangıç belgeleri |
 | `kur.ps1`, `surum.json` | Kurucu ve kurulacak dosya listesi |
+| `guncelle.ps1` | Kurulu projeyi yeni şablon sürümüne getirir (kuru çalıştırma + yedekli uygulama) |
+| `tests/kur-smoke.ps1` | Kurucu ve güncelleme betiğinin duman testi (`.github/workflows/kurucu-smoke.yml` ile CI'da da çalışır) |
 | `gorseller/akis.svg` | Akış görseli |
 | `docs/KURAL_ESLEME.md` | v0.1'deki kuralların v0.2'de nereye gittiği |
 | `docs/arsiv/v0.1-gelistirme/` | Şablonun v0.1 geliştirme geçmişi |
