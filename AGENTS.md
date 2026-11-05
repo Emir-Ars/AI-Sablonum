@@ -125,3 +125,4 @@ Kapanmış bir aşamada sonradan hata çıkarsa arşiv değiştirilmez. Düzeltm
 - Kurulan başlangıç belgeleri `sablon/docs/` altındadır; buraya bu deponun geliştirme kaydı yazılmaz. Kurulacak dosya listesi `surum.json` içindedir.
 - Bu deponun kendi durumu `docs/DURUM.md` dosyasındadır (en fazla 30 satır). v0.1 geliştirme geçmişi `docs/arsiv/v0.1-gelistirme/`, v0.2 doğrulama kayıtları `docs/arsiv/v0.2-gelistirme/DOGRULAMA.md` içindedir; bunlar her oturumda okunmaz.
 - Kurucu değişikliği Windows PowerShell 5.1 ile geçici bir hedef klasörde denenir; gerçek proje klasörü kullanılmaz.
+- `genel/KURALLAR.md` ortak kısmı değiştiğinde, değişiklikten önceki ortak kısmın LF hash'i aynı commit'te `surum.json` içindeki `knownAgentsCommonLfSha256` listesine eklenir. `tests/bilinen-hashler.ps1` bunu git geçmişinden denetler.

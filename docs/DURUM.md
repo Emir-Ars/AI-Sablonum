@@ -1,30 +1,28 @@
 # Durum
 
-- Son güncelleme: 2026-11-05 13:06
-- Sürüm: v0.3.0 (geliştirme)
+- Son güncelleme: 2026-11-05 13:40:10 +03:00
+- Sürüm: v0.3.1 (geliştirme)
 - Dal: main
 
-## Kısa özet
+## v0.3.1 değişiklikleri
 
-Şablon v0.2'de sadeleşti (ayrıntı: `docs/KURAL_ESLEME.md`). v0.3.0 üç başlıkta ilerledi:
+- v0.2.0 öncesi kurulumlar içerik okunmadan reddediliyor.
+- Ortak kuralların hash'i satır sonundan bağımsız; eski kayıtlar yeni LF alanına taşınıyor, özel bölüm ve hedefin satır sonları korunuyor.
+- Bilinen eski ortak kurallar otomatik yenileniyor; paket listesi doğrulanıyor, bakım kuralı ve README açıklamaları güncellendi.
+- Güvenlik ve kayıt geçişi testleri ile tam Git geçmişini kullanan otomatik doğrulama (CI) denetimi eklendi.
 
-- A, kural metinleri: kapsam bazlı yetki (tek adım veya aralık), küçük iş istisnası, varsayım kuralı tek maddede, test komutunu projede keşfetme, kısaltılmış "Doğrulandı" satırı, netleşen inceleme katmanları.
-- B, depo bakımı: `.gitattributes`, `GOREV_*.md` ignore, `DURUM.md` kurala uydu, README'ye var olan projeye kurulum ve izin ayarı önerileri.
-- C, kurucu: `tests/kur-smoke.ps1` (16 senaryo), CI iş akışı, `guncelle.ps1` (kuru çalıştırma, yedekli uygulama) ve kayıtta `agentsCommonSha256`.
+## Doğrulananlar
 
-## Doğrulananlar (ayrıntı: `docs/arsiv/v0.2-gelistirme/DOGRULAMA.md` ve git geçmişi)
+- v0.3.1 sonrası Windows PowerShell 5.1: duman testi geçti=27, kaldı=0, atlandı=0; geçmiş hash denetimi EKSİK=0, FAZLA=0.
+- D bölümü: 4 betikte ayrıştırıcı hatası 0; 8 ortak fonksiyon aynı. AGENTS.md ortak/tam karakter sayısı LF ile 12.837/13.862.
+- Bağımsız inceleme: tasarımda kayıt geçişi bulgusu giderildi ve test edildi; sonraki kod incelemesinde kanıtlı hata yok. Ayrıntılar: [doğrulama raporu](DOGRULAMA_v0.3.1.md).
 
-- `tests/kur-smoke.ps1` yerelde (Windows PowerShell 5.1, sürüm 0.3.0 sonrası): geçti=16 kaldı=0 atlandı=0. CI (`kurucu-smoke`, windows-latest) commit `fd36f40` için başarılı.
-- `AGENTS.md` ortak kısmı `genel/KURALLAR.md` ile aynı (13.081 karakter, 56 madde). `guncelle.ps1` tasarımı ve kodu bağımsız alt ajanla incelendi.
+## Doğrulanmayanlar ve sınırlar
 
-## Doğrulanmayanlar
-
-- Gerçek Codex ve Claude oturumlarında yeni kurallara (kapsam aralığı, küçük iş istisnası) uyum denenmedi.
-- Kod incelemesinden sonra yapılan üç küçük düzeltme (salt okunur kayıt, üst yol dosya, başlıksız `AGENTS.md`) yeniden incelenmedi ve testle doğrudan sınanmadı.
-- `guncelle.ps1` yazma atomik değil; satır sonu veya BOM farkı "kullanıcı değiştirmiş" sayılır. Ev klasörü iletisi bu makinede sınanmadı (önce "iç içe" iletisi çıkar).
-- README'deki Codex değerleri yalnız belgede örnek geçenlerle sınırlı; Claude izin örneği çalışan bir oturumda denenmedi.
-- Eski doğrulanmayanlar (SVG önizlemesi, `git mv` ile arşivleme, dolu `PLAN.md` yükü): `DOGRULAMA.md`.
+- Bu sürümün CI sonucu kontrol edilmedi; ayrı bir sığ klonda ret denemesi yok. Yazma atomik değil (kesinti kısmi değişiklik bırakabilir).
+- Gerçek Codex/Claude oturumlarında kural uyumu ve izin örnekleri denenmedi; ev klasörü reddinde özel ileti yerine önce iç içe hedef iletisi görülüyor.
+- Önceki açık kontroller (SVG önizlemesi, git mv arşivlemesi, dolu PLAN.md yükü): [eski doğrulama kaydı](arsiv/v0.2-gelistirme/DOGRULAMA.md).
 
 ## Sıradaki seçim
 
-`GOREV_v0.3.md` görev bitince silinmeli (kullanıcı onayı bekliyor). Kullanıcının seçimi bekleniyor. Bu bölüm uygulama izni değildir.
+Kullanıcı commit ve push işlemini onayladı. GOREV_v0.3.md / GOREV_v0.3.1.md dosyalarının silinmesi isteğiyle bekletildi; sonraki çalışma kapsamı seçilecek. Bu bölüm uygulama izni değildir.

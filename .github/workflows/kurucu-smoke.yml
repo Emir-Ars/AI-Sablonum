@@ -23,6 +23,11 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
       - name: Kurucu duman testi (Windows PowerShell 5.1)
         shell: powershell
         run: .\tests\kur-smoke.ps1
+      - name: Bilinen ortak kısım hash'leri
+        shell: powershell
+        run: .\tests\bilinen-hashler.ps1

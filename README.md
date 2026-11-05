@@ -91,11 +91,11 @@ powershell.exe -NoProfile -File .\guncelle.ps1 -TargetDirectory "C:\Projeler\Pro
 | Dosyayı kurulumdan sonra sen değiştirmişsin | Dokunulmaz, raporlanır |
 | Kurulum kaydında olup projede olmayan dosya | Sildiğin sayılır, geri yazılmaz |
 | Kurulum kaydında olup yeni şablonda olmayan dosya | Silinmez, raporlanır |
-| `AGENTS.md` | "Projeye özel kurallar" başlığından önceki ortak kısım, kurulumdan beri değişmemişse yenilenir; başlık ve sonrası aynen korunur |
+| `AGENTS.md` | "Projeye özel kurallar" başlığından önceki ortak kısım, kurulumdan beri değişmemişse veya bilinen bir eski şablon sürümüyle birebir aynıysa yenilenir; başlık ve sonrası aynen korunur, dosyanın satır sonu biçimi (CRLF/LF) korunur |
 
-- **Eski kurulumlar:** `kurulum.json` içinde `agentsCommonSha256` alanı yoksa (yalnız bu özellikten önce kurulmuş projeler) `AGENTS.md` ortak kısmına dokunulmaz. `-Uygula` ile yeni ortak kısım `.ai-sablon/yeni-AGENTS-ortak.md` dosyasına yazılır; elle birleştirirsin. Ortak kısmı sen değiştirdiysen de aynısı olur.
+- **Eski kurulumlar:** v0.2.0 ve sonrası desteklenir. v0.3.0'dan önce kurulmuş projelerde `AGENTS.md` ortak kısmı, paketteki bilinen eski sürümlerden biriyle birebir aynıysa otomatik yenilenir. Ortak kısmı sen değiştirdiysen veya tanınmayan bir sürümse dokunulmaz; `-Uygula` ile yeni ortak kısım `.ai-sablon/yeni-AGENTS-ortak.md` dosyasına yazılır, elle birleştirirsin. v0.1 kurulumları reddedilir; "Var olan projeye kurulum" bölümündeki elle birleştirme yolunu kullan.
 - **Güvenlik:** üzerine yazılan her dosyanın eski hâli önce `.ai-sablon/yedek/<tarih-saat>/` altına kopyalanır. Hiçbir dosya silinmez. Yedek alınamazsa hiçbir dosya değiştirilmez. Kurulu sürüm paketten yeniyse güncelleme reddedilir.
-- **Sınırlar:** karşılaştırma bayt düzeyindedir. Satır sonu (CRLF/LF) veya BOM değişmiş bir dosya "sen değiştirmişsin" diye raporlanır ve güvenli tarafta kalınır. Hedefte `.ai-sablon/kurulum.json` yoksa betik çıkış kodu 1 ile durur.
+- **Sınırlar:** yalnız satır sonu (CRLF/LF) farkı olan dosya "aynı" sayılır ve yeniden yazılmaz. Bunun dışındaki karşılaştırma bayt düzeyindedir: BOM eklenmiş veya içeriği değişmiş dosya "sen değiştirmişsin" diye raporlanır ve güvenli tarafta kalınır. Hedefte `.ai-sablon/kurulum.json` yoksa betik çıkış kodu 1 ile durur.
 - Betik yalnız `kur.ps1` ile kurulmuş projeler içindir ve yedekten geri yükleme yapmaz; geri almak için yedek klasöründeki dosyayı kendin kopyalarsın.
 
 ## Kurulan dosyalar
@@ -172,4 +172,4 @@ Sonuç: 3. aşamada çalışırken ajan 2. aşamanın günlüğünü ve kararlar
 | `docs/KURAL_ESLEME.md` | v0.1'deki kuralların v0.2'de nereye gittiği |
 | `docs/arsiv/v0.1-gelistirme/` | Şablonun v0.1 geliştirme geçmişi |
 
-Sürüm 0.3.0, durum "geliştirme". Doğrulama sonuçları ve açık sınırlar `docs/DURUM.md` içindedir.
+Sürüm 0.3.1, durum "geliştirme". Doğrulama sonuçları ve açık sınırlar `docs/DURUM.md` içindedir.

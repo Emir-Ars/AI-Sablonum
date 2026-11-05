@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "version": "0.3.0",
+  "version": "0.3.1",
   "packageStatus": "development",
   "minimumPowerShellVersion": "5.1",
   "copyFiles": [
@@ -91,5 +91,11 @@
   ],
   "pendingFeatures": [
     "windows-validation"
+  ],
+  "knownAgentsCommonLfSha256": [
+    "414edb38d43d2fffca13b91934cdf840cb4529a5ee71187c98b06e4cd9add9e7",
+    "998fbaa6fce9989356089bd84ea4af1cf574ed0ca2b5c4f5bb94adc6614ebdd9",
+    "6a0e015d44c4c78d007208268443d878ab26c91cea9e5337878ac7e164b95bd9",
+    "a59b75369334dd73b9cb67d65151954f4d5eb240b1993cb5ad5fc1ca9890c6c6"
   ]
 }

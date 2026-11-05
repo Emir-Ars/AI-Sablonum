@@ -78,6 +78,18 @@ function Get-BytesHash {
 }
 
 # kur.ps1 ile aynı tutulmalı
+function Get-LfHash {
+    # CRLF -> LF çevrilmiş baytların SHA-256'sı; satır sonu farkı hash'i değiştirmez.
+    param([byte[]]$Bytes)
+    $list = New-Object 'Collections.Generic.List[byte]' ($Bytes.Length)
+    for ($i = 0; $i -lt $Bytes.Length; $i++) {
+        if ($Bytes[$i] -eq 13 -and ($i + 1) -lt $Bytes.Length -and $Bytes[$i + 1] -eq 10) { continue }
+        $list.Add($Bytes[$i])
+    }
+    return Get-BytesHash ($list.ToArray())
+}
+
+# kur.ps1 ile aynı tutulmalı
 function Split-AgentsBytes {
     param([byte[]]$Bytes)
     $text = $utf8.GetString($Bytes)
@@ -163,6 +175,13 @@ try {
     if ($versionBytes.Length -ge 3 -and $versionBytes[0] -eq 239 -and $versionBytes[1] -eq 187 -and $versionBytes[2] -eq 191) { throw 'surum.json UTF-8 BOM olmadan kaydedilmeli.' }
     $version = $utf8.GetString($versionBytes) | ConvertFrom-Json
     if ($version.schemaVersion -ne 2 -or $version.version -notmatch '^\d+\.\d+\.\d+$' -or $version.packageStatus -notin @('development', 'release') -or $version.minimumPowerShellVersion -ne '5.1') { throw 'Sürüm kaydının biçimi veya alanları geçersiz.' }
+    $knownAgentsCommonLfSha256 = @()
+    if ($null -ne $version.PSObject.Properties['knownAgentsCommonLfSha256']) {
+        $knownAgentsCommonLfSha256 = $version.knownAgentsCommonLfSha256
+        if ($knownAgentsCommonLfSha256 -isnot [array] -or $knownAgentsCommonLfSha256.Count -gt 100) { throw 'Sürüm kaydındaki bilinen hash listesi geçersiz.' }
+        if (@($knownAgentsCommonLfSha256 | Where-Object { $_ -isnot [string] -or $_ -cnotmatch '^[0-9a-f]{64}$' }).Count -gt 0 -or @($knownAgentsCommonLfSha256 | Select-Object -Unique).Count -ne $knownAgentsCommonLfSha256.Count) { throw 'Sürüm kaydındaki bilinen hash listesi geçersiz.' }
+    }
+
     if (@($version.copyFiles).Count -lt 1 -or @($version.copyFiles).Count -gt 100) { throw 'Sürüm kaydının kaynak dosya listesi geçersiz.' }
     $allowedSourcePrefixes = @('genel/', 'sablon/')
     $blockedTargetPrefixes = @('.git/', '.claude/', '.codex/', '.agents/', '.vscode/', '.ai-sablon/')
@@ -171,6 +190,36 @@ try {
     if (@($version.generatedFiles).Count -ne 2 -or @(Compare-Object ($version.generatedFiles | Sort-Object) ($expectedGenerated | Sort-Object)).Count -ne 0) { throw 'Üretilecek dosya listesi geçersiz.' }
     $pendingFeatures = @($version.pendingFeatures | Where-Object { $null -ne $_ })
     if (@($pendingFeatures | Where-Object { $_ -isnot [string] -or $_ -notmatch '^[a-z0-9-]+$' }).Count -gt 0 -or @($pendingFeatures | Select-Object -Unique).Count -ne $pendingFeatures.Count) { throw 'Bekleyen bileşen listesi geçersiz.' }
+
+    # --- Hedefteki kurulum kaydı ---
+    $aiDir = Get-PackagePath $targetRoot '.ai-sablon'
+    $recordPath = Get-PackagePath $targetRoot '.ai-sablon/kurulum.json'
+    Assert-UnredirectedPath $aiDir
+    Assert-UnredirectedPath $recordPath
+    if (-not (Test-Path -LiteralPath $recordPath -PathType Leaf)) { throw 'Hedefte .ai-sablon/kurulum.json yok; bu klasör kur.ps1 ile kurulmamış.' }
+    [byte[]]$recordBytes = [IO.File]::ReadAllBytes($recordPath)
+    try { $record = $utf8.GetString($recordBytes) | ConvertFrom-Json } catch { throw ('Kurulum kaydı okunamadı veya bozuk: ' + $_.Exception.Message) }
+    if ($null -eq $record -or $record.schemaVersion -ne 1) { throw 'Kurulum kaydının şema sürümü desteklenmiyor.' }
+    if ($record.templateVersion -isnot [string] -or $record.templateVersion -notmatch '^\d+\.\d+\.\d+$') { throw 'Kurulum kaydındaki sürüm geçersiz.' }
+    if ([version]$record.templateVersion -lt [version]'0.2.0') { throw ('Kurulu sürüm (v' + $record.templateVersion + ') v0.2 öncesi belge yapısını kullanıyor; otomatik güncelleme yapılmaz. README "Var olan projeye kurulum" bölümündeki elle birleştirme yolunu kullan.') }
+    if ([version]$record.templateVersion -gt [version]$version.version) { throw ('Kurulu sürüm (' + $record.templateVersion + ') bu paketten (' + $version.version + ') yeni; eski pakete geri dönülmez.') }
+    $recordedHashes = @{}
+    $recordOrder = New-Object 'Collections.Generic.List[string]'
+    foreach ($entry in @($record.installedFiles)) {
+        if ($null -eq $entry -or $entry.path -isnot [string] -or $entry.sha256 -isnot [string] -or $entry.sha256 -notmatch '^[0-9a-f]{64}$') { throw 'Kurulum kaydındaki installedFiles girdisi geçersiz.' }
+        if ($recordedHashes.ContainsKey($entry.path)) { throw ('Kurulum kaydında tekrarlı yol: ' + $entry.path) }
+        $recordedHashes[$entry.path] = $entry.sha256
+        $recordOrder.Add($entry.path)
+    }
+    $recordedCommonLf = $null
+    $recordedCommonBytes = $null
+    if ($null -ne $record.PSObject.Properties['agentsCommonLfSha256']) {
+        if ($record.agentsCommonLfSha256 -isnot [string] -or $record.agentsCommonLfSha256 -cnotmatch '^[0-9a-f]{64}$') { throw 'Kurulum kaydındaki agentsCommonLfSha256 geçersiz.' }
+        $recordedCommonLf = $record.agentsCommonLfSha256
+    } elseif ($null -ne $record.PSObject.Properties['agentsCommonSha256']) {
+        if ($record.agentsCommonSha256 -isnot [string] -or $record.agentsCommonSha256 -cnotmatch '^[0-9a-f]{64}$') { throw 'Kurulum kaydındaki agentsCommonSha256 geçersiz.' }
+        $recordedCommonBytes = $record.agentsCommonSha256
+    }
 
     $payload = New-Object 'Collections.Generic.List[object]'
     $sourceFiles = New-Object 'Collections.Generic.List[object]'
@@ -208,38 +257,13 @@ try {
     $newAgentsItem = @($payload | Where-Object { $_.relativePath -eq 'AGENTS.md' })[0]
     $newAgentsSplit = Split-AgentsBytes $newAgentsItem.bytes
     if ($null -eq $newAgentsSplit) { throw 'AGENTS.md kaynağında "## Projeye özel kurallar" başlığı tam bir kez bulunmalı.' }
-    $newCommonHash = Get-BytesHash $newAgentsSplit.Common
-
-    # --- Hedefteki kurulum kaydı ---
-    $aiDir = Get-PackagePath $targetRoot '.ai-sablon'
-    $recordPath = Get-PackagePath $targetRoot '.ai-sablon/kurulum.json'
-    Assert-UnredirectedPath $aiDir
-    Assert-UnredirectedPath $recordPath
-    if (-not (Test-Path -LiteralPath $recordPath -PathType Leaf)) { throw 'Hedefte .ai-sablon/kurulum.json yok; bu klasör kur.ps1 ile kurulmamış.' }
-    [byte[]]$recordBytes = [IO.File]::ReadAllBytes($recordPath)
-    try { $record = $utf8.GetString($recordBytes) | ConvertFrom-Json } catch { throw ('Kurulum kaydı okunamadı veya bozuk: ' + $_.Exception.Message) }
-    if ($null -eq $record -or $record.schemaVersion -ne 1) { throw 'Kurulum kaydının şema sürümü desteklenmiyor.' }
-    if ($record.templateVersion -isnot [string] -or $record.templateVersion -notmatch '^\d+\.\d+\.\d+$') { throw 'Kurulum kaydındaki sürüm geçersiz.' }
-    if ([version]$record.templateVersion -gt [version]$version.version) { throw ('Kurulu sürüm (' + $record.templateVersion + ') bu paketten (' + $version.version + ') yeni; eski pakete geri dönülmez.') }
-    $recordedHashes = @{}
-    $recordOrder = New-Object 'Collections.Generic.List[string]'
-    foreach ($entry in @($record.installedFiles)) {
-        if ($null -eq $entry -or $entry.path -isnot [string] -or $entry.sha256 -isnot [string] -or $entry.sha256 -notmatch '^[0-9a-f]{64}$') { throw 'Kurulum kaydındaki installedFiles girdisi geçersiz.' }
-        if ($recordedHashes.ContainsKey($entry.path)) { throw ('Kurulum kaydında tekrarlı yol: ' + $entry.path) }
-        $recordedHashes[$entry.path] = $entry.sha256
-        $recordOrder.Add($entry.path)
-    }
-    $recordedCommon = $null
-    if ($null -ne $record.PSObject.Properties['agentsCommonSha256']) {
-        if ($record.agentsCommonSha256 -isnot [string] -or $record.agentsCommonSha256 -notmatch '^[0-9a-f]{64}$') { throw 'Kurulum kaydındaki agentsCommonSha256 geçersiz.' }
-        $recordedCommon = $record.agentsCommonSha256
-    }
+    $newCommonLfHash = Get-LfHash $newAgentsSplit.Common
 
     # --- Plan (bu aşamada hiçbir şey yazılmaz) ---
     $plan = New-Object 'Collections.Generic.List[object]'
     $newRecordedHashes = @{}
     $problems = New-Object 'Collections.Generic.List[string]'
-    $finalCommon = $recordedCommon
+    $finalCommonLf = $recordedCommonLf
     $agentsManualBytes = $null
     foreach ($item in $payload) {
         $rel = $item.relativePath
@@ -269,23 +293,39 @@ try {
             $currentSplit = $null
             try { $currentSplit = Split-AgentsBytes $currentBytes } catch { $currentSplit = $null }
             if ($null -eq $currentSplit) { $entry.Action = 'AgentsDokunma'; $entry.Detail = '"## Projeye özel kurallar" başlığı tam bir kez bulunamadı veya dosya UTF-8 değil; dokunulmadı'; $agentsManualBytes = $newAgentsSplit.Common; continue }
-            $currentCommonHash = Get-BytesHash $currentSplit.Common
-            if ($currentCommonHash -eq $newCommonHash) { $entry.Action = 'AgentsAyni'; $entry.Detail = 'ortak kısım güncel'; $finalCommon = $newCommonHash; continue }
-            if ($null -ne $recordedCommon -and $currentCommonHash -eq $recordedCommon) {
+            $currentCommonLfHash = Get-LfHash $currentSplit.Common
+            if ($currentCommonLfHash -eq $newCommonLfHash) { $entry.Action = 'AgentsAyni'; $entry.Detail = 'ortak kısım güncel'; $finalCommonLf = $newCommonLfHash; continue }
+            $canUpdateCommon = ($null -ne $recordedCommonLf -and $currentCommonLfHash -eq $recordedCommonLf)
+            if ($null -eq $recordedCommonLf -and $null -ne $recordedCommonBytes) {
+                $canUpdateCommon = ((Get-BytesHash $currentSplit.Common) -eq $recordedCommonBytes)
+            }
+            $knownOldCommon = $false
+            if (-not $canUpdateCommon -and $knownAgentsCommonLfSha256 -contains $currentCommonLfHash) {
+                $canUpdateCommon = $true
+                $knownOldCommon = $true
+            }
+            if ($canUpdateCommon) {
                 if (Test-ReadOnlyFile $item.path) { $problems.Add('Salt okunur dosya: ' + $rel) }
-                $merged = New-Object byte[] ($newAgentsSplit.Common.Length + $currentSplit.Tail.Length)
-                [Array]::Copy($newAgentsSplit.Common, 0, $merged, 0, $newAgentsSplit.Common.Length)
-                [Array]::Copy($currentSplit.Tail, 0, $merged, $newAgentsSplit.Common.Length, $currentSplit.Tail.Length)
+                $newCommonText = $utf8.GetString($newAgentsSplit.Common).Replace("`r`n", "`n")
+                $currentCommonText = $utf8.GetString($currentSplit.Common)
+                if ($currentCommonText.Contains("`r`n") -and -not [regex]::IsMatch($currentCommonText, '(?<!\r)\n')) {
+                    $newCommonText = $newCommonText.Replace("`n", "`r`n")
+                }
+                [byte[]]$newCommonBytes = $utf8.GetBytes($newCommonText)
+                $merged = New-Object byte[] ($newCommonBytes.Length + $currentSplit.Tail.Length)
+                [Array]::Copy($newCommonBytes, 0, $merged, 0, $newCommonBytes.Length)
+                [Array]::Copy($currentSplit.Tail, 0, $merged, $newCommonBytes.Length, $currentSplit.Tail.Length)
                 $entry.Action = 'AgentsGuncelle'; $entry.Detail = 'ortak kısım yenilenecek, "Projeye özel kurallar" bölümü korunacak'; $entry.Bytes = $merged
-                $finalCommon = $newCommonHash
+                if ($knownOldCommon) { $entry.Detail += '; bilinen eski sürüm ortak kısmı' }
+                $finalCommonLf = $newCommonLfHash
                 continue
             }
             $entry.Action = 'AgentsElle'
-            if ($null -eq $recordedCommon) { $entry.Detail = 'kayıtta agentsCommonSha256 yok (eski kurulum); ortak kısma dokunulmadı' } else { $entry.Detail = 'ortak kısım kurulumdan sonra değiştirilmiş; dokunulmadı' }
+            if ($null -eq $recordedCommonLf -and $null -eq $recordedCommonBytes) { $entry.Detail = 'kayıtta ortak kısım hash alanı yok (eski kurulum); ortak kısma dokunulmadı' } else { $entry.Detail = 'ortak kısım kurulumdan sonra değiştirilmiş; dokunulmadı' }
             $agentsManualBytes = $newAgentsSplit.Common
             continue
         }
-        if ($entry.CurHash -eq $item.sha256) { $entry.Action = 'Ayni'; continue }
+        if ($entry.CurHash -eq $item.sha256 -or (Get-LfHash $currentBytes) -eq (Get-LfHash $item.bytes)) { $entry.Action = 'Ayni'; continue }
         if ($null -ne $recordedHash -and $entry.CurHash -eq $recordedHash) {
             if (Test-ReadOnlyFile $item.path) { $problems.Add('Salt okunur dosya: ' + $rel) }
             $entry.Action = 'Guncelle'; $entry.Bytes = $item.bytes
@@ -343,7 +383,8 @@ try {
         $versionChanged = ($record.templateVersion -ne $version.version)
         $anyChange = @($plan | Where-Object { $_.Action -in @('Ekle', 'Guncelle', 'AgentsGuncelle') }).Count -gt 0
         $refreshNeeded = @($plan | Where-Object { $_.Action -eq 'Ayni' -and $recordedHashes.ContainsKey($_.Rel) -and $recordedHashes[$_.Rel] -ne $_.CurHash }).Count -gt 0
-        $commonChanged = ($finalCommon -ne $recordedCommon)
+        # Değer aynı kalsa da eski alanın yeni LF alanına taşınması kaydı yenilemeyi gerektirir.
+        $commonChanged = ($finalCommonLf -ne $recordedCommonLf) -or ($null -ne $finalCommonLf -and $null -ne $record.PSObject.Properties['agentsCommonSha256'])
         $writeRecord = $anyChange -or $versionChanged -or $refreshNeeded -or $commonChanged
         if ($writeRecord) { $overwrites.Add([pscustomobject]@{ Rel = '.ai-sablon/kurulum.json'; Path = $recordPath; ExpectedHash = (Get-BytesHash $recordBytes) }) }
 
@@ -414,7 +455,10 @@ try {
                 $newRecord['pendingFeatures'] = $pendingFeatures
                 $newRecord['sourceFiles'] = $sourceFiles.ToArray()
                 $newRecord['installedFiles'] = $installedFiles
-                if ($null -ne $finalCommon) { $newRecord['agentsCommonSha256'] = $finalCommon }
+                if ($null -ne $finalCommonLf) {
+                    $newRecord['agentsCommonLfSha256'] = $finalCommonLf
+                    $newRecord.Remove('agentsCommonSha256')
+                }
                 [byte[]]$newRecordBytes = $utf8.GetBytes((ConvertTo-Json -InputObject $newRecord -Depth 8) + [Environment]::NewLine)
                 Write-ExistingFile $recordPath $newRecordBytes
                 $changeLog.Add('Güncellendi: .ai-sablon/kurulum.json (yedek: ' + $backupPaths['.ai-sablon/kurulum.json'] + ')')

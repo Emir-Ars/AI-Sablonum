@@ -69,6 +69,18 @@ function Get-BytesHash {
 }
 
 # guncelle.ps1 ile aynı tutulmalı
+function Get-LfHash {
+    # CRLF -> LF çevrilmiş baytların SHA-256'sı; satır sonu farkı hash'i değiştirmez.
+    param([byte[]]$Bytes)
+    $list = New-Object 'Collections.Generic.List[byte]' ($Bytes.Length)
+    for ($i = 0; $i -lt $Bytes.Length; $i++) {
+        if ($Bytes[$i] -eq 13 -and ($i + 1) -lt $Bytes.Length -and $Bytes[$i + 1] -eq 10) { continue }
+        $list.Add($Bytes[$i])
+    }
+    return Get-BytesHash ($list.ToArray())
+}
+
+# guncelle.ps1 ile aynı tutulmalı
 function Split-AgentsBytes {
     param([byte[]]$Bytes)
     $text = $utf8.GetString($Bytes)
@@ -138,6 +150,13 @@ try {
     if ($versionBytes.Length -ge 3 -and $versionBytes[0] -eq 239 -and $versionBytes[1] -eq 187 -and $versionBytes[2] -eq 191) { throw 'surum.json UTF-8 BOM olmadan kaydedilmeli.' }
     $version = $utf8.GetString($versionBytes) | ConvertFrom-Json
     if ($version.schemaVersion -ne 2 -or $version.version -notmatch '^\d+\.\d+\.\d+$' -or $version.packageStatus -notin @('development', 'release') -or $version.minimumPowerShellVersion -ne '5.1') { throw 'Sürüm kaydının biçimi veya alanları geçersiz.' }
+    $knownAgentsCommonLfSha256 = @()
+    if ($null -ne $version.PSObject.Properties['knownAgentsCommonLfSha256']) {
+        $knownAgentsCommonLfSha256 = $version.knownAgentsCommonLfSha256
+        if ($knownAgentsCommonLfSha256 -isnot [array] -or $knownAgentsCommonLfSha256.Count -gt 100) { throw 'Sürüm kaydındaki bilinen hash listesi geçersiz.' }
+        if (@($knownAgentsCommonLfSha256 | Where-Object { $_ -isnot [string] -or $_ -cnotmatch '^[0-9a-f]{64}$' }).Count -gt 0 -or @($knownAgentsCommonLfSha256 | Select-Object -Unique).Count -ne $knownAgentsCommonLfSha256.Count) { throw 'Sürüm kaydındaki bilinen hash listesi geçersiz.' }
+    }
+
     if (@($version.copyFiles).Count -lt 1 -or @($version.copyFiles).Count -gt 100) { throw 'Sürüm kaydının kaynak dosya listesi geçersiz.' }
     # Kaynaklar yalnız şablon klasörlerinden gelir; hedefler araç ve Git ayar klasörlerine yazılamaz.
     $allowedSourcePrefixes = @('genel/', 'sablon/')
@@ -172,11 +191,11 @@ try {
     }
     foreach ($requiredTarget in $requiredTargets) { if (-not $seenTargets.ContainsKey($requiredTarget)) { throw ('Zorunlu kurulum dosyası eksik: ' + $requiredTarget) } }
     if ($version.packageStatus -eq 'release' -and $pendingFeatures.Count -gt 0) { throw 'Yayımlanmış paket bekleyen bileşen içeremez.' }
-    # AGENTS.md ortak kısmının hash'i kayda yazılır; guncelle.ps1 ortak kısmı yalnız bu hash tutuyorsa değiştirir.
+    # Satır sonu farkı ortak kısmı değiştirilmiş saydırmasın diye LF hash'i kayda yazılır.
     $agentsPayload = @($payload | Where-Object { $_.relativePath -eq 'AGENTS.md' })[0]
     $agentsSplit = Split-AgentsBytes $agentsPayload.bytes
     if ($null -eq $agentsSplit) { throw 'AGENTS.md kaynağında "## Projeye özel kurallar" başlığı tam bir kez bulunmalı.' }
-    $agentsCommonSha256 = Get-BytesHash $agentsSplit.Common
+    $agentsCommonLfSha256 = Get-LfHash $agentsSplit.Common
     $sourceFiles.Add([pscustomobject]@{path='surum.json'; sha256=(Get-BytesHash $versionBytes)})
     $sourceFiles.Add([pscustomobject]@{path='kur.ps1'; sha256=(Get-BytesHash ([IO.File]::ReadAllBytes($PSCommandPath)))})
 
@@ -208,7 +227,7 @@ try {
         pendingFeatures = $pendingFeatures
         sourceFiles = $sourceFiles.ToArray()
         installedFiles = $installedFiles
-        agentsCommonSha256 = $agentsCommonSha256
+        agentsCommonLfSha256 = $agentsCommonLfSha256
     }
     [byte[]]$recordBytes = $utf8.GetBytes((ConvertTo-Json -InputObject $record -Depth 8) + [Environment]::NewLine)
     Write-NewInstallFile $recordPath $recordBytes

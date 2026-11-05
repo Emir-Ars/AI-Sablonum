@@ -108,6 +108,34 @@ function Write-TextNoBom {
     [IO.File]::WriteAllText($Path, $Text, $utf8NoBom)
 }
 
+
+function Get-TextLfHash {
+    # Beklenen hash metin üzerinden hesaplanır; üretimdeki bayt döngüsünü kopyalamaz.
+    param([string]$Text)
+    $hasher = [Security.Cryptography.SHA256]::Create()
+    try { return ([BitConverter]::ToString($hasher.ComputeHash($utf8NoBom.GetBytes($Text.Replace("`r`n", "`n"))))).Replace('-', '').ToLowerInvariant() }
+    finally { $hasher.Dispose() }
+}
+
+function Read-AgentsParts {
+    param([string]$Path)
+    $text = [IO.File]::ReadAllText($Path, $utf8NoBom)
+    $markers = [regex]::Matches($text, '(?m)^## Projeye özel kurallar\r?$')
+    Assert-True ($markers.Count -eq 1) 'Test verisinde tek özel bölüm başlığı olmalı.'
+    return [pscustomobject]@{
+        Common = $text.Substring(0, $markers[0].Index)
+        TailBase64 = [Convert]::ToBase64String($utf8NoBom.GetBytes($text.Substring($markers[0].Index)))
+    }
+}
+
+function Set-PackageMarkdownLineEndings {
+    param([string]$Directory, [string]$LineEnding)
+    foreach ($file in Get-ChildItem -LiteralPath $Directory -Recurse -File -Filter '*.md') {
+        $text = [IO.File]::ReadAllText($file.FullName, $utf8NoBom).Replace("`r`n", "`n")
+        Write-TextNoBom $file.FullName ($text.Replace("`n", $LineEnding))
+    }
+}
+
 $versionInfo = [IO.File]::ReadAllText((Join-Path $repoRoot 'surum.json'), $utf8NoBom) | ConvertFrom-Json
 
 try {
@@ -144,6 +172,10 @@ try {
             $actual = Get-FileSha (Join-Path $cleanTarget ($entry.path.Replace('/', '\')))
             Assert-True ($actual -eq $entry.sha256) ('Kayıtlı hash gerçek dosyadan farklı: ' + $entry.path)
         }
+        $parts = Read-AgentsParts (Join-Path $cleanTarget 'AGENTS.md')
+        Assert-True ($null -ne $record.PSObject.Properties['agentsCommonLfSha256']) 'Temiz kurulumda LF hash alanı yok.'
+        Assert-True ($record.agentsCommonLfSha256 -eq (Get-TextLfHash $parts.Common)) 'Temiz kurulumdaki ortak LF hash yanlış.'
+        Assert-True ($null -eq $record.PSObject.Properties['agentsCommonSha256']) 'Temiz kurulumda eski bayt hash alanı var.'
     }
 
     Invoke-Scenario '3 Encoding (BOM)' {
@@ -242,7 +274,7 @@ try {
     $oldPackage = Join-Path $runRoot 'u-eski-paket'
     New-PackageCopy $oldPackage
     $oldVersionText = [IO.File]::ReadAllText((Join-Path $oldPackage 'surum.json'), $utf8NoBom)
-    Write-TextNoBom (Join-Path $oldPackage 'surum.json') ($oldVersionText -replace '"version":\s*"[^"]+"', '"version": "0.0.1"')
+    Write-TextNoBom (Join-Path $oldPackage 'surum.json') ($oldVersionText -replace '"version":\s*"[^"]+"', '"version": "0.2.0"')
     $oldRules = [IO.File]::ReadAllText((Join-Path $oldPackage 'genel\KURALLAR.md'), $utf8NoBom)
     Write-TextNoBom (Join-Path $oldPackage 'genel\KURALLAR.md') ($oldRules.Replace('# Çalışma kuralları', '# Çalışma kuralları (eski sürüm)'))
     foreach ($name in @('YOL_HARITASI.md', 'PROJE.md')) {
@@ -311,11 +343,12 @@ try {
         Assert-True (-not $after.Contains('(eski sürüm)')) 'Eski ortak kısım hâlâ duruyor.'
     }
 
-    Invoke-Scenario 'U4 Güncelle: agentsCommonSha256 alanı yoksa ortak kısma dokunulmaz' {
+    Invoke-Scenario 'U4 Güncelle: ortak hash alanları yok ve sürüm tanınmıyorsa ortak kısma dokunulmaz' {
         $target = New-OldInstall 'u4'
         $recordPath = Join-Path $target '.ai-sablon\kurulum.json'
         $record = [IO.File]::ReadAllText($recordPath, $utf8NoBom) | ConvertFrom-Json
         $record.PSObject.Properties.Remove('agentsCommonSha256')
+        $record.PSObject.Properties.Remove('agentsCommonLfSha256')
         Write-TextNoBom $recordPath ((ConvertTo-Json -InputObject $record -Depth 8) + "`n")
         $agentsHash = Get-FileSha (Join-Path $target 'AGENTS.md')
         $result = Invoke-Guncelle $target -Apply
@@ -374,6 +407,259 @@ try {
         $rejected = Invoke-Guncelle $plain -Apply
         Assert-True ($rejected.Code -eq 1) 'Kurulum kaydı olmayan hedef reddedilmedi.'
         Assert-True (@(Get-ChildItem -LiteralPath $plain -Force).Count -eq 0) 'Kayıtsız hedefe dosya yazılmış.'
+    }
+
+    Invoke-Scenario 'U8 Güncelle: salt okunur dosya yazma ve yedekleme öncesi reddedilir' {
+        $target = New-OldInstall 'u8'
+        $locked = Join-Path $target 'docs\YOL_HARITASI.md'
+        $originalAttributes = [IO.File]::GetAttributes($locked)
+        try {
+            [IO.File]::SetAttributes($locked, ($originalAttributes -bor [IO.FileAttributes]::ReadOnly))
+            $before = Get-Snapshot $target
+            $result = Invoke-Guncelle $target -Apply
+            Assert-True ($result.Code -eq 1) ('Çıkış kodu 1 değil: ' + $result.Code)
+            Assert-True ($result.Err -match 'Salt okunur') 'Salt okunur uyarısı yok.'
+            $difference = Compare-Snapshot $before (Get-Snapshot $target)
+            Assert-True ($null -eq $difference) $difference
+            Assert-True (-not (Test-Path -LiteralPath (Join-Path $target '.ai-sablon\yedek'))) 'Hata öncesinde yedek klasörü oluşmuş.'
+        } finally {
+            [IO.File]::SetAttributes($locked, $originalAttributes)
+        }
+    }
+
+    Invoke-Scenario 'U9 Güncelle: üst yol dosyaysa hiçbir dosya değiştirilmez' {
+        $target = New-OldInstall 'u9'
+        $package = Join-Path $runRoot 'u9-paket'
+        New-PackageCopy $package
+        $versionPath = Join-Path $package 'surum.json'
+        $version = [IO.File]::ReadAllText($versionPath, $utf8NoBom) | ConvertFrom-Json
+        $version.copyFiles = @($version.copyFiles) + @([pscustomobject]@{ source = 'sablon/docs/arsiv/BENIOKU.md'; target = 'docs/yeni/ek.md' })
+        Write-TextNoBom $versionPath ((ConvertTo-Json -InputObject $version -Depth 8) + "`n")
+        Write-TextNoBom (Join-Path $target 'docs\yeni') 'üst yol dosyası'
+        $before = Get-Snapshot $target
+        $result = Invoke-Guncelle $target -Apply -Script (Join-Path $package 'guncelle.ps1')
+        Assert-True ($result.Code -eq 1) ('Çıkış kodu 1 değil: ' + $result.Code)
+        Assert-True ($result.Err -match 'Üst yol dosya') 'Üst yol dosya uyarısı yok.'
+        $difference = Compare-Snapshot $before (Get-Snapshot $target)
+        Assert-True ($null -eq $difference) $difference
+    }
+
+    Invoke-Scenario 'U10 Güncelle: başlıksız AGENTS.md korunur ve elle birleştirme dosyası yazılır' {
+        $target = New-OldInstall 'u10'
+        $path = Join-Path $target 'AGENTS.md'
+        $text = [IO.File]::ReadAllText($path, $utf8NoBom)
+        Write-TextNoBom $path ([regex]::Replace($text, '(?m)^## Projeye özel kurallar\r?\n?', ''))
+        $before = Get-FileSha $path
+        $result = Invoke-Guncelle $target -Apply
+        Assert-True ($result.Code -eq 0) ('Güncelleme başarısız: ' + $result.Err)
+        Assert-True ((Get-FileSha $path) -eq $before) 'Başlıksız AGENTS.md değişmiş.'
+        Assert-True ($result.Out -match 'dokunulmadı') 'Dokunulmadı raporu yok.'
+        $manual = Join-Path $target '.ai-sablon\yeni-AGENTS-ortak.md'
+        $expected = Read-AgentsParts (Join-Path $repoRoot 'genel\KURALLAR.md')
+        Assert-True (Test-Path -LiteralPath $manual) 'Elle birleştirme dosyası yok.'
+        Assert-True ([Convert]::ToBase64String([IO.File]::ReadAllBytes($manual)) -ceq [Convert]::ToBase64String($utf8NoBom.GetBytes($expected.Common))) 'Elle birleştirme dosyası paket ortak baytlarıyla aynı değil.'
+    }
+
+    Invoke-Scenario 'U11 Güncelle: v0.1 kuru çalıştırmada ve uygulamada reddedilir' {
+        $target = New-OldInstall 'u11'
+        $path = Join-Path $target '.ai-sablon\kurulum.json'
+        $record = [IO.File]::ReadAllText($path, $utf8NoBom) | ConvertFrom-Json
+        $record.templateVersion = '0.1.0'
+        Write-TextNoBom $path ((ConvertTo-Json -InputObject $record -Depth 8) + "`n")
+        $before = Get-Snapshot $target
+        foreach ($apply in @($false, $true)) {
+            $result = Invoke-Guncelle $target -Apply:$apply
+            Assert-True ($result.Code -eq 1) ('Çıkış kodu 1 değil: ' + $result.Code)
+            Assert-True ($result.Err -match 'v0.2 öncesi') 'v0.2 öncesi uyarısı yok.'
+            $difference = Compare-Snapshot $before (Get-Snapshot $target)
+            Assert-True ($null -eq $difference) $difference
+        }
+    }
+
+    Invoke-Scenario 'U12 Güncelle: CRLF kurulum LF paketten güncellenirken özel bölüm ve CRLF korunur' {
+        $package = Join-Path $runRoot 'u12-crlf-paket'
+        New-PackageCopy $package
+        $rulesPath = Join-Path $package 'genel\KURALLAR.md'
+        Write-TextNoBom $rulesPath ([IO.File]::ReadAllText($rulesPath, $utf8NoBom).Replace('# Çalışma kuralları', '# Çalışma kuralları (eski sürüm)'))
+        Set-PackageMarkdownLineEndings $package "`r`n"
+        $target = Join-Path $runRoot 'u12'
+        $install = Invoke-Kur $target (Join-Path $package 'kur.ps1')
+        Assert-True ($install.Code -eq 0) ('CRLF kurulumu başarısız: ' + $install.Err)
+        $agentsPath = Join-Path $target 'AGENTS.md'
+        Write-TextNoBom $agentsPath ([IO.File]::ReadAllText($agentsPath, $utf8NoBom) + "- Özel Türkçe kural`r`n")
+        $before = Read-AgentsParts $agentsPath
+        $lfPackage = Join-Path $runRoot 'u12-lf-paket'
+        New-PackageCopy $lfPackage
+        Set-PackageMarkdownLineEndings $lfPackage "`n"
+        $expected = Read-AgentsParts (Join-Path $lfPackage 'genel\KURALLAR.md')
+        Assert-True (-not $expected.Common.Contains("`r")) 'Güncelleme test paketi LF değil.'
+        $result = Invoke-Guncelle $target -Apply -Script (Join-Path $lfPackage 'guncelle.ps1')
+        Assert-True ($result.Code -eq 0) ('Güncelleme başarısız: ' + $result.Err)
+        $after = Read-AgentsParts $agentsPath
+        Assert-True ($after.Common.Replace("`r`n", "`n") -ceq $expected.Common) 'Ortak kısım yeni LF sürümle aynı değil.'
+        $fullText = [IO.File]::ReadAllText($agentsPath, $utf8NoBom)
+        Assert-True ($fullText.Contains("`r`n") -and -not [regex]::IsMatch($fullText, '(?<!\r)\n')) 'CRLF korunmamış veya yalın LF oluşmuş.'
+        Assert-True ($before.TailBase64 -ceq $after.TailBase64) 'Özel bölümün baytları değişmiş.'
+    }
+
+    Invoke-Scenario 'U13 Güncelle: yalnız satır sonu farkı aynı sayılır ve dosya yeniden yazılmaz' {
+        $package = Join-Path $runRoot 'u13-lf-paket'
+        New-PackageCopy $package
+        Set-PackageMarkdownLineEndings $package "`n"
+        $target = Join-Path $runRoot 'u13'
+        $install = Invoke-Kur $target (Join-Path $package 'kur.ps1')
+        Assert-True ($install.Code -eq 0) ('Kurulum başarısız: ' + $install.Err)
+        $path = Join-Path $target 'docs\YOL_HARITASI.md'
+        $lfText = [IO.File]::ReadAllText($path, $utf8NoBom)
+        Assert-True (-not $lfText.Contains("`r")) 'Başlangıç dosyası LF değil.'
+        Write-TextNoBom $path ($lfText.Replace("`n", "`r`n"))
+        $beforeHash = Get-FileSha $path
+        $beforeTime = [IO.File]::GetLastWriteTimeUtc($path).Ticks
+        $result = Invoke-Guncelle $target -Apply -Script (Join-Path $package 'guncelle.ps1')
+        Assert-True ($result.Code -eq 0) ('Güncelleme başarısız: ' + $result.Err)
+        $sameSection = [regex]::Match($result.Out, '(?ms)^Aynı \(işlem yok\) \(\d+\):\r?\n(.*?)(?=^\S|\z)').Groups[1].Value
+        Assert-True ($sameSection.Contains('  docs/YOL_HARITASI.md')) 'Satır sonu farkı Aynı listesinde değil.'
+        Assert-True ((Get-FileSha $path) -eq $beforeHash -and [IO.File]::GetLastWriteTimeUtc($path).Ticks -eq $beforeTime) 'Dosya yeniden yazılmış.'
+        $before = Get-Snapshot $target
+        $second = Invoke-Guncelle $target -Apply -Script (Join-Path $package 'guncelle.ps1')
+        Assert-True ($second.Code -eq 0) ('İkinci çalıştırma başarısız: ' + $second.Err)
+        $difference = Compare-Snapshot $before (Get-Snapshot $target)
+        Assert-True ($null -eq $difference) $difference
+    }
+
+    Invoke-Scenario 'U14 Güncelle: kayıtta hash yokken bilinen eski sürüm yenilenir' {
+        $target = New-OldInstall 'u14'
+        $agentsPath = Join-Path $target 'AGENTS.md'
+        Write-TextNoBom $agentsPath ([IO.File]::ReadAllText($agentsPath, $utf8NoBom) + "- özel bölüm`n")
+        $before = Read-AgentsParts $agentsPath
+        $recordPath = Join-Path $target '.ai-sablon\kurulum.json'
+        $record = [IO.File]::ReadAllText($recordPath, $utf8NoBom) | ConvertFrom-Json
+        $record.PSObject.Properties.Remove('agentsCommonSha256')
+        $record.PSObject.Properties.Remove('agentsCommonLfSha256')
+        Write-TextNoBom $recordPath ((ConvertTo-Json -InputObject $record -Depth 8) + "`n")
+        $package = Join-Path $runRoot 'u14-paket'
+        New-PackageCopy $package
+        $versionPath = Join-Path $package 'surum.json'
+        $version = [IO.File]::ReadAllText($versionPath, $utf8NoBom) | ConvertFrom-Json
+        $version.knownAgentsCommonLfSha256 = @($version.knownAgentsCommonLfSha256) + @((Get-TextLfHash $before.Common))
+        Write-TextNoBom $versionPath ((ConvertTo-Json -InputObject $version -Depth 8) + "`n")
+        $result = Invoke-Guncelle $target -Apply -Script (Join-Path $package 'guncelle.ps1')
+        Assert-True ($result.Code -eq 0) ('Güncelleme başarısız: ' + $result.Err)
+        $after = Read-AgentsParts $agentsPath
+        $expected = Read-AgentsParts (Join-Path $package 'genel\KURALLAR.md')
+        Assert-True ($after.Common.Replace("`r`n", "`n") -ceq $expected.Common.Replace("`r`n", "`n")) 'Bilinen ortak kısım yenilenmemiş.'
+        Assert-True ($after.TailBase64 -ceq $before.TailBase64) 'Özel bölüm değişmiş.'
+        Assert-True ($result.Out -match 'bilinen eski sürüm') 'Bilinen sürüm ayrıntısı yok.'
+        $record = [IO.File]::ReadAllText($recordPath, $utf8NoBom) | ConvertFrom-Json
+        Assert-True ($record.agentsCommonLfSha256 -eq (Get-TextLfHash $expected.Common)) 'LF hash kayda yazılmamış.'
+        Assert-True ($null -eq $record.PSObject.Properties['agentsCommonSha256']) 'Eski bayt hash alanı kalmış.'
+    }
+
+    Invoke-Scenario 'U15 Güncelle: v0.3.0 bayt hash kaydı LF hash alanına taşınır' {
+        $target = New-OldInstall 'u15'
+        $agentsPath = Join-Path $target 'AGENTS.md'
+        $parts = Read-AgentsParts $agentsPath
+        $recordPath = Join-Path $target '.ai-sablon\kurulum.json'
+        $record = [IO.File]::ReadAllText($recordPath, $utf8NoBom) | ConvertFrom-Json
+        $record.templateVersion = '0.3.0'
+        $record.PSObject.Properties.Remove('agentsCommonLfSha256')
+        $commonPath = Join-Path $runRoot 'u15-ortak-baytlar'
+        Write-TextNoBom $commonPath $parts.Common
+        $record | Add-Member -NotePropertyName 'agentsCommonSha256' -NotePropertyValue (Get-FileSha $commonPath) -Force
+        Write-TextNoBom $recordPath ((ConvertTo-Json -InputObject $record -Depth 8) + "`n")
+        $result = Invoke-Guncelle $target -Apply
+        Assert-True ($result.Code -eq 0) ('Güncelleme başarısız: ' + $result.Err)
+        $after = Read-AgentsParts $agentsPath
+        $expected = Read-AgentsParts (Join-Path $repoRoot 'genel\KURALLAR.md')
+        Assert-True ($after.Common.Replace("`r`n", "`n") -ceq $expected.Common.Replace("`r`n", "`n")) 'v0.3.0 ortak kısmı yenilenmemiş.'
+        Assert-True ($parts.TailBase64 -ceq $after.TailBase64) 'Özel bölüm değişmiş.'
+        $record = [IO.File]::ReadAllText($recordPath, $utf8NoBom) | ConvertFrom-Json
+        Assert-True ($record.agentsCommonLfSha256 -eq (Get-TextLfHash $expected.Common)) 'LF hash alanı yanlış.'
+        Assert-True ($null -eq $record.PSObject.Properties['agentsCommonSha256']) 'Eski hash alanı kaldırılmamış.'
+    }
+
+    Invoke-Scenario 'K-liste Geçersiz bilinen hash listeleri yazmadan reddedilir' {
+        $package = Join-Path $runRoot 'k-liste-paket'
+        New-PackageCopy $package
+        $versionPath = Join-Path $package 'surum.json'
+        $original = [IO.File]::ReadAllText($versionPath, $utf8NoBom)
+        $validHash = $versionInfo.knownAgentsCommonLfSha256[0]
+        $cases = @(
+            [pscustomobject]@{ Name = 'xyz'; Value = @($versionInfo.knownAgentsCommonLfSha256) + @('xyz') },
+            [pscustomobject]@{ Name = 'null'; Value = $null },
+            [pscustomobject]@{ Name = 'skaler'; Value = $validHash },
+            [pscustomobject]@{ Name = 'tekrar'; Value = @($validHash, $validHash) },
+            [pscustomobject]@{ Name = 'buyuk-harf'; Value = @($validHash.ToUpperInvariant()) },
+            [pscustomobject]@{ Name = 'sayi'; Value = @(17) },
+            [pscustomobject]@{ Name = 'sinir'; Value = @(1..101 | ForEach-Object { '{0:x64}' -f $_ }) }
+        )
+        foreach ($case in $cases) {
+            $version = $original | ConvertFrom-Json
+            $version.knownAgentsCommonLfSha256 = $case.Value
+            Write-TextNoBom $versionPath ((ConvertTo-Json -InputObject $version -Depth 8) + "`n")
+            $target = Join-Path $runRoot ('k-liste-' + $case.Name)
+            New-Item -ItemType Directory -Path $target | Out-Null
+            $result = Invoke-Kur $target (Join-Path $package 'kur.ps1')
+            Assert-True ($result.Code -eq 1) ($case.Name + ': geçersiz liste kabul edilmiş.')
+            Assert-True ($result.Err -match 'bilinen hash listesi geçersiz') ($case.Name + ': liste hata iletisi yok.')
+            Assert-True (@(Get-ChildItem -LiteralPath $target -Recurse -Force).Count -eq 0) ($case.Name + ': hedef boş değil.')
+            $installed = New-OldInstall ('k-guncelle-' + $case.Name)
+            $before = Get-Snapshot $installed
+            $update = Invoke-Guncelle $installed -Apply -Script (Join-Path $package 'guncelle.ps1')
+            Assert-True ($update.Code -eq 1 -and $update.Err -match 'bilinen hash listesi geçersiz') ($case.Name + ': güncelleyici listeyi reddetmemiş.')
+            $difference = Compare-Snapshot $before (Get-Snapshot $installed)
+            Assert-True ($null -eq $difference) $difference
+        }
+    }
+
+    Invoke-Scenario 'U16 Güncelle: iki hash alanı varsa yalnız LF alanı kullanılır ve kullanıcı değişikliği korunur' {
+        $target = New-OldInstall 'u16'
+        $agentsPath = Join-Path $target 'AGENTS.md'
+        $parts = Read-AgentsParts $agentsPath
+        Write-TextNoBom $agentsPath ($parts.Common + "- Kullanıcının ortak kısma eklediği kural`n" + $utf8NoBom.GetString([Convert]::FromBase64String($parts.TailBase64)))
+        $changed = Read-AgentsParts $agentsPath
+        $commonPath = Join-Path $runRoot 'u16-ortak'
+        Write-TextNoBom $commonPath $changed.Common
+        $recordPath = Join-Path $target '.ai-sablon\kurulum.json'
+        $record = [IO.File]::ReadAllText($recordPath, $utf8NoBom) | ConvertFrom-Json
+        $oldLfHash = $record.agentsCommonLfSha256
+        $record | Add-Member -NotePropertyName 'agentsCommonSha256' -NotePropertyValue (Get-FileSha $commonPath) -Force
+        Write-TextNoBom $recordPath ((ConvertTo-Json -InputObject $record -Depth 8) + "`n")
+        $beforeHash = Get-FileSha $agentsPath
+        $result = Invoke-Guncelle $target -Apply
+        Assert-True ($result.Code -eq 0) ('Güncelleme başarısız: ' + $result.Err)
+        Assert-True ((Get-FileSha $agentsPath) -eq $beforeHash) 'Eşleşen eski bayt hash LF alanının önüne geçmiş.'
+        $record = [IO.File]::ReadAllText($recordPath, $utf8NoBom) | ConvertFrom-Json
+        Assert-True ($record.agentsCommonLfSha256 -eq $oldLfHash) 'Elle birleştirmede eski LF hash korunmamış.'
+        Assert-True ($null -eq $record.PSObject.Properties['agentsCommonSha256']) 'LF alanı yazılmasına rağmen eski alan kalmış.'
+    }
+
+    Invoke-Scenario 'U17 Güncelle: aynı sürüm ve içerikte eski kayıt taşınır, AGENTS.md yeniden yazılmaz' {
+        $package = Join-Path $runRoot 'u17-lf-paket'
+        New-PackageCopy $package
+        Set-PackageMarkdownLineEndings $package "`n"
+        $target = Join-Path $runRoot 'u17'
+        $install = Invoke-Kur $target (Join-Path $package 'kur.ps1')
+        Assert-True ($install.Code -eq 0) ('Kurulum başarısız: ' + $install.Err)
+        $recordPath = Join-Path $target '.ai-sablon\kurulum.json'
+        $record = [IO.File]::ReadAllText($recordPath, $utf8NoBom) | ConvertFrom-Json
+        $hash = $record.agentsCommonLfSha256
+        $record.PSObject.Properties.Remove('agentsCommonLfSha256')
+        $record | Add-Member -NotePropertyName 'agentsCommonSha256' -NotePropertyValue $hash -Force
+        Write-TextNoBom $recordPath ((ConvertTo-Json -InputObject $record -Depth 8) + "`n")
+        $agentsPath = Join-Path $target 'AGENTS.md'
+        $beforeHash = Get-FileSha $agentsPath
+        $beforeTime = [IO.File]::GetLastWriteTimeUtc($agentsPath).Ticks
+        $result = Invoke-Guncelle $target -Apply -Script (Join-Path $package 'guncelle.ps1')
+        Assert-True ($result.Code -eq 0) ('Kayıt geçişi başarısız: ' + $result.Err)
+        Assert-True ((Get-FileSha $agentsPath) -eq $beforeHash -and [IO.File]::GetLastWriteTimeUtc($agentsPath).Ticks -eq $beforeTime) 'Güncel AGENTS.md yeniden yazılmış.'
+        $record = [IO.File]::ReadAllText($recordPath, $utf8NoBom) | ConvertFrom-Json
+        Assert-True ($record.agentsCommonLfSha256 -eq $hash -and $null -eq $record.PSObject.Properties['agentsCommonSha256']) 'Aynı hash değerinde kayıt alanı taşınmamış.'
+        $before = Get-Snapshot $target
+        $second = Invoke-Guncelle $target -Apply -Script (Join-Path $package 'guncelle.ps1')
+        Assert-True ($second.Code -eq 0) ('İkinci çalıştırma başarısız: ' + $second.Err)
+        $difference = Compare-Snapshot $before (Get-Snapshot $target)
+        Assert-True ($null -eq $difference) $difference
     }
 
 } finally {
