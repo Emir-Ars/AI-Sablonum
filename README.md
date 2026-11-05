@@ -172,4 +172,4 @@ Sonuç: 3. aşamada çalışırken ajan 2. aşamanın günlüğünü ve kararlar
 | `docs/KURAL_ESLEME.md` | v0.1'deki kuralların v0.2'de nereye gittiği |
 | `docs/arsiv/v0.1-gelistirme/` | Şablonun v0.1 geliştirme geçmişi |
 
-Sürüm 0.2.1, durum "geliştirme". Doğrulama sonuçları ve açık sınırlar `docs/DURUM.md` içindedir.
+Sürüm 0.3.0, durum "geliştirme". Doğrulama sonuçları ve açık sınırlar `docs/DURUM.md` içindedir.
