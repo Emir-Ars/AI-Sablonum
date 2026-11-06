@@ -11,7 +11,7 @@ Henüz yazılmadı.
 
 ## Tasarım
 
-Henüz yazılmadı. Her alt adımın tasarımı `### 1.1 — kısa ad` gibi ayrı başlıkla eklenir.
+Henüz yazılmadı. Her alt adımın tasarımı `### 1.1 — kısa ad` gibi ayrı başlıkla eklenir; `PLAN.md` "İlgili kaynaklar" sütunu bu başlığa bağlantı verebilir.
 
 ## Riskler ve açık noktalar
 

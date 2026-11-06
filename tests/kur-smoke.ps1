@@ -188,6 +188,43 @@ try {
         Assert-True ($kurBytes[0] -eq 239 -and $kurBytes[1] -eq 187 -and $kurBytes[2] -eq 191) 'kur.ps1 BOM''lu değil.'
     }
 
+    Invoke-Scenario 'R1 Kurulu belgelerdeki yerel bağlantılar ve rehber yolları hedefte var' {
+        Assert-True ($null -ne $cleanResult -and $cleanResult.Code -eq 0) 'Senaryo 1 başarısız; bağlantı kontrolü yapılamaz.'
+        $broken = New-Object 'Collections.Generic.List[string]'
+        $linkCount = 0
+        $guideCount = 0
+        foreach ($file in Get-ChildItem -LiteralPath $cleanTarget -Recurse -File -Filter '*.md') {
+            $relativeFile = $file.FullName.Substring($cleanTarget.Length + 1)
+            $text = [IO.File]::ReadAllText($file.FullName, $utf8NoBom)
+            # Kod blokları ve satır içi kod örnek içerir; bağlantı sayılmaz.
+            $prose = [regex]::Replace($text, '(?s)```.*?```', '')
+            $prose = [regex]::Replace($prose, '`[^`\r\n]*`', '')
+            foreach ($match in [regex]::Matches($prose, '\]\(([^)\s]+)\)')) {
+                $link = $match.Groups[1].Value
+                if ($link -match '^(?i:https?:|mailto:|#)') { continue }
+                $linkCount++
+                $pathPart = [Uri]::UnescapeDataString($link.Split('#')[0]).Replace('/', '\')
+                $resolved = [IO.Path]::GetFullPath((Join-Path $file.DirectoryName $pathPart))
+                if (-not (Test-Path -LiteralPath $resolved)) { $broken.Add($relativeFile + ' -> ' + $link) }
+            }
+            # Kurallarda adı geçen rehberler (ör. docs/kurallar/GIT.md) hedefe gerçekten kurulmuş olmalı.
+            foreach ($match in [regex]::Matches($text, '`(docs/kurallar/[A-Za-z_/-]*[A-Z][A-Z_]*\.md)`')) {
+                $guideCount++
+                if (-not (Test-Path -LiteralPath (Join-Path $cleanTarget $match.Groups[1].Value.Replace('/', '\')) -PathType Leaf)) { $broken.Add($relativeFile + ' -> ' + $match.Groups[1].Value) }
+            }
+        }
+        Assert-True ($linkCount -gt 0 -and $guideCount -gt 0) ('Denetlenecek bağlantı veya rehber yolu bulunamadı: ' + $linkCount + '/' + $guideCount)
+        Assert-True ($broken.Count -eq 0) ('Kırık bağlantı: ' + ($broken -join '; '))
+    }
+
+    Invoke-Scenario 'R2 Kök AGENTS.md ortak kısmı genel/KURALLAR.md ile aynı' {
+        $rootAgents = Join-Path $repoRoot 'AGENTS.md'
+        if (-not (Test-Path -LiteralPath $rootAgents)) { Skip-Scenario 'Kök AGENTS.md yok.' }
+        $root = Read-AgentsParts $rootAgents
+        $source = Read-AgentsParts (Join-Path $repoRoot 'genel\KURALLAR.md')
+        Assert-True ($root.Common.Replace("`r`n", "`n") -ceq $source.Common.Replace("`r`n", "`n")) 'Kök AGENTS.md ortak kısmı genel/KURALLAR.md ile aynı değil.'
+    }
+
     Invoke-Scenario '4 Tekrar kurulum' {
         Assert-True ($null -ne $cleanResult -and $cleanResult.Code -eq 0) 'Senaryo 1 başarısız; tekrar kurulum denenemez.'
         $before = Get-Snapshot $cleanTarget
@@ -660,6 +697,60 @@ try {
         Assert-True ($second.Code -eq 0) ('İkinci çalıştırma başarısız: ' + $second.Err)
         $difference = Compare-Snapshot $before (Get-Snapshot $target)
         Assert-True ($null -eq $difference) $difference
+    }
+
+    Invoke-Scenario 'U18 Güncelle: rehbersiz eski kurulum yeni rehberleri alır; dolu hafıza belgeleri ve özel kurallar korunur' {
+        $newGuides = @('docs/kurallar/PLANLAMA.md', 'docs/kurallar/GIT.md', 'docs/kurallar/WINDOWS.md')
+        $package = Join-Path $runRoot 'u18-eski-paket'
+        New-PackageCopy $package
+        $versionPath = Join-Path $package 'surum.json'
+        $version = [IO.File]::ReadAllText($versionPath, $utf8NoBom) | ConvertFrom-Json
+        $version.version = '0.3.1'
+        $version.copyFiles = @($version.copyFiles | Where-Object { $newGuides -notcontains $_.target })
+        Write-TextNoBom $versionPath ((ConvertTo-Json -InputObject $version -Depth 8) + "`n")
+        $rulesPath = Join-Path $package 'genel\KURALLAR.md'
+        Write-TextNoBom $rulesPath ([IO.File]::ReadAllText($rulesPath, $utf8NoBom).Replace('# Çalışma kuralları', '# Çalışma kuralları (eski sürüm)'))
+        $target = Join-Path $runRoot 'u18'
+        $install = Invoke-Kur $target (Join-Path $package 'kur.ps1')
+        Assert-True ($install.Code -eq 0) ('Eski kurulum başarısız: ' + $install.Err)
+        foreach ($guide in $newGuides) { Assert-True (-not (Test-Path -LiteralPath (Join-Path $target ($guide.Replace('/', '\'))))) ('Eski kurulumda rehber zaten var: ' + $guide) }
+        # Kullanıcının doldurduğu hafıza belgeleri ve özel kural.
+        $memoryFiles = @('docs/DURUM.md', 'docs/aktif-asama/PLAN.md', 'docs/aktif-asama/GUNLUK.md', 'docs/aktif-asama/KARARLAR.md', 'docs/KARARLAR.md', 'docs/PROJE.md')
+        $memoryHashes = @{}
+        foreach ($relative in $memoryFiles) {
+            $path = Join-Path $target ($relative.Replace('/', '\'))
+            Write-TextNoBom $path ("# Dolu kayıt`n`n- " + $relative + ": 1.4 adımı ve K-007 kararı korunmalı.`n")
+            $memoryHashes[$relative] = Get-FileSha $path
+        }
+        $agentsPath = Join-Path $target 'AGENTS.md'
+        Write-TextNoBom $agentsPath ([IO.File]::ReadAllText($agentsPath, $utf8NoBom) + "- Özel kural: tarihler UTC yazılır.`n")
+        $tailBefore = (Read-AgentsParts $agentsPath).TailBase64
+        $before = Get-Snapshot $target
+        $dry = Invoke-Guncelle $target
+        Assert-True ($dry.Code -eq 0) ('Kuru çalıştırma başarısız: ' + $dry.Err)
+        $difference = Compare-Snapshot $before (Get-Snapshot $target)
+        Assert-True ($null -eq $difference) ('Kuru çalıştırma dosya değiştirmiş: ' + $difference)
+        $addSection = [regex]::Match($dry.Out, '(?ms)^Eklenecek \(\d+\):\r?\n(.*?)(?=^\S|\z)').Groups[1].Value
+        foreach ($guide in $newGuides) { Assert-True ($addSection.Contains('  ' + $guide)) ('Kuru çalıştırma raporunda eklenecek değil: ' + $guide) }
+        $result = Invoke-Guncelle $target -Apply
+        Assert-True ($result.Code -eq 0) ('Güncelleme başarısız: ' + $result.Err)
+        foreach ($guide in $newGuides) {
+            $installed = Join-Path $target ($guide.Replace('/', '\'))
+            Assert-True (Test-Path -LiteralPath $installed -PathType Leaf) ('Rehber kurulmamış: ' + $guide)
+            $source = @($versionInfo.copyFiles | Where-Object { $_.target -eq $guide })[0].source
+            Assert-True ((Get-FileSha $installed) -eq (Get-FileSha (Join-Path $repoRoot ($source.Replace('/', '\'))))) ('Rehber kaynakla aynı değil: ' + $guide)
+        }
+        $userSection = [regex]::Match($result.Out, '(?ms)^Kullanıcı değiştirmiş \(dokunulmayacak\) \(\d+\):\r?\n(.*?)(?=^\S|\z)').Groups[1].Value
+        foreach ($relative in $memoryFiles) {
+            Assert-True ((Get-FileSha (Join-Path $target ($relative.Replace('/', '\')))) -eq $memoryHashes[$relative]) ('Dolu hafıza belgesi değişmiş: ' + $relative)
+            Assert-True ($userSection.Contains('  ' + $relative)) ('Korunan belge raporda yok: ' + $relative)
+        }
+        $after = Read-AgentsParts $agentsPath
+        Assert-True ($after.TailBase64 -ceq $tailBefore) 'Projeye özel kurallar değişmiş.'
+        $expected = Read-AgentsParts (Join-Path $repoRoot 'genel\KURALLAR.md')
+        Assert-True ($after.Common.Replace("`r`n", "`n") -ceq $expected.Common.Replace("`r`n", "`n")) 'Ortak kısım yeni sürüme geçmemiş.'
+        $record = [IO.File]::ReadAllText((Join-Path $target '.ai-sablon\kurulum.json'), $utf8NoBom) | ConvertFrom-Json
+        Assert-True (@($record.installedFiles | Where-Object { $newGuides -contains $_.path }).Count -eq $newGuides.Count) 'Yeni rehberler kurulum kaydına yazılmamış.'
     }
 
 } finally {

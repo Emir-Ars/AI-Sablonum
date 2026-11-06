@@ -1,6 +1,6 @@
 # Bağımsız inceleme
 
-Bu dosya yalnız bir alt adımın inceleme katmanı "zorunlu" veya "hafif" olduğunda okunur.
+Bu dosya bir alt adımın inceleme katmanı belirlenirken (planlama, küçük iş istisnası) ve katman "zorunlu" veya "hafif" olduğunda okunur.
 
 Bağımsız inceleme: kodu veya tasarımı yazan ajandan ayrı, salt okunur bir alt ajanın hata arayan değerlendirmesidir. Testlerin yerine geçmez.
 

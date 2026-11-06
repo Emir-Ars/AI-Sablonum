@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "version": "0.3.1",
+  "version": "0.3.2",
   "packageStatus": "development",
   "minimumPowerShellVersion": "5.1",
   "copyFiles": [
@@ -57,6 +57,18 @@
       "target": "docs/kurallar/INCELEME.md"
     },
     {
+      "source": "sablon/docs/kurallar/PLANLAMA.md",
+      "target": "docs/kurallar/PLANLAMA.md"
+    },
+    {
+      "source": "sablon/docs/kurallar/GIT.md",
+      "target": "docs/kurallar/GIT.md"
+    },
+    {
+      "source": "sablon/docs/kurallar/WINDOWS.md",
+      "target": "docs/kurallar/WINDOWS.md"
+    },
+    {
       "source": "sablon/docs/kurallar/sablonlar/PLAN.md",
       "target": "docs/kurallar/sablonlar/PLAN.md"
     },
@@ -96,6 +108,7 @@
     "414edb38d43d2fffca13b91934cdf840cb4529a5ee71187c98b06e4cd9add9e7",
     "998fbaa6fce9989356089bd84ea4af1cf574ed0ca2b5c4f5bb94adc6614ebdd9",
     "6a0e015d44c4c78d007208268443d878ab26c91cea9e5337878ac7e164b95bd9",
-    "a59b75369334dd73b9cb67d65151954f4d5eb240b1993cb5ad5fc1ca9890c6c6"
+    "a59b75369334dd73b9cb67d65151954f4d5eb240b1993cb5ad5fc1ca9890c6c6",
+    "244f17c81385dae3b0c548b7607c3424d5f1e06adf12bef1aad50249f642b78f"
   ]
 }

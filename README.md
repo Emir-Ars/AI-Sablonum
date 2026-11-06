@@ -3,9 +3,9 @@
 Codex ve Claude ile VS Code'da proje geliştirirken aynı çalışma düzenini kullanmak için kurulan küçük bir kural ve belge paketi.
 
 Hedefler:
-- **Token tasarrufu:** her oturumda yalnız kısa kurallar, durum notu ve aktif aşamanın planı okunur.
+- **Bağlamı küçük tutma:** her oturumda kısa kurallar, durum notu ve planın yalnız başlangıç bölümü ile ilgili adımları okunur; ayrıntılı rehberler yalnız ilgili işte okunur.
 - **Düzenli ilerleme:** genel plan → aşama planı → alt adım; ajan yalnız senin yetkilendirdiğin adımı veya adım aralığını uygular.
-- **Unutmama:** bütün bilgi repo dosyalarında; araç değişse de kaldığın yerden devam edilir.
+- **Unutmama:** kayıtlar iş sırasında (adım bitince, karar değişince, iş durunca) repo dosyalarına yazılır; sohbet veya araç değişse de son kayıt noktasından devam edilir.
 - **Eski aşamaları okumama:** biten aşama arşive taşınır, kalıcı bilgisi ana belgelere aktarılır.
 
 ![Proje akışı](gorseller/akis.svg)
@@ -98,6 +98,18 @@ powershell.exe -NoProfile -File .\guncelle.ps1 -TargetDirectory "C:\Projeler\Pro
 - **Sınırlar:** yalnız satır sonu (CRLF/LF) farkı olan dosya "aynı" sayılır ve yeniden yazılmaz. Bunun dışındaki karşılaştırma bayt düzeyindedir: BOM eklenmiş veya içeriği değişmiş dosya "sen değiştirmişsin" diye raporlanır ve güvenli tarafta kalınır. Hedefte `.ai-sablon/kurulum.json` yoksa betik çıkış kodu 1 ile durur.
 - Betik yalnız `kur.ps1` ile kurulmuş projeler içindir ve yedekten geri yükleme yapmaz; geri almak için yedek klasöründeki dosyayı kendin kopyalarsın.
 
+### Dolu belgeleri yeni biçime geçirme
+
+Güncelleyici doldurduğun belgeleri korur ve yeni biçime çevirmez. v0.3.2 ile gelen değişiklikler için:
+
+1. Güncelleyiciyi önce kuru çalıştır ve raporu incele.
+2. Onayladığın güncellemeyi `-Uygula` ile uygula. Yeni rehberler (`docs/kurallar/PLANLAMA.md`, `GIT.md`, `WINDOWS.md`) eklenir; değiştirmediğin şablon dosyaları yenilenir.
+3. "Kullanıcı değiştirmiş" diye korunan dolu belgelerdeki yeni alanları elle birleştir: `DURUM.md` yeni başlıkları, `PLAN.md` başındaki "Başlangıç" bölümü ve "İlgili kaynaklar" sütunu, karar kayıtlarındaki "Önceki karar" alanı. `docs/KARARLAR.md`, `aktif-asama/GUNLUK.md` ve `PROJE.md` başındaki açıklama satırlarını yeni şablondakiyle değiştir (eski başlıklar "en çok üç kayıt" ve "eski kararda cümle düzeltilir" der; çelişkide `AGENTS.md` geçerlidir). Var olan bilgiyi, adım ve K-numaralarını koru; eski kayıtları yeniden yazma. Boş yeni biçimler `docs/kurallar/sablonlar/` altındadır; `DURUM.md`, `KARARLAR.md` ve `PROJE.md` için paketteki `sablon/docs/` dosyalarına bak.
+4. Yalnız `AGENTS.md` ortak kısmının güncellenmesi dolu proje belgelerini otomatik olarak yeni biçime dönüştürmez.
+5. Projende şablondan gelmeyen aynı adlı bir dosya varsa (ör. kendi `docs/kurallar/GIT.md` dosyan) güncelleyici onu korur ve raporlar; rehber kurulmaz. Bu durumda dosyanı yeniden adlandırıp güncellemeyi tekrar çalıştır veya içerikleri elle birleştir.
+
+Ajana örnek mesaj: "docs/kurallar/sablonlar altındaki yeni PLAN ve DURUM biçimini mevcut belgelerime uygula; bilgileri ve numaraları koru, önce farkları göster, onayımdan sonra yaz."
+
 ## Kurulan dosyalar
 
 ```text
@@ -120,8 +132,11 @@ ProjeAdi/
     │   └── arastirma/        Bu aşamanın araştırma belgeleri
     ├── arsiv/                Biten aşamalar (her oturumda okunmaz)
     └── kurallar/             Yalnız gerektiğinde okunan ayrıntılar
+        ├── PLANLAMA.md       Yol haritası, aşama planı, test komutu bulma
         ├── ARSIVLEME.md      Aşama kapanış adımları
         ├── INCELEME.md       Riskli işlerde bağımsız inceleme
+        ├── GIT.md            Commit ve push ayrıntıları
+        ├── WINDOWS.md        PowerShell ve dosya kodlaması
         └── sablonlar/        Yeni aşama için boş PLAN/TASARIM/KARARLAR/GUNLUK
 ```
 
@@ -135,19 +150,36 @@ ProjeAdi/
 | Uygulama (aralık) | Birden fazla adımı birlikte yetkilendir | "2.3–2.5'i uygula." |
 | Küçük düzeltme | Plan açmadan küçük iş iste | "README'deki yazım hatasını düzelt." |
 | Yeni kural | Çalışırken söyle | "Bundan sonra bütün tarihler UTC olsun, kurallara ekle." |
-| Oturum sonu / araç değişimi | Durumu kaydettir | "DURUM.md'yi güncelle." |
-| Yeni oturum | Durumu okut | "Durumu oku ve özetle, uygulamaya başlama." |
+| Oturum sonu / araç değişimi | Son kontrolü yaptır | "Kayıtları son kez kontrol et, DURUM.md'yi güncelle." |
+| Yeni oturum | Durumu okut | "Bu projenin durumunu ve yarım kalan işi dosyalardan bul. İlgili kaynakları belirt, henüz uygulama yapma." |
 | Aşama bitince | Kapat | "2. aşamayı kapat ve arşivle." |
+
+## Hafıza ve kayıt
+
+- **Ne zaman yazılır:** ajan kayıtları oturum sonunu beklemeden günceller: alt adım bitince, doğrulama sonucu değişince, önemli karar veya kapsam değişince, iş durunca, senden yanıt beklemeye başlayınca ve uzun işte pahalı bir ara sonuç çıkınca. Her komut için ayrı kayıt açılmaz. Ani kesintide son kayıt noktasından sonraki iş kaybolabilir.
+- **Ne okunur:** yeni oturumda `DURUM.md`, `PLAN.md` başlangıç bölümü, aşama kuralları ve güncel adım; aynı sohbette yalnız değişen bilgi. Günlük ve arşiv aranır, baştan sona okunmaz.
+- **Bağlam ve token:** bir dosyayı bir kez okumak, sonraki isteklerde sıfır bağlam veya token maliyeti anlamına gelmez; okunan metin sohbet bağlamında kalır ve `AGENTS.md` her oturumda yeniden yüklenir. Bu yüzden sürekli yüklenen kurallar kısa tutulur. Gerçek tasarruf ölçülmedi; ölçmek için aracın kendi bağlam göstergesini kullanabilirsin (ör. Claude Code'da `/context`).
+- **Hafıza nerede:** bu şablon reposu yalnız boş başlangıç belgelerini tutar. Her proje kendi hafızasını (`docs/` altındaki durum, plan, günlük ve kararlar) kendi reposunda saklar. `.ai-sablon/kurulum.json` ilerleme günlüğü değildir; yalnız kurulan şablon sürümünü ve dosya özetlerini güncelleyici için tutar.
+
+### Kayıt nerede durur?
+
+| Durum | Anlamı | Nasıl anlaşılır |
+|---|---|---|
+| 1. Dosyaya yazıldı | Yalnız bu bilgisayarda; Git geçmişinde yok | `git status` dosyayı değişmiş gösterir |
+| 2. Yerel commit oluşturuldu | Yerel Git geçmişinde; GitHub'da henüz yok | `git log` commit'i gösterir; `git status -sb` "ahead" der |
+| 3. GitHub'a push edildi | Uzak depoda | Push çıktısı başarılıdır ve `git ls-remote origin <dal>` yerel commit kimliğini gösterir |
+
+Commit ve push ayrı onay ister; otomatik commit, push veya gizli yedekleme yoktur. Ajan push sonucunu kontrol etmeden "GitHub'a kaydedildi" demez.
 
 ## Biten aşama nasıl ayrılır?
 
-Aşama kapanırken ajan `docs/kurallar/ARSIVLEME.md` adımlarını uygular:
+Aşama kapanırken ajan `docs/kurallar/ARSIVLEME.md` adımlarını uygular. "Aşamayı kapat" demen kapanışın mekanik işlerini (kararlaştırılmış bilgiyi aktarma, özet, taşıma, bağlantı düzeltme, boş aşama açma) kapsar; bunlar için tek tek onay istenmez. Yeni karar, emin olunmayan bilgiyi silme, arşivin üzerine yazma ve sonraki aşamaya başlama sana sorulur; commit ve push ayrı onaydır.
 
 1. Bütün testleri çalıştırır, kapanış ölçütlerini kontrol eder.
 2. Sonraki aşamaları etkileyen her şeyi ana belgelere taşır: kararların tam metnini `docs/KARARLAR.md`, kod/komut/veri biçimi bilgisini `docs/PROJE.md`, açık işleri `docs/ACIK_KONULAR.md` ve `docs/DURUM.md`. Emin olmadığını sana sorar.
 3. Ana belgelerde birikmeyi temizler: yerine geçilmiş kararların tam metni arşive gider, dizinde tek satırı kalır (K-numarasına verilen bağlantılar kırılmaz).
 4. Aşamaya kısa bir `OZET.md` yazar.
-5. `docs/aktif-asama/` klasörünü bütünüyle `docs/arsiv/02-ad/` gibi bir klasöre taşır ve yerine boş bir aşama klasörü açar.
+5. `docs/aktif-asama/` klasörünü bütünüyle `docs/arsiv/02-ad/` gibi bir klasöre taşır, bağlantıları yeni konuma göre düzeltir ve yerine boş bir aşama klasörü açar.
 6. Yol haritasında aşamayı "Tamamlandı" yapar, arşiv bağlantısını ekler.
 
 Sonuç: 3. aşamada çalışırken ajan 2. aşamanın günlüğünü ve kararlarını okumaz. Yalnız 2. aşamadan geriye kalan ve hâlâ geçerli olan bilgiyi (ana `KARARLAR.md` ve `PROJE.md`) görür.
@@ -168,8 +200,10 @@ Sonuç: 3. aşamada çalışırken ajan 2. aşamanın günlüğünü ve kararlar
 | `kur.ps1`, `surum.json` | Kurucu ve kurulacak dosya listesi |
 | `guncelle.ps1` | Kurulu projeyi yeni şablon sürümüne getirir (kuru çalıştırma + yedekli uygulama) |
 | `tests/kur-smoke.ps1` | Kurucu ve güncelleme betiğinin duman testi (`.github/workflows/kurucu-smoke.yml` ile CI'da da çalışır) |
+| `tests/bilinen-hashler.ps1` | Eski ortak kural hash listesini Git geçmişiyle karşılaştırır (tam geçmiş gerekir) |
 | `gorseller/akis.svg` | Akış görseli |
 | `docs/KURAL_ESLEME.md` | v0.1'deki kuralların v0.2'de nereye gittiği |
 | `docs/arsiv/v0.1-gelistirme/` | Şablonun v0.1 geliştirme geçmişi |
+| `docs/HAFIZA_TOKEN_DOGRULAMA.md` | v0.3.2 hafıza ve token iyileştirmesinin doğrulama raporu |
 
-Sürüm 0.3.1, durum "geliştirme". Doğrulama sonuçları ve açık sınırlar `docs/DURUM.md` içindedir.
+Sürüm 0.3.2, durum "geliştirme". Doğrulama sonuçları ve açık sınırlar `docs/DURUM.md` içindedir.

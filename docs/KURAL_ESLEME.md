@@ -1,6 +1,6 @@
 # v0.1 → v0.2 kural eşlemesi
 
-Bu belge yalnız şablon reposunda durur, projelere kurulmaz. v0.1'deki kuralların v0.2'de nereye gittiğini gösterir.
+Bu belge yalnız şablon reposunda durur, projelere kurulmaz. v0.1'deki kuralların v0.2'de nereye gittiğini gösterir. Tarihî kayıttır: aşağıdaki `§` numaraları v0.2 kural düzenine aittir; güncel yerler için `genel/KURALLAR.md` dosyasına bak.
 
 ## Boyut
 
