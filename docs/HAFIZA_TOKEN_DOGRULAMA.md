@@ -1,6 +1,6 @@
 # Hafıza ve token iyileştirmesi — doğrulama raporu
 
-- Son güncelleme: 2026-11-06 12:48 +03:00
+- Son güncelleme: 2026-11-06 14:02:02 +03:00
 - Yetkilendirilen kapsam: H0–H8 (kullanıcı mesajı, 2026-11-06). Kural değişiklikleri ve gerekli belge/test güncellemeleri onaylı; commit ve push ayrıca onay bekler.
 - Kapsam kaynağı: kökteki `GOREV_HAFIZA_VE_TOKEN_IYILESTIRME.md` (`.gitignore` kapsamında, Git dışında). Kalıcı kapsam, kabul ölçütleri ve sonuçlar bu rapordadır.
 - Güncel kısa özet: [DURUM.md](DURUM.md).
@@ -83,6 +83,8 @@ Hedef aşımı gerekçesi: 9.000 hedefi 1.127 karakter (%12,5) aşıldı. (1) G�
 - Eski atıflar: `genel/`, `sablon/` ve kök `AGENTS.md` içinde `§` atfı yok. Şablonlarda geliştirme izi yok (`v0.3.2`, `H0–H8`, tarih araması boş).
 - `docs/DURUM.md` 28 satır, `sablon/docs/DURUM.md` 29 satır.
 
+- GitHub CI `kurucu-smoke` (çalıştırma 42206788113, commit `2f51cd5`): başarılı, 2 dk 32 sn (yerel testlerden ayrı).
+
 ### Başarısız
 
 - İlk ölçüm denemesi Git Bash'ten `powershell.exe -File` ile çağrılınca betik çalıştırma ilkesine takıldı (`running scripts is disabled`). Neden: Git Bash ortamında süreç düzeyi `Bypass` yok. PowerShell aracından aynı komut çalıştı; kalıcı ayar değiştirilmedi.
@@ -93,7 +95,6 @@ Hedef aşımı gerekçesi: 9.000 hedefi 1.127 karakter (%12,5) aşıldı. (1) G�
 
 ### Çalıştırılamayan
 
-- GitHub CI: commit/push yapılmadı, sonuç yok.
 - Gerçek yeni Codex/Claude oturumu: bu makinede `claude` ve `codex` komutları PATH'te bulunamadı; VS Code içinden yeni oturum bu ajan tarafından açılamıyor. Deneme adımları aşağıda.
 
 Not: Bu oturumdaki PowerShell aracı süreç düzeyinde `PSExecutionPolicyPreference=Bypass` ile çalışıyor; yukarıdaki `powershell.exe -NoProfile -File` komutları bu ortamda çalıştı. Normal bir terminalde betik ilkesi engellerse README'deki `-ExecutionPolicy Bypass` örneği kullanılır.
@@ -146,8 +147,12 @@ Düzeltme incelemesi (aynı inceleyici, yalnız düzeltilen bölümler): Önemli
 
 ## Açık kalanlar
 
-- GitHub CI sonucu: commit ve push sonrasına kaldı.
 - Gerçek yeni Codex/Claude oturumu: çalıştırılamadı; adımlar yukarıda.
 - Gerçek token ölçümü yapılmadı; yalnız karakter ve bayt.
 - Ortak kısım 9.000 hedefini %12,5 aşıyor (gerekçe Ölçümler bölümünde).
 - Önceden bilinen sınırlar sürüyor: yazma atomik değil; ayrı sığ klonda ret denemesi yok.
+
+## Teslim
+
+- Commit `2f51cd5dc05ba9b889b689a2917dd93639074d3e` (main), kullanıcı onayıyla oluşturuldu ve push edildi; `git ls-remote origin main` aynı kimliği gösterdi.
+- GitHub CI `kurucu-smoke` (çalıştırma 42206788113, commit `2f51cd5`): başarılı, 2 dk 32 sn.

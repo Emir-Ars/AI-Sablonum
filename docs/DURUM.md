@@ -1,8 +1,8 @@
 # Durum
 
-- Son güncelleme: 2026-11-06 12:48:13 +03:00
+- Son güncelleme: 2026-11-06 14:02:02 +03:00
 - Sürüm: v0.3.2 (geliştirme)
-- Dal: main; gözlenen son commit `32c889c` (v0.3.1). H0–H8 değişiklikleri çalışma ağacında, commit edilmedi.
+- Dal: main; H0–H8 commit `2f51cd5` ile GitHub'a gönderildi (`git ls-remote` ile doğrulandı).
 - Ayrıntılı rapor: [HAFIZA_TOKEN_DOGRULAMA.md](HAFIZA_TOKEN_DOGRULAMA.md)
 
 ## Son yapılan (v0.3.2, H0–H8)
@@ -20,9 +20,10 @@
 
 ## Doğrulanmayanlar ve sınırlar
 
-- GitHub CI sonucu yok; gerçek yeni Codex/Claude oturumu çalıştırılamadı (araçlar PATH'te yok); token ölçülmedi.
+- GitHub CI `kurucu-smoke` (çalıştırma 42206788113, commit `2f51cd5`): başarılı, 2 dk 32 sn.
+- Gerçek yeni Codex/Claude oturumu çalıştırılamadı (araçlar PATH'te yok); token ölçülmedi.
 - Önceki sınırlar sürüyor: yazma atomik değil; sığ klon reddi ayrı denenmedi.
 
 ## Sıradaki seçim
 
-Commit önerisi sunuldu; commit ve push ayrı ayrı kullanıcı onayı bekler. Bu bölüm uygulama izni değildir.
+Sonraki çalışma kapsamı kullanıcı tarafından seçilecek. Bu bölüm uygulama izni değildir.
