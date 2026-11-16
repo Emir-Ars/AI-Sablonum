@@ -1,8 +1,8 @@
 # Durum
 
-- Son güncelleme: 2026-11-16 13:40:00 +03:00
+- Son güncelleme: 2026-11-16 13:41:24 +03:00
 - Sürüm: v0.3.2 (geliştirme)
-- Dal: main; başlangıç HEAD `2f39172`. Bu çalışmanın değişiklikleri yalnız dosyaya yazıldı.
+- Dal: main; uygulama commit'i `32ba2f1` push edildi; `git ls-remote origin refs/heads/main` ile aynı kimlik gözlendi.
 - Güncel çalışma: [dört davranış kuralı](DAVRANIS_KURALLARI_DOGRULAMA.md); aktif aşama yok.
 
 ## Son yapılan
@@ -19,7 +19,7 @@
 
 - Önceki doğrulamalar ve sınırlar: [HAFIZA_TOKEN_DOGRULAMA.md](HAFIZA_TOKEN_DOGRULAMA.md).
 - Geçici devir örneği hazır; gerçek bağımsız VS Code ajan oturumu açılıp gözlenmedi. Deneme yolu ve mesajı güncel raporda.
-- Kullanıcı beş dosya için commit ve push onayı verdi; işlem sonucu bekleniyor. CI sonucu kontrol edilmedi.
+- Takip edilmeyen kullanıcı notu commit'e alınmadı; push sonrası CI sonucu kontrol edilmedi.
 
 ## Sonraki devam noktası
 

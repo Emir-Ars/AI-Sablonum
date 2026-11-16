@@ -29,7 +29,7 @@
 - Son ifade netleştirmesi: karar maddesi tasarım kararlarıyla sınırlı kalmaması için "Önemli bir karar isterken" oldu. Son metinle aynı komut tekrar çalıştırıldı: geçti=30, kaldı=0, atlandı=0; çıkış 0. Klasör: `%TEMP%\ai-sablon-smoke-20261116-133325`.
 - Geçti: `git diff --check`; izlenen dosyalarda boşluk/satır sonu hatası yok. Değişen beş Markdown/JSON dosyasında ayrıca UTF-8 BOM'suz kodlama ve satır sonu boşluk kontrolü yapıldı.
 - Geçti: kaynak/kök ortak metin eşitliği; başlangıca göre projeye özel bölümün ve kullanıcı notunun aynen korunması; eski ortak hash'in listede olması. `git diff --name-only -- sablon/docs docs/arsiv` boş: başlangıç şablonları ve arşivler değişmedi.
-- Atlanan otomatik senaryo: 0. Çalıştırılmayan: gerçek yeni VS Code ajan oturumu ve bu değişiklik için GitHub CI. Bağımsız inceleme katman gereği yok; öz kontrol bağımsız inceleme olarak sunulmadı.
+- Atlanan otomatik senaryo: 0. Çalıştırılmayan: gerçek yeni VS Code ajan oturumu. GitHub CI bu oturumda elle başlatılmadı; push sonrası sonucu kontrol edilmedi. Bağımsız inceleme katman gereği yok; öz kontrol bağımsız inceleme olarak sunulmadı.
 
 ## Gerçek oturum devri
 
@@ -61,6 +61,8 @@ Gerçek bağımsız VS Code ajan oturumu bu çalışmada açılıp gözlenmedi; 
 - 2026-11-16 13:36 — Sonuç: son metinle duman testi 30/0/0, geçmiş hash denetimi EKSİK=0/FAZLA=0; metin, özel bölüm ve girdi koruma kontrolleri geçti. Gerçek oturum devri dışında kapsam tamamlandı; bu deneme için hazır örnek ve mesaj yukarıda.
 - Commit ve push yapılmadı.
 - 2026-11-16 13:40 — Kullanıcı "commit push atabilirsin" diyerek aşağıdaki beş dosyanın commit ve push işlemlerini onayladı; önceki satır uygulama sonundaki durumu gösterir. Commit öncesi `git diff --check` temiz ve beş dosya da ignore dışında. İşlem sonucu henüz gözlenmedi.
+- 2026-11-16 13:40 — Yerel commit `32ba2f1a0391ec5b4a45c394c0918bd9d8f5bdef` oluşturuldu: beş dosya, mesaj `Dört davranış kuralını ortak şablona uygula`. `git log --oneline -1` ve `git status --short` ile gözlendi; yalnız kullanıcı notu takip edilmeyen dosya kaldı. Push sonucu bu kayıt anında henüz kontrol edilmedi.
+- 2026-11-16 13:41 — Uygulama commit'i `32ba2f1a0391ec5b4a45c394c0918bd9d8f5bdef`, `git push origin main` ile gönderildi (çıkış 0). `git ls-remote origin refs/heads/main` aynı kimliği verdi. Gözlenen teslim sonucu bu rapor ve DURUM kaydına işlendi; yalnız bu iki dosyanın teslim kaydı ayrı commit ile gönderilecek. CI sonucu kontrol edilmedi; gerçek oturum devri hâlâ açık.
 
 ## Onaylanan commit kapsamı
 
