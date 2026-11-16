@@ -1,29 +1,26 @@
 # Durum
 
-- Son güncelleme: 2026-11-06 14:02:02 +03:00
+- Son güncelleme: 2026-11-16 13:40:00 +03:00
 - Sürüm: v0.3.2 (geliştirme)
-- Dal: main; H0–H8 commit `2f51cd5` ile GitHub'a gönderildi (`git ls-remote` ile doğrulandı).
-- Ayrıntılı rapor: [HAFIZA_TOKEN_DOGRULAMA.md](HAFIZA_TOKEN_DOGRULAMA.md)
+- Dal: main; başlangıç HEAD `2f39172`. Bu çalışmanın değişiklikleri yalnız dosyaya yazıldı.
+- Güncel çalışma: [dört davranış kuralı](DAVRANIS_KURALLARI_DOGRULAMA.md); aktif aşama yok.
 
-## Son yapılan (v0.3.2, H0–H8)
+## Son yapılan
 
-- Ortak kurallar kısaldı (ortak kısım 12.837 → 10.127 karakter); okuma tablosu ve kayıt anları eklendi.
-- Ayrıntılar yeni rehberlere taşındı: `docs/kurallar/PLANLAMA.md`, `GIT.md`, `WINDOWS.md`; `surum.json` eşlemeleri ve eski ortak hash eklendi.
-- PLAN şablonuna "Başlangıç" bölümü ve "İlgili kaynaklar" sütunu; günlükte kesin üç kayıt sınırı kalktı; değişen karar yeni numara alıyor.
-- README: kayıt anları, bağlam/token notu, üç kayıt durumu, hafızanın yeri, dolu belgeleri geçirme yolu.
+- Dört davranış ortak kaynağa işlendi; kök AGENTS ortak kısmı eşitlendi, özel kurallar korundu.
+- Eski ortak metnin LF hash'i `surum.json` listesine eklendi. Arşiv ve başlangıç belgeleri değiştirilmedi.
 
-## Doğrulananlar
+## Doğrulama
 
-- Windows PowerShell 5.1: duman testi geçti=30, kaldı=0, atlandı=0 (yeni R1, R2, U18); geçmiş hash denetimi EKSİK=0, FAZLA=0; `git diff --check` temiz.
-- Bağımsız inceleme (Hafif): 1 önemli + 5 küçük bulgu düzeltildi; düzeltme incelemesinde kanıtlı bulgu yok.
-- Hafıza denemeleri yalnız aynı ajanın canlandırması; sonuçlar raporda.
+- Son Windows PowerShell 5.1 duman testi: geçti=30, kaldı=0, atlandı=0; geçmiş hash denetimi EKSİK=0, FAZLA=0.
+- Ortak metin eşitliği, özel bölüm/girdi koruması, UTF-8 ve `git diff --check` geçti. İlk kısıtlı ortam hatası raporda korunuyor.
 
-## Doğrulanmayanlar ve sınırlar
+## Açık kalan / sınırlar
 
-- GitHub CI `kurucu-smoke` (çalıştırma 42206788113, commit `2f51cd5`): başarılı, 2 dk 32 sn.
-- Gerçek yeni Codex/Claude oturumu çalıştırılamadı (araçlar PATH'te yok); token ölçülmedi.
-- Önceki sınırlar sürüyor: yazma atomik değil; sığ klon reddi ayrı denenmedi.
+- Önceki doğrulamalar ve sınırlar: [HAFIZA_TOKEN_DOGRULAMA.md](HAFIZA_TOKEN_DOGRULAMA.md).
+- Geçici devir örneği hazır; gerçek bağımsız VS Code ajan oturumu açılıp gözlenmedi. Deneme yolu ve mesajı güncel raporda.
+- Kullanıcı beş dosya için commit ve push onayı verdi; işlem sonucu bekleniyor. CI sonucu kontrol edilmedi.
 
-## Sıradaki seçim
+## Sonraki devam noktası
 
-Sonraki çalışma kapsamı kullanıcı tarafından seçilecek. Bu bölüm uygulama izni değildir.
+Kullanıcı yeni VS Code ajan oturumunda rapordaki yalnız-durum mesajını deneyebilir; amaç karar ve doğrulama ayrımını yeni oturumda gözlemek. Bu not uygulama izni değildir.

@@ -19,7 +19,8 @@ Bu dosya her oturumda otomatik yüklenir; gereksiz yere yeniden okunmaz. `docs/k
 
 - Açıklamalar ve belgeler Türkçedir. Kod tanımlayıcıları İngilizce, kod yorumları Türkçedir ve yalnız gerekçeyi anlatır.
 - Teknik terim ilk geçtiğinde yarım cümleyle açıklanır; aynı oturumda tekrar açıklanmaz.
-- Adım sonu özeti kısadır: ne yapıldı, neden, nasıl doğrulandı, açık kalan ne.
+- Adım sonu özeti kısadır: ne yapıldı, neden, nasıl doğrulandı, açık kalan ne. Kullanıcıya veya çağıran sisteme görünen davranış değiştiyse doğrulama durumunu belirterek tek somut örnek ekle; belge düzenlemesi veya davranışı koruyan yeniden düzenleme için gerekmez.
+- Durum sorusunda güncel adımı kayıtlardan sen bul; doğrulananı, henüz denenmeyeni, varsa yarım kalan işi veya engeli, ardından gerekçesiyle önerdiğin tek sonraki işi günlük dille anlat. Dayandığın kayıtları göster. Durum sorusu uygulama izni değildir.
 - Proje türünü veya teknolojisini varsayma; koddan, yapılandırmadan ve belgelerden öğren, yetmezse sor.
 
 ## 3. Ne zaman ne okunur
@@ -28,6 +29,7 @@ Bu dosya her oturumda otomatik yüklenir; gereksiz yere yeniden okunmaz. `docs/k
 |---|---|
 | Yeni oturum veya araç değişimi | `docs/DURUM.md`; `docs/aktif-asama/PLAN.md` "Başlangıç", "Aşama kuralları" ve ilgili adım satırları; Git varsa `git status --short`, `git log --oneline -5` |
 | Aynı sohbette yeni mesaj | Yeni kapsam ve değişen bilgi; bağlamdaki güncel belge yeniden okunmaz |
+| "Nerede kaldık?" / durum sorusu | `docs/DURUM.md`, aktif planın ilgili adımı; geçerli karar için `docs/KARARLAR.md` dizini; gerekirse ilgili günlük/karar kaydı ve `docs/ACIK_KONULAR.md` |
 | Kod değiştirmeden önce | İlgili kod/testler; adımın kabul ölçütü ve "İlgili kaynaklar"ı; `docs/PROJE.md` sözleşmeleri; geçerli kararlar (önce `docs/KARARLAR.md` dizini) |
 | Bağlam kaybı veya özetleme sonrası | DURUM, güncel adım, geçerli kapsam ve gerekli kaynaklar yeniden doğrulanır |
 | Hata araştırması | Hata metni, konu veya K-numarasıyla `GUNLUK.md`, gerekirse `docs/arsiv/` araması |
@@ -60,7 +62,7 @@ Kayıt oturum sonuna bırakılmaz. Şu anlarda ilgili kayıtlar, kullanıcıya s
 - Kayıt dosyasının başındaki açıklama bu dosyayla çelişirse bu dosya geçerlidir (eski kurulumlarda başlıklar eski kalabilir). Alt adım bitince `PLAN.md`, `GUNLUK.md` ve davranış/komut/yapı değiştiyse `docs/PROJE.md` güncellenir. DURUM planı tekrar etmez, güncel adıma bağlantı verir.
 - `GUNLUK.md`: alt adım başına hedef üç kısa kayıt, yeni hata/karar/kesinti için ek kayıt. Eski kayıt değiştirilmez, yanlışsa düzeltme kaydı eklenir; başarısız deneme sonradan başarılı gösterilmez.
 - Kararlar `K-001` biçiminde proje boyunca artar, numara yeniden kullanılmaz; her kararın `docs/KARARLAR.md` dizininde satırı vardır. Tam metin, sonraki aşamaları etkiliyorsa `docs/KARARLAR.md`, etkilemiyorsa `docs/aktif-asama/KARARLAR.md` dosyasına yazılır; emin değilsen sor. Anlamı değişen karar yeni numara alır; eski metin ve gerekçe korunur, dizinde eski kararın durumu yeni karara bağlanır.
-- Kullanıcı kararı ile ajan önerisi ayrı yazılır; söylenmeyen gerekçe uydurulmaz. Aynı bilgi iki yere yazılmaz; ikinci yerde bağlantı verilir.
+- Kullanıcının seçimini karar olarak kaydet; henüz onaylamadığı ajan önerisini `docs/ACIK_KONULAR.md` içinde bekleyen konu olarak tut, kullanıcı kararı gibi sunma. Söylenmeyen gerekçe uydurulmaz. Aynı bilgi iki yere yazılmaz; ikinci yerde bağlantı verilir.
 - `docs/PROJE.md` kodun şu anki hâlidir: ilgili bölüm yeniden yazılır, geçersiz bilgi silinir; yaklaşık 150 satırı geçerse bileşen dosyalarına bölmeyi öner, sonra yalnız ilgili bileşen okunur.
 - Tarih ve saat kabuktan alınır. Proje durumu yalnız repo dosyalarına yazılır, aracın kendi hafızasına yazılmaz.
 
@@ -75,7 +77,8 @@ Kayıt oturum sonuna bırakılmaz. Şu anlarda ilgili kayıtlar, kullanıcıya s
 
 - Önce mevcut kodu ve `docs/PROJE.md` dosyasını incele, yerleşik yapıya uy, dosyaları sorumluluklarına göre düzenle; etkiyi çağıranlar, veri biçimleri ve testler üzerinden kontrol et.
 - Gereksiz karmaşıklık ekleme; sadelik uğruna gerekli doğrulama, hata yönetimi, güvenlik veya testi de çıkarma.
-- Önemli tasarım seçiminde gerçek seçenekleri kısa yarar/bedel ile sun; seçimi kullanıcı yapar.
+- Önemli bir karar isterken gerçek seçeneklerin kullanıcıya etkisini, proje amacına göre önerdiğin tercihi ve başlıca bedelini kısaca anlat; seçimi değiştirecek öncelik belirsizse günlük dille sor. Seçimi kullanıcı yapar.
+- Kullanıcının iddiası kod, test veya güncel proje belgesiyle çelişiyorsa açıkça düzelt; kanıtın yerini ve kullanıcı için sonucunu kısaca belirt. Yalnız kod/belge okumayı çalıştırılmış testten ayır; eldeki kanıt yetmiyorsa belirsizliği açık bırak.
 - Doğrulanmamış bilgiyi kesin gibi sunma, "doğrulanmadı" diye işaretle. Belirsizlikte: projede ara → resmî kaynakta doğrula → kullanıcıya sor; sorulması gereken konuda tahminle ilerleme. Hata ayıklarken hipotezi test, log veya küçük denemeyle sına; neden doğrulanmadan "çözüldü" deme. Düşük riskli ayrıntıda (ad, biçim, yerleşim) mevcut düzene uy, özette belirt.
 - Silmeden önce dosya, fonksiyon veya ayarın adını projede ara. Kodda eksik yer tutucu bırakma.
 
