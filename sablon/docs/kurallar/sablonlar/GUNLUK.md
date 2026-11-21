@@ -2,7 +2,7 @@
 
 > Bu aşamada yapılan iş ve çalıştırılan kontroller. Baştan sona okunmaz; adım numarası, hata metni veya K-numarasıyla aranır. Yeni kayıt dosyanın sonuna eklenir; eski kayıt değiştirilmez.
 >
-> - Alt adım başına hedef üç kısa kayıttır (planlama; uygulama ve doğrulama; commit ve sonuç). Yeni hata, önemli karar, kesinti veya yeniden açılan iş için ek kayıt yazılır; sınır yüzünden bilgi atlanmaz.
+> - Alt adım başına hedef üç kısa kayıttır (planlama; uygulama, doğrulama ve inceleme; sonuç: commit, push, CI ve varsa birleştirme). Sonuç kaydı son kayıtken sonradan gelen Git veya CI sonucu sonuna satır olarak eklenir (`docs/kurallar/GIT.md`); bu, eski kaydı değiştirmek sayılmaz. Yeni hata, önemli karar, kesinti veya yeniden açılan iş için ek kayıt yazılır; sınır yüzünden bilgi atlanmaz.
 > - Komut çıktısı yapıştırılmaz; komut, sayı ve sonuç yazılır. Aynı sonuç tekrar yazılmaz.
 > - Yanlış bir eski kayıt, ona işaret eden düzeltme kaydıyla düzeltilir. Başarısız deneme sonradan başarılı gösterilmez.
 

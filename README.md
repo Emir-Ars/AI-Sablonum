@@ -110,6 +110,13 @@ Güncelleyici doldurduğun belgeleri korur ve yeni biçime çevirmez. v0.3.2 ile
 
 Ajana örnek mesaj: "docs/kurallar/sablonlar altındaki yeni PLAN ve DURUM biçimini mevcut belgelerime uygula; bilgileri ve numaraları koru, önce farkları göster, onayımdan sonra yaz."
 
+v0.3.3 değişiklikleri `AGENTS.md` ortak kısmında ve `docs/kurallar/` rehberlerindedir; güncelleyici bunları yeniler. Dolu belgelerde zorunlu değişiklik yoktur. İsteğe bağlı olanlar:
+
+- `PLAN.md` "Başlangıç" bölümünden commit/CI kimliğini ve test sayısını çıkar; bunlar `GUNLUK.md`'de kalır. "Doğrulandı" satırları da artık commit kimliği taşımaz; eski satırlara dokunmak gerekmez.
+- `PLAN.md` "Başlangıç" bölümüne "Plan anındaki son karar: K-xxx" satırını ekle. Eski plan için o anki son K-numarasını yaz; daha önceki kararlar adımların "İlgili kaynaklar" sütunundan bulunur.
+- Etkin `PLAN.md`, `TASARIM.md` ve `GUNLUK.md` başlık açıklamalarını `docs/kurallar/sablonlar/` altındaki yeni hâlleriyle değiştir.
+- Projede CI varsa ajan ilk push'ta CI'ı kendisinin okuyup okumayacağını sorar ve cevabını "Projeye özel kurallar" bölümüne yazar. Bu kural zaten varsa soru tekrar sorulmaz.
+
 ## Kurulan dosyalar
 
 ```text
@@ -147,7 +154,7 @@ ProjeAdi/
 | Başlangıç | Genel araştırma belgelerini `docs/arastirma/` altına koy | "Araştırma belgelerini oku, yalnız yol haritasını hazırla." |
 | Aşamaya başlarken | O aşamanın araştırma belgelerini `docs/aktif-asama/arastirma/` altına koy | "2. aşamayı başlat: araştırmayı oku, alt adımları planla, uygulama yapma." |
 | Uygulama | Tek adım seç | "Yalnız 2.3'ü uygula." |
-| Uygulama (aralık) | Birden fazla adımı birlikte yetkilendir | "2.3–2.5'i uygula." |
+| Uygulama (aralık) | Birden fazla adımı birlikte yetkilendir; araya commit, push veya birleştirme girerse ajan o işlemden sonra durur | "2.3–2.5'i uygula." |
 | Küçük düzeltme | Plan açmadan küçük iş iste | "README'deki yazım hatasını düzelt." |
 | Yeni kural | Çalışırken söyle | "Bundan sonra bütün tarihler UTC olsun, kurallara ekle." |
 | Oturum sonu / araç değişimi | Son kontrolü yaptır | "Kayıtları son kez kontrol et, DURUM.md'yi güncelle." |
@@ -205,5 +212,6 @@ Sonuç: 3. aşamada çalışırken ajan 2. aşamanın günlüğünü ve kararlar
 | `docs/KURAL_ESLEME.md` | v0.1'deki kuralların v0.2'de nereye gittiği |
 | `docs/arsiv/v0.1-gelistirme/` | Şablonun v0.1 geliştirme geçmişi |
 | `docs/HAFIZA_TOKEN_DOGRULAMA.md` | v0.3.2 hafıza ve token iyileştirmesinin doğrulama raporu |
+| `docs/DOGRULAMA_v0.3.3.md` | v0.3.3 genel iyileştirmelerinin planı ve doğrulama raporu |
 
-Sürüm 0.3.2, durum "geliştirme". Doğrulama sonuçları ve açık sınırlar `docs/DURUM.md` içindedir.
+Sürüm 0.3.3, durum "geliştirme". Doğrulama sonuçları ve açık sınırlar `docs/DURUM.md` içindedir.

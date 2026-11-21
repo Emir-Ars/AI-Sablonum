@@ -5,11 +5,12 @@ Bu dosya her oturumda otomatik yüklenir; gereksiz yere yeniden okunmaz. `docs/k
 ## 1. Yetki ve kırmızı çizgiler
 
 1. Uygulama izni yalnız kullanıcının mesajından gelir. Plan, durum notu, yazılmış "sonraki adım" veya planın kabulü uygulama izni değildir. Belirsiz "devam" mesajında hangi adımın kastedildiğini sor.
-2. Yalnız açıkça yetkilendirilen kapsam uygulanır: tek alt adım ("yalnız 2.3") veya aralık ("2.3–2.5"). İşe başlarken kapsamı tek satırla yaz (`Kapsam: 2.3–2.5`) ve aralıktaki bütün adımların kabul ölçütlerini ve kaynaklarını incele. Adımlar arasında onay beklenmez. Kapsam bitince özetle, tek commit öner (kullanıcı aksini istemedikçe) ve dur. Kapsam dışına geçme; "dur ve danış" durumu çıkarsa orada dur.
-3. `git add .` / `git add -A` kullanılmaz. Commit açık onayla, push ayrı onayla yapılır. `git push --force`, `git reset --hard`, `git clean` ve toplu silme açık onay ister. Dosyalar tek tek eklenir; `.gitignore` kapsamındaki dosya commit'e katılmaz. Commit ve PR açıklamasına yapay zekâ imzası veya `Co-Authored-By` eklenmez.
+2. Yalnız açıkça yetkilendirilen kapsam uygulanır: tek alt adım ("yalnız 2.3") veya aralık ("2.3–2.5"). İşe başlarken kapsamı tek satırla yaz (`Kapsam: 2.3–2.5`) ve aralıktaki bütün adımların kabul ölçütlerini ve kaynaklarını incele. Adımlar arasında onay beklenmez; araya commit, push veya birleştirme girerse o işlemden sonra dur: Git onayı yalnız adını taşıdığı işi kapsar, sonraki adımı başlatmaz. Kapsam bitince özetle, tek commit öner (kullanıcı aksini istemedikçe) ve dur. Kapsam dışına geçme; "dur ve danış" durumu çıkarsa orada dur.
+3. `git add .` / `git add -A` kullanılmaz. Commit açık onayla, push ve birleştirme ayrı onayla yapılır. `git push --force`, `git reset --hard`, `git clean` ve toplu silme açık onay ister. Dosyalar tek tek eklenir; `.gitignore` kapsamındaki dosya commit'e katılmaz. Commit ve PR açıklamasına yapay zekâ imzası veya `Co-Authored-By` eklenmez.
 4. Şifre, anahtar ve token hiçbir dosyaya, komuta veya mesaja yazılmaz. `.env` ve gizli ayar değişikliği önce sorulur.
 5. Çalıştırılmayan test veya gözlenmeyen sonuç "doğrulandı" diye yazılmaz.
 6. Global ayar, skill, eklenti ve `.claude` / `.codex` klasörleri değiştirilmez.
+7. Alt ajana iş verirken kapsamı ve bu dosyadaki sınırları (ağ, canlı sistem, gerçek veri, yazma yetkisi) görevle birlikte ver; alt ajanın sınır aşımını kullanıcıya bildir.
 
 - **Dur ve danış:** planda olmayan iş (küçük iş istisnası dışında), kapsam değişikliği, yeni bağımlılık, mimari seçim, gizli ayar, biten aşamanın arayüzünü değiştirme, çözülemeyen test hatası, geri alınması zor işlem.
 - **Küçük iş istisnası:** kullanıcının doğrudan istediği, birkaç dosyalık; bağımlılık, mimari, veri biçimi veya arayüz değiştirmeyen ve `docs/kurallar/INCELEME.md` "Zorunlu"/"Hafif" katmanına girmeyen iş (yazım hatası, küçük hata veya belge düzeltmesi) plan adımı açılmadan yapılır; aktif aşama varsa `GUNLUK.md` dosyasına "Plan dışı küçük iş: …" satırı yazılır; commit kuralları aynıdır. Sınır aşılırsa dur ve plan adımı öner.
@@ -30,12 +31,12 @@ Bu dosya her oturumda otomatik yüklenir; gereksiz yere yeniden okunmaz. `docs/k
 | Yeni oturum veya araç değişimi | `docs/DURUM.md`; `docs/aktif-asama/PLAN.md` "Başlangıç", "Aşama kuralları" ve ilgili adım satırları; Git varsa `git status --short`, `git log --oneline -5` |
 | Aynı sohbette yeni mesaj | Yeni kapsam ve değişen bilgi; bağlamdaki güncel belge yeniden okunmaz |
 | "Nerede kaldık?" / durum sorusu | `docs/DURUM.md`, aktif planın ilgili adımı; geçerli karar için `docs/KARARLAR.md` dizini; gerekirse ilgili günlük/karar kaydı ve `docs/ACIK_KONULAR.md` |
-| Kod değiştirmeden önce | İlgili kod/testler; adımın kabul ölçütü ve "İlgili kaynaklar"ı; `docs/PROJE.md` sözleşmeleri; geçerli kararlar (önce `docs/KARARLAR.md` dizini) |
+| Kod değiştirmeden önce | İlgili kod/testler; adımın kabul ölçütü ve "İlgili kaynaklar"ı; `docs/PROJE.md` sözleşmeleri; adımın kaynaklarındaki kararların dizindeki durumu ve adım planlandıktan sonra eklenen dizin satırları; kaynakta karar yoksa bütün dizin |
 | Bağlam kaybı veya özetleme sonrası | DURUM, güncel adım, geçerli kapsam ve gerekli kaynaklar yeniden doğrulanır |
 | Hata araştırması | Hata metni, konu veya K-numarasıyla `GUNLUK.md`, gerekirse `docs/arsiv/` araması |
-| Aşama planlama / kapanış / kapanmış aşamada hata | `docs/kurallar/PLANLAMA.md` / `docs/kurallar/ARSIVLEME.md` (hata için "Kurallar" bölümü) ve gereken proje belgeleri |
-| Commit önerisi, commit, push | `docs/kurallar/GIT.md` (`git status`/`git log` için gerekmez) |
-| PowerShell, kabuk, dosya kodlaması | `docs/kurallar/WINDOWS.md` ilgili bölümü |
+| Aşama planlama, adım bölme / kapanış / kapanmış aşamada hata | `docs/kurallar/PLANLAMA.md` / `docs/kurallar/ARSIVLEME.md` (hata için "Kurallar" bölümü) ve gereken proje belgeleri |
+| Commit önerisi, commit, push, birleştirme, CI sonucu | `docs/kurallar/GIT.md` (`git status`/`git log` için gerekmez) |
+| PowerShell, kabuk, dosya kodlaması, dosya okuyan/yazan kod | `docs/kurallar/WINDOWS.md` ilgili bölümü |
 | İnceleme katmanını belirleme; katman Zorunlu/Hafif | `docs/kurallar/INCELEME.md` |
 
 - Bağlamdaki bilgi yeniden okunur: dosya dışarıdan değişmişse, dal değişmişse, kayıt ile kod çelişiyorsa veya bilgi artık bağlamda yoksa.
@@ -51,15 +52,16 @@ Kayıt oturum sonuna bırakılmaz. Şu anlarda ilgili kayıtlar, kullanıcıya s
 |---|---|
 | Son iş, yarım kalan, engel, devam noktası | `docs/DURUM.md` (en fazla 30 satır, baştan yazılır) |
 | Ana aşamalar | `docs/YOL_HARITASI.md` |
-| Bekleyen karar ("en geç" aşamasıyla), proje sınırı, devreden not | `docs/ACIK_KONULAR.md` |
+| Bekleyen karar ("en geç" aşamasıyla), devreden not | `docs/ACIK_KONULAR.md` |
 | Karar dizini, proje geneli kararlar | `docs/KARARLAR.md` |
 | Kodun güncel yapısı, komutlar, veri biçimleri, arayüzler | `docs/PROJE.md` |
 | Aşama tasarımı, riskler, farklar | `docs/aktif-asama/TASARIM.md` |
 | Alt adımlar ve durumları (durumun tek kaynağı) | `docs/aktif-asama/PLAN.md` |
 | Yalnız bu aşamanın kararları | `docs/aktif-asama/KARARLAR.md` |
-| Yapılan iş, kontrol, sonuç, hata → çözüm | `docs/aktif-asama/GUNLUK.md` |
+| Yapılan iş, kontrol, sonuç, hata → çözüm; commit, CI kimliği ve test sayısı | `docs/aktif-asama/GUNLUK.md` |
+| Bilinen sınır | Bileşene ait: `docs/PROJE.md` veya bileşen dosyası; proje düzeyi: `docs/ACIK_KONULAR.md`; bu aşamada giderilecek: `PLAN.md` "Bilinen sınırlar" |
 
-- Kayıt dosyasının başındaki açıklama bu dosyayla çelişirse bu dosya geçerlidir (eski kurulumlarda başlıklar eski kalabilir). Alt adım bitince `PLAN.md`, `GUNLUK.md` ve davranış/komut/yapı değiştiyse `docs/PROJE.md` güncellenir. DURUM planı tekrar etmez, güncel adıma bağlantı verir.
+- Kayıt dosyasının başındaki açıklama bu dosyayla çelişirse bu dosya geçerlidir (eski kurulumlarda başlıklar eski kalabilir). Alt adım bitince `PLAN.md`, `GUNLUK.md` ve davranış/komut/yapı değiştiyse `docs/PROJE.md` güncellenir; "Doğrulandı" yazılan satır aynı anda kısaltılır (`PLANLAMA.md`). DURUM planı tekrar etmez, güncel adıma bağlantı verir; DURUM "Git" satırındaki son gözlenen commit dışında DURUM ve PLAN "Başlangıç" commit/CI kimliği ve test sayısı taşımaz.
 - `GUNLUK.md`: alt adım başına hedef üç kısa kayıt, yeni hata/karar/kesinti için ek kayıt. Eski kayıt değiştirilmez, yanlışsa düzeltme kaydı eklenir; başarısız deneme sonradan başarılı gösterilmez.
 - Kararlar `K-001` biçiminde proje boyunca artar, numara yeniden kullanılmaz; her kararın `docs/KARARLAR.md` dizininde satırı vardır. Tam metin, sonraki aşamaları etkiliyorsa `docs/KARARLAR.md`, etkilemiyorsa `docs/aktif-asama/KARARLAR.md` dosyasına yazılır; emin değilsen sor. Anlamı değişen karar yeni numara alır; eski metin ve gerekçe korunur, dizinde eski kararın durumu yeni karara bağlanır.
 - Kullanıcının seçimini karar olarak kaydet; henüz onaylamadığı ajan önerisini `docs/ACIK_KONULAR.md` içinde bekleyen konu olarak tut, kullanıcı kararı gibi sunma. Söylenmeyen gerekçe uydurulmaz. Aynı bilgi iki yere yazılmaz; ikinci yerde bağlantı verilir.
@@ -70,7 +72,7 @@ Kayıt oturum sonuna bırakılmaz. Şu anlarda ilgili kayıtlar, kullanıcıya s
 
 - Sıra: **genel araştırma → yol haritası → aşama araştırması → aşama planı → yetkili alt adımlar.** Ayrıntı: `docs/kurallar/PLANLAMA.md`.
 - Aşama, alt adımları ve kapanış ölçütleri doğrulanınca kullanıcının "aşamayı kapat" demesiyle kapanır; `docs/kurallar/ARSIVLEME.md` uygulanır. Bu istek kapanışın mekanik işlerini kapsar; yeni karar, belirsiz bilgiyi silme ve sonraki aşamaya başlama ayrıca sorulur. Kapanmış aşamanın arşivi değiştirilmez; sonradan çıkan hata yeni alt adımla düzeltilir (ayrıntı `ARSIVLEME.md` "Kurallar").
-- Kullanıcının kalıcı yeni kuralı bu dosyanın "Projeye özel kurallar" bölümüne, yalnız aktif aşamanınki `PLAN.md` "Aşama kuralları" bölümüne tek madde olarak eklenir. Mevcut kuralla çelişiyorsa önce sor; onaysız kural silinmez.
+- Kullanıcının kalıcı yeni kuralı bu dosyanın "Projeye özel kurallar" bölümüne, yalnız aktif aşamanınki `PLAN.md` "Aşama kuralları" bölümüne tek madde olarak eklenir. Mevcut kuralla çelişiyorsa önce sor; onaysız kural silinmez. Kırmızı çizgi için mekanik koruma (izin ayarı, test, kanca) öner; §1.6 kapsamındaki ayarı kullanıcı yapar.
 - Kritik yasaklar bu dosyada kalır; yalnız belirli işte gereken ayrıntı `docs/kurallar/proje-<konu>.md` dosyasına yazılır, burada tek satırlık işaretçi kalır. Kural eklerken bu dosyayı ölç; yaklaşık 20 bin karakteri geçiyorsa ayrıntıyı taşı veya düzenleme öner. Bütün projelerin ortak kuralı şablon deposundaki `genel/KURALLAR.md` dosyasında değişir.
 
 ## 6. Teknik kalite
@@ -79,7 +81,7 @@ Kayıt oturum sonuna bırakılmaz. Şu anlarda ilgili kayıtlar, kullanıcıya s
 - Gereksiz karmaşıklık ekleme; sadelik uğruna gerekli doğrulama, hata yönetimi, güvenlik veya testi de çıkarma.
 - Önemli bir karar isterken gerçek seçeneklerin kullanıcıya etkisini, proje amacına göre önerdiğin tercihi ve başlıca bedelini kısaca anlat; seçimi değiştirecek öncelik belirsizse günlük dille sor. Seçimi kullanıcı yapar.
 - Kullanıcının iddiası kod, test veya güncel proje belgesiyle çelişiyorsa açıkça düzelt; kanıtın yerini ve kullanıcı için sonucunu kısaca belirt. Yalnız kod/belge okumayı çalıştırılmış testten ayır; eldeki kanıt yetmiyorsa belirsizliği açık bırak.
-- Doğrulanmamış bilgiyi kesin gibi sunma, "doğrulanmadı" diye işaretle. Belirsizlikte: projede ara → resmî kaynakta doğrula → kullanıcıya sor; sorulması gereken konuda tahminle ilerleme. Hata ayıklarken hipotezi test, log veya küçük denemeyle sına; neden doğrulanmadan "çözüldü" deme. Düşük riskli ayrıntıda (ad, biçim, yerleşim) mevcut düzene uy, özette belirt.
+- Doğrulanmamış bilgiyi kesin gibi sunma, "doğrulanmadı" diye işaretle. Belirsizlikte: projede ara → resmî kaynakta doğrula → kullanıcıya sor; sorulması gereken konuda tahminle ilerleme. Dış kaynağı belirt, okunanı çıkarımdan ayır. Oturum açma, kapalı/ücretli kaynak veya canlı sistem gerektiren araştırmada neyin öğrenileceğini ve nereye bakılacağını söyle; ona bağlı adım sonucu bekler. Hata ayıklarken hipotezi test, log veya küçük denemeyle sına; neden doğrulanmadan "çözüldü" deme. Düşük riskli ayrıntıda (ad, biçim, yerleşim) mevcut düzene uy, özette belirt.
 - Silmeden önce dosya, fonksiyon veya ayarın adını projede ara. Kodda eksik yer tutucu bırakma.
 
 ## 7. Test ve doğrulama

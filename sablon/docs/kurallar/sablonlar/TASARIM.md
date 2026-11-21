@@ -1,6 +1,6 @@
 # Aşama tasarımı
 
-> Araştırmadan çıkan tasarım, riskler ve farklar. **Durum yazılmaz**: durumun tek kaynağı `PLAN.md` dosyasıdır. Alt adım tasarımları kendi başlığı altında yazılır, böylece ajan yalnız çalıştığı alt adımın bölümünü okur. Aşama kapanınca bu dosya arşive taşınır.
+> Araştırmadan çıkan tasarım, riskler ve farklar. **Durum yazılmaz**: durumun tek kaynağı `PLAN.md` dosyasıdır. Alt adım tasarımları kendi Markdown başlığı altında yazılır (`### 1.1 — kısa ad`; kalın yazı başlık sayılmaz), böylece ajan yalnız çalıştığı alt adımın bölümünü okur. Çok büyüyen bölüm `docs/kurallar/PLANLAMA.md` "Tasarım bölümünü ayırma" kuralıyla ayrı dosyaya taşınır. Aşama kapanınca bu dosya arşive taşınır.
 
 - Aşama: Henüz seçilmedi.
 - Araştırma belgeleri: bu klasördeki `arastirma/`

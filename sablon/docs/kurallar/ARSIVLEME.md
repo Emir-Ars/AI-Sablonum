@@ -31,7 +31,7 @@ Kullanıcının "aşamayı kapat" veya "arşivle" demesi şu işleri kapsar; her
    | Karar (`aktif-asama/KARARLAR.md`) | Tam metni `aktif-asama/KARARLAR.md` içinden **keserek** `docs/KARARLAR.md` dosyasına taşı (numara değişmez); aşama dosyasında yalnız "K-003 — tam metni docs/KARARLAR.md içine taşındı" satırı kalır (aynı bilgi iki yerde durmaz); dizinde kapsamı "Proje geneli" yap. Etkilemiyorsa arşivde kalır; dizinde durumu "Arşivde" olur ve arşiv bağlantısı eklenir |
    | Tasarım (`TASARIM.md`) | Sonraki aşamaları etkileyen sözleşme, yapı veya komut bilgisini `docs/PROJE.md` dosyasına işle; geri kalanı arşivde kalır |
    | Kod yapısı, komut, veri biçimi, arayüz bilgisi | `docs/PROJE.md` güncel mi kontrol et, eksikse ekle |
-   | Açık kalan iş veya bilinen sınır | `docs/ACIK_KONULAR.md` (bilinen sınır, devreden not) veya `docs/YOL_HARITASI.md` ilgili aşama satırı |
+   | Açık kalan iş veya bilinen sınır (`PLAN.md` "Bilinen sınırlar" dahil) | Bilinen sınır `AGENTS.md` §4 "Bilinen sınır" satırına göre `docs/PROJE.md` (bileşen) veya `docs/ACIK_KONULAR.md` (proje düzeyi); açık iş ve devreden not `docs/ACIK_KONULAR.md` veya `docs/YOL_HARITASI.md` ilgili aşama satırı |
    | Aşama kuralı (PLAN.md "Aşama kuralları") | Bütün projede geçerli olacaksa `AGENTS.md` "Projeye özel kurallar" |
    | Araştırma belgesi | İleride de kullanılacaksa `docs/arastirma/` altına taşı |
 
