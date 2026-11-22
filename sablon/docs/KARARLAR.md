@@ -8,7 +8,7 @@ Henüz karar yok.
 
 ## Karar dizini
 
-Durumlar: Geçerli, Kısmen değişti: K-xxx, Yerine geçildi: K-xxx, Arşivde (tam metin arşiv bağlantısıyla). Dizin satırı kısa tutulur (en çok ~120 karakter); ayrıntı tam metindedir.
+Durumlar: Geçerli, Kısmen değişti: K-xxx, Yerine geçildi: K-xxx, Arşivde (tam metin arşiv bağlantısıyla). Dizin satırı kısa tutulur (en çok ~120 karakter); ayrıntı tam metindedir. Kapsam yalnız "Proje geneli" (tam metin bu dosyada; yerine geçilip aşama kapanışında taşındıysa `arsiv/KARARLAR_ESKI.md`) veya "Aşama N" (tam metin o aşamanın `KARARLAR.md` dosyasında; aşama kapandıysa arşivde) olur.
 
 | No | Başlık | Kapsam | Durum |
 |---|---|---|---|

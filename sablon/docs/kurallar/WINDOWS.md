@@ -12,6 +12,7 @@ Bu dosya PowerShell komutu yazarken, `.ps1` dosyası oluştururken, dosya kodlam
 
 - `.ps1` dosyaları UTF-8 BOM'lu kaydedilir; Windows PowerShell 5.1 BOM'suz betikteki Türkçe karakterleri yanlış okur.
 - Markdown, JSON ve YAML dosyaları UTF-8 BOM'suz kaydedilir.
+- Projenin `.gitattributes` dosyası Markdown satır sonunu belirlemiyorsa ve Git `core.autocrlf` açıksa LF ile yazılan belgelerde Git işlemleri "LF will be replaced by CRLF" uyarısı verir; `*.md text eol=lf` gibi bir kural öner. `.gitattributes` değişikliği kullanıcı onayıyla yapılır; var olan dosyaları yeniden normalleştirmek (`git add --renormalize`) ayrıca sorulur.
 - Windows PowerShell 5.1'de `Set-Content` ve `Out-File` varsayılan olarak BOM'suz UTF-8 yazmaz; `-Encoding UTF8` de BOM ekler. BOM'suz dosya için `[IO.File]::WriteAllText($yol, $metin, (New-Object Text.UTF8Encoding($false)))` kullan.
 - Kodda metin dosyası okurken ve yazarken kodlamayı açıkça ver (ör. UTF-8); ikili dosyada kodlama verilmez. Windows'ta dilin veya aracın varsayılan kodlaması UTF-8 olmayabilir; kod başka makinede farklı sonuç verir.
 - Türkçe commit mesajı için `docs/kurallar/GIT.md` "Commit" bölümüne bak.

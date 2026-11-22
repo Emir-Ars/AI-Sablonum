@@ -5,8 +5,8 @@ Bu dosya her oturumda otomatik yüklenir; gereksiz yere yeniden okunmaz. `docs/k
 ## 1. Yetki ve kırmızı çizgiler
 
 1. Uygulama izni yalnız kullanıcının mesajından gelir. Plan, durum notu, yazılmış "sonraki adım" veya planın kabulü uygulama izni değildir. Belirsiz "devam" mesajında hangi adımın kastedildiğini sor.
-2. Yalnız açıkça yetkilendirilen kapsam uygulanır: tek alt adım ("yalnız 2.3") veya aralık ("2.3–2.5"). İşe başlarken kapsamı tek satırla yaz (`Kapsam: 2.3–2.5`) ve aralıktaki bütün adımların kabul ölçütlerini ve kaynaklarını incele. Adımlar arasında onay beklenmez; araya commit, push veya birleştirme girerse o işlemden sonra dur: Git onayı yalnız adını taşıdığı işi kapsar, sonraki adımı başlatmaz. Kapsam bitince özetle, tek commit öner (kullanıcı aksini istemedikçe) ve dur. Kapsam dışına geçme; "dur ve danış" durumu çıkarsa orada dur.
-3. `git add .` / `git add -A` kullanılmaz. Commit açık onayla, push ve birleştirme ayrı onayla yapılır. `git push --force`, `git reset --hard`, `git clean` ve toplu silme açık onay ister. Dosyalar tek tek eklenir; `.gitignore` kapsamındaki dosya commit'e katılmaz. Commit ve PR açıklamasına yapay zekâ imzası veya `Co-Authored-By` eklenmez.
+2. Yalnız açıkça yetkilendirilen kapsam uygulanır: tek alt adım ("yalnız 2.3") veya aralık ("2.3–2.5"). İşe başlarken kapsamı tek satırla yaz (`Kapsam: 2.3–2.5`) ve aralıktaki bütün adımların kabul ölçütlerini ve kaynaklarını incele. Adımlar arasında onay beklenmez; araya commit, push, birleştirme veya dal silme girerse o işlemden sonra dur: Git onayı yalnız adını taşıdığı işi kapsar, sonraki adımı başlatmaz. Kapsam bitince özetle, tek commit öner (kullanıcı aksini istemedikçe) ve dur. Kapsam dışına geçme; "dur ve danış" durumu çıkarsa orada dur.
+3. `git add .` / `git add -A` kullanılmaz. Commit açık onayla, push ve birleştirme ayrı onayla yapılır. `git push --force`, `git reset --hard`, `git clean`, dal silme (yerel veya uzak) ve toplu silme açık onay ister. Dosyalar tek tek eklenir; `.gitignore` kapsamındaki dosya commit'e katılmaz. Commit ve PR açıklamasına yapay zekâ imzası veya `Co-Authored-By` eklenmez.
 4. Şifre, anahtar ve token hiçbir dosyaya, komuta veya mesaja yazılmaz. `.env` ve gizli ayar değişikliği önce sorulur.
 5. Çalıştırılmayan test veya gözlenmeyen sonuç "doğrulandı" diye yazılmaz.
 6. Global ayar, skill, eklenti ve `.claude` / `.codex` klasörleri değiştirilmez.
@@ -31,11 +31,11 @@ Bu dosya her oturumda otomatik yüklenir; gereksiz yere yeniden okunmaz. `docs/k
 | Yeni oturum veya araç değişimi | `docs/DURUM.md`; `docs/aktif-asama/PLAN.md` "Başlangıç", "Aşama kuralları" ve ilgili adım satırları; Git varsa `git status --short`, `git log --oneline -5` |
 | Aynı sohbette yeni mesaj | Yeni kapsam ve değişen bilgi; bağlamdaki güncel belge yeniden okunmaz |
 | "Nerede kaldık?" / durum sorusu | `docs/DURUM.md`, aktif planın ilgili adımı; geçerli karar için `docs/KARARLAR.md` dizini; gerekirse ilgili günlük/karar kaydı ve `docs/ACIK_KONULAR.md` |
-| Kod değiştirmeden önce | İlgili kod/testler; adımın kabul ölçütü ve "İlgili kaynaklar"ı; `docs/PROJE.md` sözleşmeleri; adımın kaynaklarındaki kararların dizindeki durumu ve adım planlandıktan sonra eklenen dizin satırları; kaynakta karar yoksa bütün dizin |
+| Kod değiştirmeden önce | İlgili kod/testler; adımın kabul ölçütü ve "İlgili kaynaklar"ı; `docs/PROJE.md` sözleşmeleri; kaynaklardaki kararların dizin durumu ve adım satırındaki `plan: K-xxx` işaretinden sonraki dizin satırları (işaret kaynak sayılmaz); işaret veya kaynakta karar yoksa bütün dizin |
 | Bağlam kaybı veya özetleme sonrası | DURUM, güncel adım, geçerli kapsam ve gerekli kaynaklar yeniden doğrulanır |
 | Hata araştırması | Hata metni, konu veya K-numarasıyla `GUNLUK.md`, gerekirse `docs/arsiv/` araması |
 | Aşama planlama, adım bölme / kapanış / kapanmış aşamada hata | `docs/kurallar/PLANLAMA.md` / `docs/kurallar/ARSIVLEME.md` (hata için "Kurallar" bölümü) ve gereken proje belgeleri |
-| Commit önerisi, commit, push, birleştirme, CI sonucu | `docs/kurallar/GIT.md` (`git status`/`git log` için gerekmez) |
+| Commit önerisi, commit, push, birleştirme, dal silme, CI sonucu | `docs/kurallar/GIT.md` (`git status`/`git log` için gerekmez) |
 | PowerShell, kabuk, dosya kodlaması, dosya okuyan/yazan kod | `docs/kurallar/WINDOWS.md` ilgili bölümü |
 | İnceleme katmanını belirleme; katman Zorunlu/Hafif | `docs/kurallar/INCELEME.md` |
 
@@ -63,7 +63,7 @@ Kayıt oturum sonuna bırakılmaz. Şu anlarda ilgili kayıtlar, kullanıcıya s
 
 - Kayıt dosyasının başındaki açıklama bu dosyayla çelişirse bu dosya geçerlidir (eski kurulumlarda başlıklar eski kalabilir). Alt adım bitince `PLAN.md`, `GUNLUK.md` ve davranış/komut/yapı değiştiyse `docs/PROJE.md` güncellenir; "Doğrulandı" yazılan satır aynı anda kısaltılır (`PLANLAMA.md`). DURUM planı tekrar etmez, güncel adıma bağlantı verir; DURUM "Git" satırındaki son gözlenen commit dışında DURUM ve PLAN "Başlangıç" commit/CI kimliği ve test sayısı taşımaz.
 - `GUNLUK.md`: alt adım başına hedef üç kısa kayıt, yeni hata/karar/kesinti için ek kayıt. Eski kayıt değiştirilmez, yanlışsa düzeltme kaydı eklenir; başarısız deneme sonradan başarılı gösterilmez.
-- Kararlar `K-001` biçiminde proje boyunca artar, numara yeniden kullanılmaz; her kararın `docs/KARARLAR.md` dizininde satırı vardır. Tam metin, sonraki aşamaları etkiliyorsa `docs/KARARLAR.md`, etkilemiyorsa `docs/aktif-asama/KARARLAR.md` dosyasına yazılır; emin değilsen sor. Anlamı değişen karar yeni numara alır; eski metin ve gerekçe korunur, dizinde eski kararın durumu yeni karara bağlanır.
+- Kararlar `K-001` biçiminde proje boyunca artar, numara yeniden kullanılmaz; her kararın `docs/KARARLAR.md` dizininde satırı vardır. Tam metin, sonraki aşamaları etkiliyorsa `docs/KARARLAR.md`, etkilemiyorsa `docs/aktif-asama/KARARLAR.md` dosyasına yazılır; emin değilsen sor. Dizindeki kapsam yalnız "Proje geneli" veya "Aşama N" olur ve tam metnin bulunduğu dosyayla uyuşur (arşivdeki hariç). Anlamı değişen karar yeni numara alır; eski metin ve gerekçe korunur, dizinde eski kararın durumu yeni karara bağlanır.
 - Kullanıcının seçimini karar olarak kaydet; henüz onaylamadığı ajan önerisini `docs/ACIK_KONULAR.md` içinde bekleyen konu olarak tut, kullanıcı kararı gibi sunma. Söylenmeyen gerekçe uydurulmaz. Aynı bilgi iki yere yazılmaz; ikinci yerde bağlantı verilir.
 - `docs/PROJE.md` kodun şu anki hâlidir: ilgili bölüm yeniden yazılır, geçersiz bilgi silinir; yaklaşık 150 satırı geçerse bileşen dosyalarına bölmeyi öner, sonra yalnız ilgili bileşen okunur.
 - Tarih ve saat kabuktan alınır. Proje durumu yalnız repo dosyalarına yazılır, aracın kendi hafızasına yazılmaz.
@@ -73,6 +73,7 @@ Kayıt oturum sonuna bırakılmaz. Şu anlarda ilgili kayıtlar, kullanıcıya s
 - Sıra: **genel araştırma → yol haritası → aşama araştırması → aşama planı → yetkili alt adımlar.** Ayrıntı: `docs/kurallar/PLANLAMA.md`.
 - Aşama, alt adımları ve kapanış ölçütleri doğrulanınca kullanıcının "aşamayı kapat" demesiyle kapanır; `docs/kurallar/ARSIVLEME.md` uygulanır. Bu istek kapanışın mekanik işlerini kapsar; yeni karar, belirsiz bilgiyi silme ve sonraki aşamaya başlama ayrıca sorulur. Kapanmış aşamanın arşivi değiştirilmez; sonradan çıkan hata yeni alt adımla düzeltilir (ayrıntı `ARSIVLEME.md` "Kurallar").
 - Kullanıcının kalıcı yeni kuralı bu dosyanın "Projeye özel kurallar" bölümüne, yalnız aktif aşamanınki `PLAN.md` "Aşama kuralları" bölümüne tek madde olarak eklenir. Mevcut kuralla çelişiyorsa önce sor; onaysız kural silinmez. Kırmızı çizgi için mekanik koruma (izin ayarı, test, kanca) öner; §1.6 kapsamındaki ayarı kullanıcı yapar.
+- Kullanıcının projeye veya aşamaya özel kuralı ortak kuralla çelişirse özel kural geçerlidir; çelişkiyi uygulamadan önce bir kez bildir; §1'i gevşeten maddeyi bildirime onay gelmeden uygulama.
 - Kritik yasaklar bu dosyada kalır; yalnız belirli işte gereken ayrıntı `docs/kurallar/proje-<konu>.md` dosyasına yazılır, burada tek satırlık işaretçi kalır. Kural eklerken bu dosyayı ölç; yaklaşık 20 bin karakteri geçiyorsa ayrıntıyı taşı veya düzenleme öner. Bütün projelerin ortak kuralı şablon deposundaki `genel/KURALLAR.md` dosyasında değişir.
 
 ## 6. Teknik kalite

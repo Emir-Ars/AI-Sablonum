@@ -1,7 +1,7 @@
 # v0.3.3 — Genel iyileştirmeler: plan ve doğrulama raporu
 
-- Son güncelleme: 2026-11-21 20:36:55 +03:00
-- Durum: Plan kabul edildi; kullanıcı "G0–G9'u uygula" kapsamını verdi (2026-11-21). G0–G9 tamamlandı; commit ve push kullanıcı onayı bekliyor.
+- Son güncelleme: 2026-11-21 20:55:25 +03:00
+- Durum: Plan kabul edildi; kullanıcı "G0–G9'u uygula" kapsamını verdi (2026-11-21). G0–G9 tamamlandı; commit, push ve CI aşağıda.
 - Kaynak: şablonu uzun süre kullanan gerçek bir projenin salt okunur incelemesi (2026-11-21). Ayrıntılı inceleme notu yerelde tutulur, kullanıcı kararıyla commit edilmez. Yalnız her projede tekrar edebilecek bulgular alınır; o projeye özgü kural, alan terimi veya örnek şablona girmez (kullanıcı, 2026-11-21).
 - Güncel kısa özet: [DURUM.md](DURUM.md).
 
@@ -38,7 +38,7 @@
 | G6 | Planlama ölçeği: yumuşak aşama eşiği; TASARIM'da gerçek alt adım başlığı; ~30 bin karakteri aşan bölüm onayla `aktif-asama/tasarim/` altına | Eşik öneri olarak yazılmış | Tamamlandı; yerel kontroller geçti |
 | G7 | Windows kodlaması: kodda dosya okuma/yazmada kodlama açık verilir | Dile bağlı olmayan tek madde | Tamamlandı; yerel kontroller geçti |
 | G8 | Paket ve belgeler: `surum.json` 0.3.3, eski LF hash listeye, README geçiş notu ve dosya tablosu, `akis.svg` kontrolü, bütçe ölçümü | Bütçe içinde; README ile kurallar çelişmiyor | Tamamlandı; yerel kontroller geçti |
-| G9 | Doğrulama, bağımsız inceleme, kayıt ve tek commit önerisi | Geçen, kalan, atlanan, çalıştırılamayan ayrı | Tamamlandı; commit onayı bekliyor |
+| G9 | Doğrulama, bağımsız inceleme, kayıt ve tek commit önerisi | Geçen, kalan, atlanan, çalıştırılamayan ayrı | Tamamlandı; commit, push, CI yeşil |
 
 ## Doğrulama planı
 
@@ -117,7 +117,7 @@
   - Hash denetimi: EKSİK=0, FAZLA=0.
   - BOM/CRLF yok; `git diff --check` temiz.
   - Güncelleme denemesi yeni ve temiz bir proje kopyasında aynı sonuçla tekrarlandı. Gerçek proje klasörünün `git status` çıktısı değişmedi.
-- Çalıştırılamayan: CI (push yapılmadı); gerçek yeni VS Code oturumu denemesi (aşağıda).
+- Çalıştırılamayan: gerçek yeni VS Code oturumu denemesi (aşağıda). CI sonucu "Commit, push ve CI" bölümünde.
 
 ## Kullanıcının yapacağı deneme (isteğe bağlı)
 
@@ -128,6 +128,13 @@ Ajan bağımsız yeni bir oturum açamaz; bu deneme yapılmadı.
 4. Ajan 2.1'den sonra commit önerince onayla.
 
 Başarı ölçütü: Ajan commit'ten sonra durur ve 2.2 için yeni mesaj bekler.
+
+## Commit, push ve CI
+
+- Commit: `e16e9a4`, kullanıcı onayıyla (inceleme notunu dışarıda bırakarak commit). 14 dosya tek tek eklendi. Yerel inceleme notu ve kullanıcı notu dışarıda kaldı; hazırlanan içerikte o projenin adı ve alan terimi taraması 0 eşleşme verdi. Commit sonrası `tests/bilinen-hashler.ps1`: EKSİK=0, FAZLA=0.
+- Push: kullanıcı onayıyla ("push et ve CI sonucuna da bak"), `main` `4a298b1..e16e9a4`. `git ls-remote origin refs/heads/main` sonucu yerel `HEAD` ile aynı: `e16e9a4632501966c2062ab9a20661c6c90cb732`.
+- CI: `kurucu-smoke` çalışması `44932425506`, `e16e9a4` üzerinde başarılı. "Kurucu duman testi" adımı geçti=30, kaldı=0, atlandı=0; "Bilinen ortak kısım hash'leri" adımı EKSİK=0, FAZLA=0. Salt okunur `gh run list`, `gh run watch`, `gh run view` kullanıldı.
+- Bu bölüm ve `DURUM.md` güncellemesi push'tan sonra yazıldı, commit edilmedi.
 
 ## Git
 

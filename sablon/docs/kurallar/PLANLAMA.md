@@ -25,9 +25,9 @@ Plan yazılırken ve uygulamada yeni alt bölme gerektiğinde ölçülür. Aşam
 
 ## PLAN.md yapısı
 
-- **Başlangıç** (en fazla 15 satır): aşama, aşama durumu, güncel adım işaretçisi, önemli kapsam sınırları ve bağlantılar. Durum tablosu ve tasarım burada tekrar edilmez; commit/CI kimliği, test sayısı ve tarihli ayrıntı da yazılmaz (bunlar `GUNLUK.md`'dedir). Plan yazılırken `docs/KARARLAR.md` dizinindeki son K-numarası "Plan anındaki son karar" alanına yazılır; kod değiştirmeden önce bundan sonraki kararlar taranır. Plan yeniden yazılırsa alan güncellenir. Yeni oturumda planın yalnız bu bölümü, "Aşama kuralları" ve ilgili adım satırları okunur. Güncel adım değişince işaretçi de güncellenir.
+- **Başlangıç** (en fazla 15 satır): aşama, aşama durumu, güncel adım işaretçisi, önemli kapsam sınırları ve bağlantılar. Durum tablosu ve tasarım burada tekrar edilmez; commit/CI kimliği, test sayısı ve tarihli ayrıntı da yazılmaz (bunlar `GUNLUK.md`'dedir). Yeni oturumda planın yalnız bu bölümü, "Aşama kuralları" ve ilgili adım satırları okunur. Güncel adım değişince işaretçi de güncellenir.
 - **Alt adımlar:** `1.1`, `1.2` gibi kalıcı numaralar; numara yeniden kullanılmaz. Büyük adım `1.2.1` gibi bölünebilir; bölmek uygulama izni değildir. Her satırda kapsam, kabul ölçütü, doğrulama yöntemi, inceleme katmanı (`INCELEME.md`), ilgili kaynaklar ve durum bulunur.
-- **İlgili kaynaklar:** yalnız o adım için gereken belge veya bölüm, K-numarası, kod ya da test yolu; kısa göreli bağlantı olarak (ör. `[PROJE.md — Test komutları](../PROJE.md#test-komutları)`, `K-004`, `[TASARIM.md — 1.2](TASARIM.md#12--kısa-ad)`, `src/x.py`). Bütün repo veya bütün belge klasörü listelenmez.
+- **İlgili kaynaklar:** yalnız o adım için gereken belge veya bölüm, K-numarası, kod ya da test yolu; kısa göreli bağlantı olarak (ör. `[PROJE.md — Test komutları](../PROJE.md#test-komutları)`, `K-004`, `[TASARIM.md — 1.2](TASARIM.md#12--kısa-ad)`, `src/x.py`). Bütün repo veya bütün belge klasörü listelenmez. Adım planlanırken `docs/KARARLAR.md` dizinindeki son K-numarası hücrenin sonuna `plan: K-xxx` olarak yazılır; kod değiştirmeden önce bundan sonraki dizin satırları taranır. Adım yeniden planlanır veya bölünürse işaret güncellenir. Dizin boşsa işaret yazılmaz; işaret kaynak sayılmaz.
 
 ## Tamamlanan adımı kısaltma
 

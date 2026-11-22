@@ -7,7 +7,6 @@
 - Aşama: Henüz seçilmedi (numara ve ad yol haritasından).
 - Aşama durumu: Araştırma bekleniyor.
 - Güncel alt adım: Yok.
-- Plan anındaki son karar: Yok (dizindeki son K-numarası; kod öncesi bundan sonrakiler taranır).
 - Kapsam sınırı: Henüz yok (ayrıntı "Amaç ve kapsam" ve "Kapsam dışı" bölümlerinde).
 - Bağlantılar: [TASARIM.md](TASARIM.md), [KARARLAR.md](KARARLAR.md), [GUNLUK.md](GUNLUK.md); araştırma belgeleri bu klasördeki `arastirma/` altında.
 
@@ -32,7 +31,7 @@ Henüz yok.
 | No | Kapsam | Kabul ölçütü | Doğrulama | İnceleme | İlgili kaynaklar | Durum |
 |---|---|---|---|---|---|---|
 
-- İlgili kaynaklar: yalnız o adım için gereken belge/bölüm, K-numarası, kod veya test yolu; kısa göreli bağlantı. Bütün repo veya klasör listelenmez.
+- İlgili kaynaklar: yalnız o adım için gereken belge/bölüm, K-numarası, kod veya test yolu; kısa göreli bağlantı. Bütün repo veya klasör listelenmez. Sonda `plan: K-xxx`: adım planlanırken dizindeki son karar.
 - İnceleme: Zorunlu / Hafif / Yok ve kısa gerekçe (`docs/kurallar/INCELEME.md`).
 - Durumlar: Planlandı, Uygulanıyor, Doğrulama bekliyor, Doğrulandı, Karar bekliyor. Durum değişikliği uygulama izni değildir.
 - "Doğrulandı" yazılırken satır yaklaşık 300 karaktere indirilir: tek cümlelik kapsam, tek cümlelik doğrulama özeti, `GUNLUK.md` doğrulama kaydı bağlantısı (commit/CI kimliği ve test sayısı günlükte kalır); "İlgili kaynaklar" kalır. Kabul ölçütü önce günlükte veya tasarımda bulunmalıdır.

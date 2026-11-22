@@ -68,6 +68,7 @@ Uyarı: projen `docs/` klasörünü MkDocs, Docusaurus veya GitHub Pages gibi bi
 
 - `allow` listesine projenin yerel test komutunu da ekleyebilirsin (ör. `Bash(npm run test *)`); komutu projene göre sen yaz.
 - Bash kuralları komut metnini eşler: belgeye göre `git -C . push` gibi farklı yazılmış bir komut `Bash(git push *)` kuralına uymaz. Bu liste ek bir güvenlik katmanıdır, tek başına kesin engel değildir. `git push --force` yerine `-f` kısaltmasını ayrıca yasaklamak istersen `Bash(git push -f *)` ekle.
+- `Read(...)` ve `Edit(...)` yasakları Claude'un dosya araçlarına ve tanıdığı dosya komutlarına (ör. `cat`, `head`) uygulanır; dosya adını vermeden okuyan komutlara (ör. `grep -r`) ve dosyayı kendisi açan betiklere (Python, Node) uygulanmaz. Codex bu dosyayı okumaz. Ajanın hiç okumaması gereken veri için kod içinde erişim kontrolü ve test kullan; işletim sistemi düzeyinde koruma için aracın sandbox ayarına bak ([belge](https://code.claude.com/docs/en/permissions)). Belgeye göre Claude Code yerel Windows'ta komutları sandbox'sız çalıştırır ([sandbox belgesi](https://code.claude.com/docs/en/sandboxing)).
 
 **Codex.** Onay ve sandbox ayarları `config.toml` dosyasında yapılır: kullanıcı düzeyinde `~/.codex/config.toml`, proje düzeyinde `.codex/config.toml` (yalnız güvenilen projelerde yüklenir). İlgili anahtarlar `approval_policy` (ör. `"on-request"`) ve `sandbox_mode` (ör. `"workspace-write"`) anahtarlarıdır. Geçerli değerlerin tam listesini [Codex belgesinden](https://developers.openai.com/codex/config-basic) kontrol et; bu README'de yalnız belgede örnek olarak geçenler anılmıştır.
 
@@ -94,9 +95,11 @@ powershell.exe -NoProfile -File .\guncelle.ps1 -TargetDirectory "C:\Projeler\Pro
 | `AGENTS.md` | "Projeye özel kurallar" başlığından önceki ortak kısım, kurulumdan beri değişmemişse veya bilinen bir eski şablon sürümüyle birebir aynıysa yenilenir; başlık ve sonrası aynen korunur, dosyanın satır sonu biçimi (CRLF/LF) korunur |
 
 - **Eski kurulumlar:** v0.2.0 ve sonrası desteklenir. v0.3.0'dan önce kurulmuş projelerde `AGENTS.md` ortak kısmı, paketteki bilinen eski sürümlerden biriyle birebir aynıysa otomatik yenilenir. Ortak kısmı sen değiştirdiysen veya tanınmayan bir sürümse dokunulmaz; `-Uygula` ile yeni ortak kısım `.ai-sablon/yeni-AGENTS-ortak.md` dosyasına yazılır, elle birleştirirsin. v0.1 kurulumları reddedilir; "Var olan projeye kurulum" bölümündeki elle birleştirme yolunu kullan.
-- **Güvenlik:** üzerine yazılan her dosyanın eski hâli önce `.ai-sablon/yedek/<tarih-saat>/` altına kopyalanır. Hiçbir dosya silinmez. Yedek alınamazsa hiçbir dosya değiştirilmez. Kurulu sürüm paketten yeniyse güncelleme reddedilir.
+- **Güvenlik:** üzerine yazılan her dosyanın eski hâli önce `.ai-sablon/yedek/<tarih-saat>/` altına kopyalanır. Hiçbir dosya silinmez. Yedek alınamazsa hiçbir dosya değiştirilmez. Kurulu sürüm paketten yeniyse güncelleme reddedilir. Yedekler ve elle birleştirme dosyası Git'te izlenmeyen dosya olarak görünür; istersen projenin `.gitignore` dosyasına `.ai-sablon/yedek/` ve `.ai-sablon/yeni-AGENTS-ortak.md` satırlarını ekle (kurucu ve güncelleyici `.gitignore` dosyasına yazmaz).
 - **Sınırlar:** yalnız satır sonu (CRLF/LF) farkı olan dosya "aynı" sayılır ve yeniden yazılmaz. Bunun dışındaki karşılaştırma bayt düzeyindedir: BOM eklenmiş veya içeriği değişmiş dosya "sen değiştirmişsin" diye raporlanır ve güvenli tarafta kalınır. Hedefte `.ai-sablon/kurulum.json` yoksa betik çıkış kodu 1 ile durur.
 - Betik yalnız `kur.ps1` ile kurulmuş projeler içindir ve yedekten geri yükleme yapmaz; geri almak için yedek klasöründeki dosyayı kendin kopyalarsın.
+
+Güncellemeden sonra ajana şunu söyle: "Ortak kısım güncellendi. Projeye özel kurallarda, docs/kurallar/proje-*.md dosyalarında ve aşama kurallarında artık ortak kurala girmiş veya onunla çelişen maddeleri listele; AGENTS.md'yi ölç. Değişiklik yapma, önce listeyi göster." Silmek veya değiştirmek senin kararındır. Bu, aşama kapanışındaki tekrar ve çelişki kontrolünün (`docs/kurallar/ARSIVLEME.md` adım 3) güncelleme anındaki karşılığıdır; yeni ortak kurallar `AGENTS.md` dosyasını 20 bin karakter eşiğinin üstüne çıkarabilir.
 
 ### Dolu belgeleri yeni biçime geçirme
 
@@ -113,9 +116,16 @@ Ajana örnek mesaj: "docs/kurallar/sablonlar altındaki yeni PLAN ve DURUM biçi
 v0.3.3 değişiklikleri `AGENTS.md` ortak kısmında ve `docs/kurallar/` rehberlerindedir; güncelleyici bunları yeniler. Dolu belgelerde zorunlu değişiklik yoktur. İsteğe bağlı olanlar:
 
 - `PLAN.md` "Başlangıç" bölümünden commit/CI kimliğini ve test sayısını çıkar; bunlar `GUNLUK.md`'de kalır. "Doğrulandı" satırları da artık commit kimliği taşımaz; eski satırlara dokunmak gerekmez.
-- `PLAN.md` "Başlangıç" bölümüne "Plan anındaki son karar: K-xxx" satırını ekle. Eski plan için o anki son K-numarasını yaz; daha önceki kararlar adımların "İlgili kaynaklar" sütunundan bulunur.
+- `PLAN.md` "Başlangıç" bölümüne "Plan anındaki son karar: K-xxx" satırını ekle. Eski plan için o anki son K-numarasını yaz; daha önceki kararlar adımların "İlgili kaynaklar" sütunundan bulunur. (v0.3.4'te bu bilgi adım satırına taşındı; aşağıdaki v0.3.4 notuna bak.)
 - Etkin `PLAN.md`, `TASARIM.md` ve `GUNLUK.md` başlık açıklamalarını `docs/kurallar/sablonlar/` altındaki yeni hâlleriyle değiştir.
 - Projede CI varsa ajan ilk push'ta CI'ı kendisinin okuyup okumayacağını sorar ve cevabını "Projeye özel kurallar" bölümüne yazar. Bu kural zaten varsa soru tekrar sorulmaz.
+
+v0.3.4 değişiklikleri de `AGENTS.md` ortak kısmında ve `docs/kurallar/` rehberlerindedir; güncelleyici bunları yeniler. Dolu belgelerde isteğe bağlı olanlar:
+
+- Güncellemeden sonra ajandan yukarıdaki tekrar ve çelişki listesini iste.
+- `docs/KARARLAR.md` başındaki "Durumlar" satırını yeni şablondakiyle değiştir. Dizinde "Proje geneli" ve "Aşama N" dışında kapsam varsa ajana listelet; tam metinlerin taşınması senin onayınla yapılır.
+- Etkin `PLAN.md` dosyasında v0.3.3'ün "Plan anındaki son karar" satırı varsa değerini henüz başlamamış adımların "İlgili kaynaklar" hücresine `plan: K-xxx` olarak taşı, sonra satırı sil. Satır yoksa işaret ekleme; işaretsiz adımda ajan bütün dizini tarar. Adımın planlandığı andan sonraki bir K-numarasını yazma, yoksa aradaki kararlar taranmaz.
+- Etkin `GUNLUK.md` başlık açıklamasını `docs/kurallar/sablonlar/GUNLUK.md` dosyasındaki yeni hâliyle değiştir (geçici bozma kaydına satır ekleme istisnası).
 
 ## Kurulan dosyalar
 
@@ -154,7 +164,7 @@ ProjeAdi/
 | Başlangıç | Genel araştırma belgelerini `docs/arastirma/` altına koy | "Araştırma belgelerini oku, yalnız yol haritasını hazırla." |
 | Aşamaya başlarken | O aşamanın araştırma belgelerini `docs/aktif-asama/arastirma/` altına koy | "2. aşamayı başlat: araştırmayı oku, alt adımları planla, uygulama yapma." |
 | Uygulama | Tek adım seç | "Yalnız 2.3'ü uygula." |
-| Uygulama (aralık) | Birden fazla adımı birlikte yetkilendir; araya commit, push veya birleştirme girerse ajan o işlemden sonra durur | "2.3–2.5'i uygula." |
+| Uygulama (aralık) | Birden fazla adımı birlikte yetkilendir; araya commit, push, birleştirme veya dal silme girerse ajan o işlemden sonra durur | "2.3–2.5'i uygula." |
 | Küçük düzeltme | Plan açmadan küçük iş iste | "README'deki yazım hatasını düzelt." |
 | Yeni kural | Çalışırken söyle | "Bundan sonra bütün tarihler UTC olsun, kurallara ekle." |
 | Oturum sonu / araç değişimi | Son kontrolü yaptır | "Kayıtları son kez kontrol et, DURUM.md'yi güncelle." |
@@ -213,5 +223,6 @@ Sonuç: 3. aşamada çalışırken ajan 2. aşamanın günlüğünü ve kararlar
 | `docs/arsiv/v0.1-gelistirme/` | Şablonun v0.1 geliştirme geçmişi |
 | `docs/HAFIZA_TOKEN_DOGRULAMA.md` | v0.3.2 hafıza ve token iyileştirmesinin doğrulama raporu |
 | `docs/DOGRULAMA_v0.3.3.md` | v0.3.3 genel iyileştirmelerinin planı ve doğrulama raporu |
+| `docs/DOGRULAMA_v0.3.4.md` | v0.3.4 bağımsız inceleme düzeltmelerinin doğrulama raporu |
 
-Sürüm 0.3.3, durum "geliştirme". Doğrulama sonuçları ve açık sınırlar `docs/DURUM.md` içindedir.
+Sürüm 0.3.4, durum "geliştirme". Doğrulama sonuçları ve açık sınırlar `docs/DURUM.md` içindedir.
