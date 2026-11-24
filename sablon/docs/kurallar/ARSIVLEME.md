@@ -16,7 +16,7 @@ Kullanıcının "aşamayı kapat" veya "arşivle" demesi şu işleri kapsar; her
 
 - Zaten verilmiş kararları ve belgelerden kesin olan bilgiyi ilgili aktif belgeye aktarmak (numaralar değişmez).
 - Kapanış özetini yazmak, aşama klasörünü taşımak, bağlantıları düzeltmek, boş aşama klasörünü açmak, yol haritası ve `DURUM.md` satırlarını güncellemek.
-- Dizinde "Yerine geçildi" olan kararların tam metnini `docs/arsiv/KARARLAR_ESKI.md` dosyasına taşımak.
+- Dizinde "Yerine geçildi" olan kararların tam metnini `docs/arsiv/KARARLAR_ESKI.md` dosyasına taşımak ve dizindeki "Tam metin" bağlantısını güncellemek.
 
 Şunlar için kullanıcıya sorulur: yeni karar vermek veya bekleyen kararı ertelemek; kararın kapsamını kayıtta dayanağı olmadan "Proje geneli" yapmak; aşama kuralını proje geneline yaymak; emin olunmayan bilgiyi silmek veya taşımak; var olan arşiv klasörünün üzerine yazmak; "öner" denen düzenlemeler; sonraki aşamaya başlamak. Arşivleme yetkisi genel silme yetkisi değildir. Commit ve push ayrı onay ister.
 
@@ -28,7 +28,7 @@ Kullanıcının "aşamayı kapat" veya "arşivle" demesi şu işleri kapsar; her
 
    | Aşama klasöründe bulunan | Sonraki aşamaları etkiliyorsa nereye |
    |---|---|
-   | Karar (`aktif-asama/KARARLAR.md`) | Tam metni `aktif-asama/KARARLAR.md` içinden **keserek** `docs/KARARLAR.md` dosyasına taşı (numara değişmez); aşama dosyasında yalnız "K-003 — tam metni docs/KARARLAR.md içine taşındı" satırı kalır (aynı bilgi iki yerde durmaz); dizinde kapsamı "Proje geneli" yap. Etkilemiyorsa arşivde kalır; dizinde durumu "Arşivde" olur ve arşiv bağlantısı eklenir |
+   | Karar (`aktif-asama/KARARLAR.md`) | Tam metni `aktif-asama/KARARLAR.md` içinden **keserek** `docs/KARARLAR.md` dosyasına taşı (numara değişmez); aşama dosyasında yalnız "K-003 — tam metni docs/KARARLAR.md içine taşındı" satırı kalır (aynı bilgi iki yerde durmaz); dizinde kapsamı "Proje geneli", "Tam metin" sütununu `bu dosya` yap. Etkilemiyorsa arşivde kalır; dizinde "Tam metin" sütunu arşiv bağlantısı olur. Her iki durumda "Durum" sütunu (Geçerli, Kısmen değişti veya Yerine geçildi: K-xxx) aynen kalır |
    | Tasarım (`TASARIM.md`) | Sonraki aşamaları etkileyen sözleşme, yapı veya komut bilgisini `docs/PROJE.md` dosyasına işle; geri kalanı arşivde kalır |
    | Kod yapısı, komut, veri biçimi, arayüz bilgisi | `docs/PROJE.md` güncel mi kontrol et, eksikse ekle |
    | Açık kalan iş veya bilinen sınır (`PLAN.md` "Bilinen sınırlar" dahil) | Bilinen sınır `AGENTS.md` §4 "Bilinen sınır" satırına göre `docs/PROJE.md` (bileşen) veya `docs/ACIK_KONULAR.md` (proje düzeyi); açık iş ve devreden not `docs/ACIK_KONULAR.md` veya `docs/YOL_HARITASI.md` ilgili aşama satırı |
@@ -38,7 +38,7 @@ Kullanıcının "aşamayı kapat" veya "arşivle" demesi şu işleri kapsar; her
    Emin olmadığın her maddeyi kullanıcıya liste hâlinde sor. Kayıtta dayanağı olmayan kapsam değişikliği ve aşama kuralının proje geneline taşınması kullanıcıya sorulmadan yapılmaz.
 
 3. **Ana belgelerde birikmeyi temizle.** Aşama klasörü dışındaki kalıcı belgeler proje boyunca büyümesin diye:
-   - `docs/KARARLAR.md`: tamamen yerine geçilmiş kararların tam metnini `docs/arsiv/KARARLAR_ESKI.md` dosyasına taşı (dosya yoksa `# Yerine geçilmiş kararlar (arşiv)` başlığıyla aç; kayıtlar aynen ve tarih sırasıyla sona eklenir). Dizinde satırı kalır ("Yerine geçildi: K-xxx", arşiv bağlantısıyla); böylece K-numarasına verilen bağlantılar kırılmaz. Aktif dosyada yalnız yürürlükteki kararların tam metni kalır.
+   - `docs/KARARLAR.md`: tamamen yerine geçilmiş kararların tam metnini `docs/arsiv/KARARLAR_ESKI.md` dosyasına taşı (dosya yoksa `# Yerine geçilmiş kararlar (arşiv)` başlığıyla aç; kayıtlar aynen ve tarih sırasıyla sona eklenir). Dizinde satırı kalır: "Durum" sütunu "Yerine geçildi: K-xxx" olarak aynen kalır, "Tam metin" sütunu arşiv bağlantısı olur; böylece K-numarasına verilen bağlantılar kırılmaz ve geçerli karara giden yol korunur. Taşınan kayıttaki "Önceki karar" alanı da aynen taşınır. Aktif dosyada yalnız yürürlükteki kararların tam metni kalır. Bitirmeden önce kontrol et: arşive giden her kararın dizin satırında geçerlilik durumu ve çalışan "Tam metin" bağlantısı var; "Yerine geçildi" ve "Kısmen değişti" satırlarının gösterdiği K-xxx dizinde bulunuyor.
    - `docs/ACIK_KONULAR.md`: bu aşamada kapanması gereken "En geç" satırları karara bağlandı mı? Bağlanmamışsa kullanıcıya sor; kullanıcı ertelerse "En geç" sütununu yeni aşamaya güncelle ve erteleme nedenini satıra tek cümleyle ekle. Yeni aşamayı ilgilendiren devreden notların başına `[Aşama N]` yaz. Giderilmiş bilinen sınır satırlarını sil ve nedenini günlüğe yaz.
    - `docs/DURUM.md` "Devreden işler": her iş ya `YOL_HARITASI.md` ilgili aşama satırına ya `ACIK_KONULAR.md` dosyasına bağlanır; sahipsiz iş bırakılmaz, bağlanamayanı kullanıcıya sor.
    - `docs/PROJE.md`: kodun şu anki hâliyle karşılaştır; eskimiş bilgiyi sil, yaklaşık 150 satırı geçiyorsa sadeleştirme öner.
@@ -59,7 +59,7 @@ Kullanıcının "aşamayı kapat" veya "arşivle" demesi şu işleri kapsar; her
    - `docs/YOL_HARITASI.md`: aşama satırı "Tamamlandı", arşiv sütununa `arsiv/NN-kisa-ad/OZET.md` bağlantısı.
    - `docs/DURUM.md`: baştan yaz. "Aktif aşama" alanına "Yok (Aşama N kapandı)", "Güncel alt adım" alanına "Yok", "Son yapılan" bölümüne aşama özetinin bağlantısını, "Sonraki devam noktası" bölümüne "Sıradaki aşama için araştırma belgeleri ve kullanıcı seçimi bekleniyor." yaz.
 
-9. **Commit öner.** Değişen ve taşınan dosyaların listesini ve Türkçe commit mesajını öner; onay gelince commit et.
+9. **Commit öner.** Değişen ve taşınan dosyaların listesini ve Türkçe commit mesajını öner; onay gelince commit et. Kapanış commit'inin sonradan gelen sonucu (CI vb.) için "Kurallar"daki kapanış sonucu maddesine bak.
 
 ## Hazırlık belgeleri
 
@@ -68,7 +68,8 @@ Yol haritası kabul edildikten sonra kullanıcı isterse yalnız yol haritası h
 ## Kurallar
 
 - Arşive taşınan dosyaların içeriği değiştirilmez; yalnız göreli bağlantılar düzeltilebilir. Bu düzeltmeyi kapanışı yapan ajan adım 7'de yapar. Eski arşivler sırf yeni belge biçimine uydurmak için yeniden yazılmaz.
-- Arşivdeki bir karar sonradan değişirse arşiv metni değiştirilmez: yeni K-numarası açılır, "Önceki karar" alanı ve `docs/KARARLAR.md` dizini ilişkiyi gösterir. Arşive taşınan kararların dizin satırı ve arşiv bağlantısı kalır.
+- Arşivdeki bir karar sonradan değişirse arşiv metni değiştirilmez: yeni K-numarası açılır, "Önceki karar" alanı ve `docs/KARARLAR.md` dizini ilişkiyi gösterir (eski satırın "Durum" sütunu yeni karara bağlanır). Arşive taşınan kararların dizin satırı ve arşiv bağlantısı kalır.
+- **Kapanış sonucu:** Kapanış commit'i kendi kimliğini ve sonradan gelen CI sonucunu içeremez. Sonuç arşive (`OZET.md` dahil) yazılmaz; yeni aktif `GUNLUK.md` dosyasına "Aşama N kapanış sonucu" kaydı olarak yazılır: commit kimliği, sonuç (yeşil, kırmızı, okunamadı) ve varsa koşu bağlantısı. Sonuç kayıt hâlâ son kayıtsa satır olarak, değilse kısa yeni kayıtla eklenir (`GIT.md` "Kayıt"). Aynı sonuç başka dosyada tekrarlanmaz; `DURUM.md` "Git" satırı yalnız durumu ve bu kayda bağlantıyı taşır, böylece `DURUM.md` yeniden yazılınca kanıt kaybolmaz. Sonraki aşama kapanınca bu günlük arşive gider ve "kapanış sonucu" araması ile bulunur.
 - Alt adım ve karar numaraları tekrar kullanılmaz. Karar numaraları bütün proje boyunca artar (`K-001`, `K-002` …); alt adım numaraları aşama numarasıyla başlar (`2.1`). Projede daha önce başka bir arşiv klasör adı kullanılmışsa (ör. `faz-01`) yeni arşiv de o adlandırmaya uyar.
 - Kapanmış bir aşamada sonradan hata çıkarsa arşiv değiştirilmez. Düzeltme aktif aşamada yeni bir alt adım olarak yapılır (ör. `3.7 — 1.4'teki tarih hatasının düzeltilmesi`) ve gerekçesi aktif aşamanın `GUNLUK.md` dosyasına yazılır (kapanmış aşamanın arşivdeki günlüğü değiştirilmez). Yeni aşama henüz seçilmediyse (aktif `PLAN.md` boştur) kapanmış aşamanın numarasıyla devam eden alt adım açılır (ör. aşama 1 kapandıysa `1.11`); bu satır yeni aşama seçilince de `PLAN.md` içinde kalır.
 - Taşıma yarıda kalırsa (ör. hata nedeniyle) yeniden denemeden önce `docs/aktif-asama/` ve hedef arşiv klasörünü karşılaştır; kopya kayıt veya kayıp varsa kullanıcıya bildir.

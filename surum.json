@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "version": "0.3.4",
+  "version": "0.3.5",
   "packageStatus": "development",
   "minimumPowerShellVersion": "5.1",
   "copyFiles": [
@@ -112,6 +112,7 @@
     "244f17c81385dae3b0c548b7607c3424d5f1e06adf12bef1aad50249f642b78f",
     "cda4e34e9c384250063c0b2fd3623b13c8e4da5b2ba4a97b0f511f038e359cf6",
     "1b12f56de124b6d6ce5ba77e0bca7cd39aa4f5f7f230971a5fdede19d61fec6e",
-    "4e084bef1ec87b8101099f91790dd8600198b4d06d1ccd6a198fadb19b623237"
+    "4e084bef1ec87b8101099f91790dd8600198b4d06d1ccd6a198fadb19b623237",
+    "0d043c3a7b7dc978d61d3e32170d3430df888d93240225f12cde83c317c7b824"
   ]
 }

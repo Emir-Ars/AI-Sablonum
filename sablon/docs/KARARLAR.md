@@ -8,12 +8,25 @@ Henüz karar yok.
 
 ## Karar dizini
 
-Durumlar: Geçerli, Kısmen değişti: K-xxx, Yerine geçildi: K-xxx, Arşivde (tam metin arşiv bağlantısıyla). Dizin satırı kısa tutulur (en çok ~120 karakter); ayrıntı tam metindedir. Kapsam yalnız "Proje geneli" (tam metin bu dosyada; yerine geçilip aşama kapanışında taşındıysa `arsiv/KARARLAR_ESKI.md`) veya "Aşama N" (tam metin o aşamanın `KARARLAR.md` dosyasında; aşama kapandıysa arşivde) olur.
+Geçerlilik ile saklandığı yer ayrı sütunlardadır; arşivleme yalnız "Tam metin" sütununu değiştirir, "Durum" sütununu ve K-xxx ilişkisini silmez.
 
-| No | Başlık | Kapsam | Durum |
-|---|---|---|---|
+- **Durum** (geçerlilik): Geçerli, Kısmen değişti: K-xxx, Yerine geçildi: K-xxx. Yeni karar eskinin yerini alınca eski satırın durumu yeni karara bağlanır; eski karar arşivde olsa da dizin satırı güncellenir, arşiv metni değişmez.
+- **Tam metin** (yer): `bu dosya`, `aşama` (aşama kapanmadıysa `aktif-asama/KARARLAR.md`) veya arşiv bağlantısı (kapanmış aşamanın `KARARLAR.md` dosyası ya da yerine geçilip taşınan karar için `arsiv/KARARLAR_ESKI.md`).
+- **Kapsam** yalnız "Proje geneli" veya "Aşama N" olur. Dizin satırı kısa tutulur (en çok ~120 karakter); ayrıntı tam metindedir.
+
+| No | Başlık | Kapsam | Durum | Tam metin |
+|---|---|---|---|---|
 
 ## Kayıt biçimi
+
+Dizin satırı örneği: aşama 1'de alınıp arşive taşınmış K-004'ün yerini sonra alınan K-012 almıştır; ilişki iki yönde okunur (dizinde K-004 → K-012, K-012 kaydında "Önceki karar: K-004").
+
+```text
+| K-004 | Örnek eski karar | Aşama 1 | Yerine geçildi: K-012 | [arşiv](arsiv/01-ad/KARARLAR.md#k-004--2026-01-05--örnek-eski-karar) |
+| K-012 | Örnek yeni karar | Proje geneli | Geçerli | bu dosya |
+```
+
+Tam metin kaydı:
 
 ```text
 ## K-001 — yyyy-MM-dd — Kısa başlık

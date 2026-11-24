@@ -1,6 +1,6 @@
 # v0.3.4 — Bağımsız inceleme düzeltmeleri: doğrulama raporu
 
-- Son güncelleme: 2026-11-21 21:55:00 +03:00
+- Son güncelleme: 2026-11-22 12:45:47 +03:00
 - Kapsam: kullanıcı mesajı (2026-11-21): görev dosyasının H, Y ve D bölümleri; seçimler S1a, S2a, S3a, S4a; sonunda commit önerip durmak. Görev dosyası (`GOREV_v0.3.4.md`) `.gitignore` kapsamında, Git dışında; kalıcı kapsam ve sonuçlar bu rapordadır.
 - Kaynak: v0.3.3 sonrası, iki depoyu da yalnız okuyan ayrı bir ajanın incelemesi. Kanıtların bir kısmı kurulu gerçek bir projeden; o projenin adı, alan terimi ve örneği bu depoya yazılmaz (v0.3.3 kullanıcı kararı).
 - İnceleme katmanı: Hafif (ortak kurallar bütün kurulu projelerin arayüzü; betik değişmedi, veri kaybı yok).
@@ -86,6 +86,14 @@ Görevdeki her "eski" metin hedef dosyada tam bir kez bulundu (20 düzenleme, 8 
   - Küçük notlar için kural gereği yeniden inceleme yapılmadı.
 - Geçti: değişen dosyalarda projeye özgü terim taraması 0 eşleşme.
 - Çalıştırılamayan: CI (push yok).
+
+## Commit ve push
+
+- Commit `6674fd4`, kullanıcı onayıyla ("commit push atabilirsin", 2026-11-22). 14 dosya tek tek eklendi; v0.3.3'ün push sonrası CI kaydı (`docs/DOGRULAMA_v0.3.3.md`) önerildiği gibi dahil. Yerel inceleme notu, kullanıcı notu ve görev dosyası dışarıda kaldı.
+- Commit öncesi hazırlanan içerikte projeye özgü terim taraması 0 eşleşme, `git diff --cached --check` temiz; commit mesajında yapay zekâ imzası yok. Commit sonrası `tests/bilinen-hashler.ps1`: EKSİK=0, FAZLA=0.
+- Push: `main` `e16e9a4..6674fd4`; `git ls-remote origin refs/heads/main` yerel `HEAD` ile aynı: `6674fd4d0905dd19e5b3d0d1844ae43fb5700753`.
+- CI: bu depoda CI okuma kuralı yok; kural gereği kullanıcıya soruldu, sonuç okunmadı.
+- Bu bölüm ve `DURUM.md` güncellemesi push'tan sonra yazıldı, commit edilmedi.
 
 ## Açık konular
 

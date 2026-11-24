@@ -6,13 +6,13 @@
 - Aktif aşama: Yok — yol haritası henüz hazırlanmadı.
 - Güncel alt adım: Yok. (Varsa numara ve [PLAN.md](aktif-asama/PLAN.md) bağlantısı.)
 - Son doğrulama kaydı: Yok. (Varsa `GUNLUK.md` kaydının başlığı.)
-- Git: Henüz kontrol edilmedi. (Gözlenen son commit; commit edilmemiş ilgili çalışma varsa kısa not.)
+- Git: Henüz kontrol edilmedi. (Gözlenen son commit ve CI durumu; commit edilmemiş ilgili çalışma varsa kısa not; aşama kapanış sonucu varsa `GUNLUK.md` kaydına bağlantı.)
 
 ## Son yapılan
 Proje yeni kuruldu.
 
 ## Yarım kalan
-Yok. (Varsa yapılan, kalan ve yeniden başlarken kontrol edilecek nokta.)
+Yok. (Varsa seçilen yaklaşım, yapılan, kalan ve yeniden başlarken kontrol edilecek nokta.)
 
 ## Engel / beklenen kullanıcı yanıtı
 Yok.

@@ -127,6 +127,11 @@ v0.3.4 değişiklikleri de `AGENTS.md` ortak kısmında ve `docs/kurallar/` rehb
 - Etkin `PLAN.md` dosyasında v0.3.3'ün "Plan anındaki son karar" satırı varsa değerini henüz başlamamış adımların "İlgili kaynaklar" hücresine `plan: K-xxx` olarak taşı, sonra satırı sil. Satır yoksa işaret ekleme; işaretsiz adımda ajan bütün dizini tarar. Adımın planlandığı andan sonraki bir K-numarasını yazma, yoksa aradaki kararlar taranmaz.
 - Etkin `GUNLUK.md` başlık açıklamasını `docs/kurallar/sablonlar/GUNLUK.md` dosyasındaki yeni hâliyle değiştir (geçici bozma kaydına satır ekleme istisnası).
 
+v0.3.5 değişiklikleri (sohbette alt adım planlama, "uygula" yetkisinin kapsamı, okuma rehberi, karar durumu ile yerinin ayrılması, kapanış sonucu) de `AGENTS.md` ortak kısmında ve `docs/kurallar/` rehberlerindedir; güncelleyici bunları yeniler. Dolu belgelerde isteğe bağlı olanlar:
+
+- `docs/KARARLAR.md` karar dizinine "Tam metin" sütununu ekle (değerler: `bu dosya`, `aşama` veya arşiv bağlantısı) ve başındaki "Durumlar" açıklamasını yeni şablondakiyle değiştir. Durumu "Arşivde" yazılmış satırlarda geçerlilik bilgisi kaybolmuş olabilir: ajana arşivdeki karar metninden ve sonraki kararların "Önceki karar" alanlarından durumu çıkarıp listelet, onayınla "Geçerli" ya da "Yerine geçildi: K-xxx" olarak yaz; arşiv bağlantısını yeni sütuna taşı.
+- `docs/DURUM.md` ve etkin `GUNLUK.md` başlık açıklamalarını yeni şablondakilerle değiştir; daha önce kapanmış bir aşamanın commit sonucu hiçbir yerde yazılı değilse etkin `GUNLUK.md` dosyasına "Aşama N kapanış sonucu" kaydı olarak ekletebilirsin.
+
 ## Kurulan dosyalar
 
 ```text
@@ -163,7 +168,8 @@ ProjeAdi/
 |---|---|---|
 | Başlangıç | Genel araştırma belgelerini `docs/arastirma/` altına koy | "Araştırma belgelerini oku, yalnız yol haritasını hazırla." |
 | Aşamaya başlarken | O aşamanın araştırma belgelerini `docs/aktif-asama/arastirma/` altına koy | "2. aşamayı başlat: araştırmayı oku, alt adımları planla, uygulama yapma." |
-| Uygulama | Tek adım seç | "Yalnız 2.3'ü uygula." |
+| Alt adımı sohbette planla (isteğe bağlı) | Aşama planı yazıldıktan sonra tek adımın yaklaşımını ve doğrulamasını sohbette gör; ajan uygulama komutunu bekler | "2.3'ü planla." |
+| Uygulama | Tek adım seç. Ajan yalnız 2.3'ün planını sunduysa hemen ardından gelen "uygula" yalnız 2.3'ü kapsar; birden fazla adım kastedilebiliyorsa tek kapsam sorusu sorar | "Yalnız 2.3'ü uygula." (veya planın ardından "uygula") |
 | Uygulama (aralık) | Birden fazla adımı birlikte yetkilendir; araya commit, push, birleştirme veya dal silme girerse ajan o işlemden sonra durur | "2.3–2.5'i uygula." |
 | Küçük düzeltme | Plan açmadan küçük iş iste | "README'deki yazım hatasını düzelt." |
 | Yeni kural | Çalışırken söyle | "Bundan sonra bütün tarihler UTC olsun, kurallara ekle." |
@@ -174,7 +180,7 @@ ProjeAdi/
 ## Hafıza ve kayıt
 
 - **Ne zaman yazılır:** ajan kayıtları oturum sonunu beklemeden günceller: alt adım bitince, doğrulama sonucu değişince, önemli karar veya kapsam değişince, iş durunca, senden yanıt beklemeye başlayınca ve uzun işte pahalı bir ara sonuç çıkınca. Her komut için ayrı kayıt açılmaz. Ani kesintide son kayıt noktasından sonraki iş kaybolabilir.
-- **Ne okunur:** yeni oturumda `DURUM.md`, `PLAN.md` başlangıç bölümü, aşama kuralları ve güncel adım; aynı sohbette yalnız değişen bilgi. Günlük ve arşiv aranır, baştan sona okunmaz.
+- **Ne okunur:** yeni oturumda `DURUM.md`, `PLAN.md` başlangıç bölümü, aşama kuralları ve güncel adım; aynı sohbette yalnız değişen bilgi. Günlük ve arşiv aranır, baştan sona okunmaz. Okuma rehberi başlangıç noktasıdır: ajan önce göreve işaret eden en dar kaynağı okur; kaynak eksikse, başka belgeye gönderiyorsa veya kodla çelişiyorsa ilgili kodu, kararı ya da arşiv bölümünü (güncel belgeden arşive verilen bağlantı dahil) izin istemeden kendisi izler.
 - **Bağlam ve token:** bir dosyayı bir kez okumak, sonraki isteklerde sıfır bağlam veya token maliyeti anlamına gelmez; okunan metin sohbet bağlamında kalır ve `AGENTS.md` her oturumda yeniden yüklenir. Bu yüzden sürekli yüklenen kurallar kısa tutulur. Gerçek tasarruf ölçülmedi; ölçmek için aracın kendi bağlam göstergesini kullanabilirsin (ör. Claude Code'da `/context`).
 - **Hafıza nerede:** bu şablon reposu yalnız boş başlangıç belgelerini tutar. Her proje kendi hafızasını (`docs/` altındaki durum, plan, günlük ve kararlar) kendi reposunda saklar. `.ai-sablon/kurulum.json` ilerleme günlüğü değildir; yalnız kurulan şablon sürümünü ve dosya özetlerini güncelleyici için tutar.
 
@@ -194,12 +200,14 @@ Aşama kapanırken ajan `docs/kurallar/ARSIVLEME.md` adımlarını uygular. "Aş
 
 1. Bütün testleri çalıştırır, kapanış ölçütlerini kontrol eder.
 2. Sonraki aşamaları etkileyen her şeyi ana belgelere taşır: kararların tam metnini `docs/KARARLAR.md`, kod/komut/veri biçimi bilgisini `docs/PROJE.md`, açık işleri `docs/ACIK_KONULAR.md` ve `docs/DURUM.md`. Emin olmadığını sana sorar.
-3. Ana belgelerde birikmeyi temizler: yerine geçilmiş kararların tam metni arşive gider, dizinde tek satırı kalır (K-numarasına verilen bağlantılar kırılmaz).
+3. Ana belgelerde birikmeyi temizler: yerine geçilmiş kararların tam metni arşive gider, dizinde tek satırı kalır; "Durum" sütunu ("Yerine geçildi: K-xxx") aynen kalır, "Tam metin" sütunu arşiv bağlantısı olur (K-numarasına verilen bağlantılar kırılmaz, geçerli karara giden yol korunur).
 4. Aşamaya kısa bir `OZET.md` yazar.
 5. `docs/aktif-asama/` klasörünü bütünüyle `docs/arsiv/02-ad/` gibi bir klasöre taşır, bağlantıları yeni konuma göre düzeltir ve yerine boş bir aşama klasörü açar.
 6. Yol haritasında aşamayı "Tamamlandı" yapar, arşiv bağlantısını ekler.
 
-Sonuç: 3. aşamada çalışırken ajan 2. aşamanın günlüğünü ve kararlarını okumaz. Yalnız 2. aşamadan geriye kalan ve hâlâ geçerli olan bilgiyi (ana `KARARLAR.md` ve `PROJE.md`) görür.
+Sonuç: 3. aşamada çalışırken ajan 2. aşamanın günlüğünü ve kararlarını rutin olarak okumaz. Yalnız 2. aşamadan geriye kalan ve hâlâ geçerli olan bilgiyi (ana `KARARLAR.md` ve `PROJE.md`) görür; bir bağlantı veya hata arşive işaret ederse ilgili bölümü kendisi açar.
+
+Kapanış commit'inin CI sonucu arşivlemeden sonra gelirse arşiv yeniden açılmaz: commit kimliği, sonuç ve varsa koşu bağlantısı yeni aktif `GUNLUK.md` dosyasına "Aşama N kapanış sonucu" kaydı olarak yazılır; `DURUM.md` yeniden yazılsa da kanıt orada kalır.
 
 ## Kuralları değiştirmek
 
@@ -224,5 +232,6 @@ Sonuç: 3. aşamada çalışırken ajan 2. aşamanın günlüğünü ve kararlar
 | `docs/HAFIZA_TOKEN_DOGRULAMA.md` | v0.3.2 hafıza ve token iyileştirmesinin doğrulama raporu |
 | `docs/DOGRULAMA_v0.3.3.md` | v0.3.3 genel iyileştirmelerinin planı ve doğrulama raporu |
 | `docs/DOGRULAMA_v0.3.4.md` | v0.3.4 bağımsız inceleme düzeltmelerinin doğrulama raporu |
+| `docs/DOGRULAMA_v0.3.5.md` | v0.3.5 sohbet planlama, kapsam, okuma rehberi, karar durumu ve kapanış sonucu değişikliklerinin doğrulama raporu |
 
-Sürüm 0.3.4, durum "geliştirme". Doğrulama sonuçları ve açık sınırlar `docs/DURUM.md` içindedir.
+Sürüm 0.3.5, durum "geliştirme". Doğrulama sonuçları ve açık sınırlar `docs/DURUM.md` içindedir.

@@ -1,6 +1,6 @@
 # Planlama
 
-Bu dosya yol haritası veya aşama planı hazırlanırken, plan yapısı değiştirilirken (adım bölme, tasarım bölümünü ayırma), bir adım "Doğrulandı" yazılırken ve `docs/PROJE.md` içinde test komutu yokken okunur; yalnız ilgili bölüm yeterlidir. Planlama uygulama izni vermez; yetki kuralları `AGENTS.md` içindedir.
+Bu dosya yol haritası veya aşama planı hazırlanırken, kullanıcı bir alt adımı sohbette planlamak isteyince, plan yapısı değiştirilirken (adım bölme, tasarım bölümünü ayırma), bir adım "Doğrulandı" yazılırken ve `docs/PROJE.md` içinde test komutu yokken okunur; yalnız ilgili bölüm yeterlidir. Planlama uygulama izni vermez; yetki kuralları `AGENTS.md` içindedir.
 
 ## Yol haritası
 
@@ -14,6 +14,16 @@ Kullanıcı genel araştırma belgelerini `docs/arastirma/` altına koyar. `docs
 4. Yol haritasının hâlâ geçerli olduğunu kontrol et; değişiklik gerekiyorsa öner, kendin değiştirme.
 5. Tasarım (araştırmadan çıkan tasarım, riskler, yol haritasından ve araştırmadan farklar, alt adım sıralama gerekçesi) `docs/aktif-asama/TASARIM.md`, alt adım tablosu `docs/aktif-asama/PLAN.md` dosyasına yazılır. Alt adım tasarımları `### 1.1 — kısa ad` gibi ayrı Markdown başlığı alır; kalın yazı başlık yerine geçmez, çünkü bağlantı ve arama başlıkla çalışır.
 6. Aşama büyüklüğünü kontrol et (aşağıdaki "Aşama büyüklüğü").
+
+## Alt adımı sohbette planlama
+
+İsteğe bağlıdır. Aşama planı (ör. 1.1–1.5) yazıldıktan sonra kullanıcı "1.2'yi planla" diyebilir; "1.2'yi uygula" derse ayrıca plan sunma zorunluluğu doğmaz.
+
+1. Adımın kabul ölçütünü ve "İlgili kaynaklarını", ilgili kodu ve testleri, `plan: K-xxx` işaretinden sonraki karar dizini satırlarını ve `PROJE.md` sözleşmelerini incele (`AGENTS.md` §3 "Kod değiştirmeden önce"). Dosya değiştirme.
+2. Yalnız o adım için sohbette kısa sun: izlenecek yaklaşım, değişecek yerler, sonucun nasıl doğrulanacağı (komut ve beklenen sonuç), "Dur ve danış" gerektiren veya kullanıcı kararı isteyen noktalar. Araştırma ve çözüm seçme serbestliği korunur; plan sözleşme değildir, uygulamada daha iyi bir yol çıkarsa kapsam içinde sapılır ve özette belirtilir.
+3. Kabul ölçütü, kapsam veya karar değişecekse uygulamaya başlamadan kullanıcıya sor.
+4. Uygulama komutunu bekle. Plan sunumu `AGENTS.md` §4'teki "kullanıcı yanıtı bekleniyor" kaydını gerektirmez. "Uygula" yetkisinin kapsamı `AGENTS.md` §1.2'dedir.
+5. Kayıt ihtiyaç kadardır: yeni plan dosyası veya zorunlu `1.2.1` alt listesi açılmaz; sohbetin kendisi belgelere kopyalanmaz. İş aynı sohbette biterse olağan `GUNLUK.md` sonuç ve doğrulama kaydı yeter. Kalıcı karar çıkarsa karar düzenine işlenir. İş yarıda kalırsa `DURUM.md` "Yarım kalan" bölümüne seçilen yaklaşım, tamamlanan kısım ve devam noktası kısaca yazılır. Planın `PLAN.md` satırını ve `1.2.1` biçimini yalnız adım gerçekten bölünecekse kullan.
 
 ## Aşama büyüklüğü
 
