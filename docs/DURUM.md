@@ -1,14 +1,14 @@
 # Durum
 
-- Son güncelleme: 2026-11-24 13:30:00 +03:00
-- Sürüm: v0.3.5 (geliştirme); commit edilmedi.
-- Dal: main; son gözlenen commit `6674fd4` (v0.3.4, push edilmişti). v0.3.4'ün CI sonucu okunmadı (izin soruldu).
+- Son güncelleme: 2026-11-24 13:42:26 +03:00
+- Sürüm: v0.3.5 (geliştirme).
+- Dal: main `d88952a` (v0.3.5), push edildi; `git ls-remote` ile uzak kimlik aynı. CI okunmadı (v0.3.4 ve v0.3.5). Bu dosyanın bu güncellemesi commit edilmedi.
 - Güncel çalışma: [v0.3.5 sohbet planlama, kapsam, okuma rehberi, karar durumu, kapanış sonucu](DOGRULAMA_v0.3.5.md); altı değişiklik uygulandı. Aktif aşama yok.
 
 ## Son yapılan
 
 - v0.3.5: "N'yi planla" ile isteğe bağlı sohbet planı; "uygula"nın kapsamı hemen önce planı sunulan adım (belirsizse tek kapsam sorusu); sohbet planı için ihtiyaç kadar kayıt; okuma rehberi başlangıç noktası; karar dizininde "Durum" ve "Tam metin" ayrımı; kapanış commit'inin sonucu yeni aktif `GUNLUK.md` dosyasında.
-- v0.3.4 commit sonrası kayıtları (DURUM ve rapor "Commit ve push" bölümü) bu çalışma ağacında commit bekliyor.
+- v0.3.4'ün commit sonrası kayıtları v0.3.5 commit'ine dahil edildi.
 
 ## Doğrulama
 
@@ -24,4 +24,4 @@
 
 ## Sonraki devam noktası
 
-Kullanıcı commit kapsamını seçer (v0.3.4 kayıtları v0.3.5 ile birlikte ya da ayrı); commit ve push ayrı onayla. Bu not uygulama izni değildir.
+Kullanıcı CI okumaya izin verirse sonuç kontrol edilir. Bu not uygulama izni değildir.
