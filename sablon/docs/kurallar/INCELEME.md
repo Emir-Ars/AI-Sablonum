@@ -8,6 +8,7 @@ Bağımsız inceleme: kodu veya tasarımı yazan ajandan ayrı, salt okunur bir 
 
 Alt adım planlanırken katman ve tek cümlelik gerekçesi `PLAN.md` tablosundaki "İnceleme" sütununa yazılır. Birden fazla ölçüt varsa en yükseği seçilir.
 
+- Bir adım bölündüğünde her yeni alt adımın inceleme katmanını kendi kapsamındaki hatanın sonucuna göre belirle. Ana adımın katmanı alt adımlara otomatik aktarılmaz. Proje veya aşama için açıkça belirlenmiş asgari inceleme katmanını koru.
 - Katman hatanın sonucuna göre belirlenir, kodun uzunluğuna göre değil; kısa bir değişiklik de sessizce yanlış sonuç verebilir.
 - Kod değişikliğinde şu da sorulur: "Hata, test ve CI kırmızı olmadan program çıktısını, veriyi veya hesap sonucunu bozabilir mi?" Evetse katman en az Hafif'tir; aşağıdaki tablonun Zorunlu ölçütlerinden birine de giriyorsa Zorunludur. Tablodaki "Yok" örnekleri bu soruyla yükselmez.
 - Belirsizse bir üst katman önerilir. Katmanı düşürmek kullanıcı kararıdır; ajan kendiliğinden düşürmez.
