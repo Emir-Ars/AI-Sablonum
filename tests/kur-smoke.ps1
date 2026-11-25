@@ -217,12 +217,18 @@ try {
         Assert-True ($broken.Count -eq 0) ('Kırık bağlantı: ' + ($broken -join '; '))
     }
 
-    Invoke-Scenario 'R2 Kök AGENTS.md ortak kısmı genel/KURALLAR.md ile aynı' {
-        $rootAgents = Join-Path $repoRoot 'AGENTS.md'
-        if (-not (Test-Path -LiteralPath $rootAgents)) { Skip-Scenario 'Kök AGENTS.md yok.' }
-        $root = Read-AgentsParts $rootAgents
-        $source = Read-AgentsParts (Join-Path $repoRoot 'genel\KURALLAR.md')
-        Assert-True ($root.Common.Replace("`r`n", "`n") -ceq $source.Common.Replace("`r`n", "`n")) 'Kök AGENTS.md ortak kısmı genel/KURALLAR.md ile aynı değil.'
+    Invoke-Scenario 'R2 Depo rehberleri olmadan aynı ajan dosyaları kurulur' {
+        Assert-True ($null -ne $cleanResult -and $cleanResult.Code -eq 0) 'Karşılaştırma için temiz kurulum gerekli.'
+        $package = Join-Path $runRoot 'r2-paket'
+        $target = Join-Path $runRoot 'r2-hedef'
+        New-PackageCopy $package
+        $result = Invoke-Kur $target (Join-Path $package 'kur.ps1')
+        Assert-True ($result.Code -eq 0) ('Paket kopyasından kurulum başarısız: ' + $result.Err)
+        $rulesHash = Get-FileSha (Join-Path $repoRoot 'genel\KURALLAR.md')
+        Assert-True ((Get-FileSha (Join-Path $target 'AGENTS.md')) -eq $rulesHash) 'Kurulu AGENTS.md dağıtılan ortak kurallarla eşleşmiyor.'
+        foreach ($name in @('AGENTS.md', 'CLAUDE.md')) {
+            Assert-True ((Get-FileSha (Join-Path $target $name)) -eq (Get-FileSha (Join-Path $cleanTarget $name))) ('Depo rehberleri kurulan dosyayı etkiliyor: ' + $name)
+        }
     }
 
     Invoke-Scenario '4 Tekrar kurulum' {

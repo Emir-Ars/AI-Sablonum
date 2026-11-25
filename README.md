@@ -223,6 +223,8 @@ Kapanış commit'inin CI sonucu arşivlemeden sonra gelirse arşiv yeniden açı
 
 ## Bu repodaki dosyalar
 
+Şablonu geliştirmek için VS Code’da bu klasörü açıp ajanla doğrudan çalışabilirsin. Kök `AGENTS.md` kısa geliştirme rehberidir. Yukarıdaki aşama ve kayıt düzeni şablonu kurduğun projelerde geçerlidir.
+
 | Dosya | Görev |
 |---|---|
 | `genel/KURALLAR.md` | Hedef projeye `AGENTS.md` olarak kurulan kurallar |
@@ -232,12 +234,5 @@ Kapanış commit'inin CI sonucu arşivlemeden sonra gelirse arşiv yeniden açı
 | `tests/kur-smoke.ps1` | Kurucu ve güncelleme betiğinin duman testi (`.github/workflows/kurucu-smoke.yml` ile CI'da da çalışır) |
 | `tests/bilinen-hashler.ps1` | Eski ortak kural hash listesini Git geçmişiyle karşılaştırır (tam geçmiş gerekir) |
 | `gorseller/akis.svg` | Akış görseli |
-| `docs/KURAL_ESLEME.md` | v0.1'deki kuralların v0.2'de nereye gittiği |
-| `docs/arsiv/v0.1-gelistirme/` | Şablonun v0.1 geliştirme geçmişi |
-| `docs/HAFIZA_TOKEN_DOGRULAMA.md` | v0.3.2 hafıza ve token iyileştirmesinin doğrulama raporu |
-| `docs/DOGRULAMA_v0.3.3.md` | v0.3.3 genel iyileştirmelerinin planı ve doğrulama raporu |
-| `docs/DOGRULAMA_v0.3.4.md` | v0.3.4 bağımsız inceleme düzeltmelerinin doğrulama raporu |
-| `docs/DOGRULAMA_v0.3.5.md` | v0.3.5 sohbet planlama, kapsam, okuma rehberi, karar durumu ve kapanış sonucu değişikliklerinin doğrulama raporu |
-| `docs/DOGRULAMA_v0.3.6.md` | Alt adımları etkin plana kaydetme ve tek satır uygulama denemesi |
 
 Sürüm 0.3.6, durum "geliştirme". Doğrulama sonuçları ve açık sınırlar `docs/DURUM.md` içindedir.

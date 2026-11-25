@@ -4,3 +4,6 @@ deep-research-report*.md
 
 # Ajan görev dosyaları (Git'e girmez)
 GOREV_*.md
+
+# Şablon geliştirilirken saklanan yerel belgeler
+/yerel-yedek/

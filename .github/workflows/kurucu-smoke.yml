@@ -3,7 +3,6 @@ name: kurucu-smoke
 on:
   push:
     paths:
-      - 'AGENTS.md'
       - 'kur.ps1'
       - 'guncelle.ps1'
       - 'surum.json'
@@ -12,7 +11,6 @@ on:
       - 'tests/**'
   pull_request:
     paths:
-      - 'AGENTS.md'
       - 'kur.ps1'
       - 'guncelle.ps1'
       - 'surum.json'
