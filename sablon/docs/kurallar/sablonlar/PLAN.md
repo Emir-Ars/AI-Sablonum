@@ -31,10 +31,11 @@ Henüz yok.
 | No | Kapsam | Kabul ölçütü | Doğrulama | İnceleme | İlgili kaynaklar | Durum |
 |---|---|---|---|---|---|---|
 
+- Bir ana adım bölünürse kapsam hücresine alt adım numaralarını yaz (ör. `3.1.1`, `3.1.2`). Yeni `Planlandı` satırlarını hemen altına ekle. Var olan numaraları, tamamlanmış satırları ve planlama sırasında ana satırın durumunu koru.
 - İlgili kaynaklar: yalnız o adım için gereken belge/bölüm, K-numarası, kod veya test yolu; kısa göreli bağlantı. Bütün repo veya klasör listelenmez. Sonda `plan: K-xxx`: adım planlanırken dizindeki son karar.
 - İnceleme: Zorunlu / Hafif / Yok ve kısa gerekçe (`docs/kurallar/INCELEME.md`).
 - Durumlar: Planlandı, Uygulanıyor, Doğrulama bekliyor, Doğrulandı, Karar bekliyor. Durum değişikliği uygulama izni değildir.
-- "Doğrulandı" yazılırken satır yaklaşık 300 karaktere indirilir: tek cümlelik kapsam, tek cümlelik doğrulama özeti, `GUNLUK.md` doğrulama kaydı bağlantısı (commit/CI kimliği ve test sayısı günlükte kalır); "İlgili kaynaklar" kalır. Kabul ölçütü önce günlükte veya tasarımda bulunmalıdır.
+- "Doğrulandı" yazılırken satır yaklaşık 300 karaktere indirilir: tek cümlelik kapsam, tek cümlelik doğrulama özeti, `GUNLUK.md` doğrulama kaydı bağlantısı (commit/CI kimliği ve test sayısı günlükte kalır); "İlgili kaynaklar" ve varsa ana satırdaki alt adım numaraları kalır. Kabul ölçütü önce günlükte veya tasarımda bulunmalıdır.
 
 ## Aşama kapanış ölçütleri
 

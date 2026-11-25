@@ -127,10 +127,12 @@ v0.3.4 değişiklikleri de `AGENTS.md` ortak kısmında ve `docs/kurallar/` rehb
 - Etkin `PLAN.md` dosyasında v0.3.3'ün "Plan anındaki son karar" satırı varsa değerini henüz başlamamış adımların "İlgili kaynaklar" hücresine `plan: K-xxx` olarak taşı, sonra satırı sil. Satır yoksa işaret ekleme; işaretsiz adımda ajan bütün dizini tarar. Adımın planlandığı andan sonraki bir K-numarasını yazma, yoksa aradaki kararlar taranmaz.
 - Etkin `GUNLUK.md` başlık açıklamasını `docs/kurallar/sablonlar/GUNLUK.md` dosyasındaki yeni hâliyle değiştir (geçici bozma kaydına satır ekleme istisnası).
 
-v0.3.5 değişiklikleri (sohbette alt adım planlama, "uygula" yetkisinin kapsamı, okuma rehberi, karar durumu ile yerinin ayrılması, kapanış sonucu) de `AGENTS.md` ortak kısmında ve `docs/kurallar/` rehberlerindedir; güncelleyici bunları yeniler. Dolu belgelerde isteğe bağlı olanlar:
+v0.3.5 ile gelen okuma rehberi, karar durumu ile yerinin ayrılması ve kapanış sonucu değişiklikleri `AGENTS.md` ortak kısmında ve `docs/kurallar/` rehberlerindedir. Güncelleyici bunları yeniler. Dolu belgelerde isteğe bağlı olanlar:
 
 - `docs/KARARLAR.md` karar dizinine "Tam metin" sütununu ekle (değerler: `bu dosya`, `aşama` veya arşiv bağlantısı) ve başındaki "Durumlar" açıklamasını yeni şablondakiyle değiştir. Durumu "Arşivde" yazılmış satırlarda geçerlilik bilgisi kaybolmuş olabilir: ajana arşivdeki karar metninden ve sonraki kararların "Önceki karar" alanlarından durumu çıkarıp listelet, onayınla "Geçerli" ya da "Yerine geçildi: K-xxx" olarak yaz; arşiv bağlantısını yeni sütuna taşı.
 - `docs/DURUM.md` ve etkin `GUNLUK.md` başlık açıklamalarını yeni şablondakilerle değiştir; daha önce kapanmış bir aşamanın commit sonucu hiçbir yerde yazılı değilse etkin `GUNLUK.md` dosyasına "Aşama N kapanış sonucu" kaydı olarak ekletebilirsin.
+
+v0.3.6 ile "3.1'i planla" komutu numaralı alt satırları etkin `PLAN.md` dosyasına kaydeder. Güncelleyici ortak kuralı ve planlama rehberini yeniler. Dolu bir planda yeni düzeni kullanmak için ilgili adımı planlatman yeterli. Var olan adım numaraları ve tamamlanmış satırlar korunur.
 
 ## Kurulan dosyalar
 
@@ -168,14 +170,17 @@ ProjeAdi/
 |---|---|---|
 | Başlangıç | Genel araştırma belgelerini `docs/arastirma/` altına koy | "Araştırma belgelerini oku, yalnız yol haritasını hazırla." |
 | Aşamaya başlarken | O aşamanın araştırma belgelerini `docs/aktif-asama/arastirma/` altına koy | "2. aşamayı başlat: araştırmayı oku, alt adımları planla, uygulama yapma." |
-| Alt adımı sohbette planla (isteğe bağlı) | Aşama planı yazıldıktan sonra tek adımın yaklaşımını ve doğrulamasını sohbette gör; ajan uygulama komutunu bekler | "2.3'ü planla." |
-| Uygulama | Tek adım seç. Ajan yalnız 2.3'ün planını sunduysa hemen ardından gelen "uygula" yalnız 2.3'ü kapsar; birden fazla adım kastedilebiliyorsa tek kapsam sorusu sorar | "Yalnız 2.3'ü uygula." (veya planın ardından "uygula") |
-| Uygulama (aralık) | Birden fazla adımı birlikte yetkilendir; araya commit, push, birleştirme veya dal silme girerse ajan o işlemden sonra durur | "2.3–2.5'i uygula." |
+| Alt adımı planla | Ajan `3.1.1`, `3.1.2` … satırlarını aynı `PLAN.md` dosyasına kaydeder. Teknik ayrıntı gerekiyorsa `TASARIM.md` dosyasını günceller ve durur | "3.1'i planla." |
+| Yalnız sohbette değerlendir | Ajan önerdiği alt adımları sohbette gösterir | "3.1'i sohbette değerlendir, dosyaya yazma." |
+| Uygulama | Tek satır seç. Ajan doğrudan o satırı uygular ve doğrular | "3.1.1'i uygula." |
+| Uygulama (aralık) | Birden fazla satırı birlikte yetkilendir. Araya commit, push, birleştirme veya dal silme girerse ajan o işlemden sonra durur | "3.1.1–3.1.2'yi uygula." |
 | Küçük düzeltme | Plan açmadan küçük iş iste | "README'deki yazım hatasını düzelt." |
 | Yeni kural | Çalışırken söyle | "Bundan sonra bütün tarihler UTC olsun, kurallara ekle." |
 | Oturum sonu / araç değişimi | Son kontrolü yaptır | "Kayıtları son kez kontrol et, DURUM.md'yi güncelle." |
 | Yeni oturum | Durumu okut | "Bu projenin durumunu ve yarım kalan işi dosyalardan bul. İlgili kaynakları belirt, henüz uygulama yapma." |
 | Aşama bitince | Kapat | "2. aşamayı kapat ve arşivle." |
+
+Araç yalnız sohbet içinde plan sunabiliyorsa ajan teslimatın aktif plana yazılacak satırlar olduğunu belirtir. Hemen ardından gelen "uygula" veya "Implement this plan" yalnız bu belge düzenlemesini yetkilendirir. Kod uygulaması "3.1.1'i uygula" gibi ayrı bir komutla başlar.
 
 ## Hafıza ve kayıt
 
@@ -233,5 +238,6 @@ Kapanış commit'inin CI sonucu arşivlemeden sonra gelirse arşiv yeniden açı
 | `docs/DOGRULAMA_v0.3.3.md` | v0.3.3 genel iyileştirmelerinin planı ve doğrulama raporu |
 | `docs/DOGRULAMA_v0.3.4.md` | v0.3.4 bağımsız inceleme düzeltmelerinin doğrulama raporu |
 | `docs/DOGRULAMA_v0.3.5.md` | v0.3.5 sohbet planlama, kapsam, okuma rehberi, karar durumu ve kapanış sonucu değişikliklerinin doğrulama raporu |
+| `docs/DOGRULAMA_v0.3.6.md` | Alt adımları etkin plana kaydetme ve tek satır uygulama denemesi |
 
-Sürüm 0.3.5, durum "geliştirme". Doğrulama sonuçları ve açık sınırlar `docs/DURUM.md` içindedir.
+Sürüm 0.3.6, durum "geliştirme". Doğrulama sonuçları ve açık sınırlar `docs/DURUM.md` içindedir.

@@ -1,6 +1,6 @@
 # Planlama
 
-Bu dosya yol haritası veya aşama planı hazırlanırken, kullanıcı bir alt adımı sohbette planlamak isteyince, plan yapısı değiştirilirken (adım bölme, tasarım bölümünü ayırma), bir adım "Doğrulandı" yazılırken ve `docs/PROJE.md` içinde test komutu yokken okunur; yalnız ilgili bölüm yeterlidir. Planlama uygulama izni vermez; yetki kuralları `AGENTS.md` içindedir.
+Bu dosya yol haritası, aşama planı veya alt adım planı hazırlanırken, plan yapısı değiştirilirken (adım bölme, tasarım bölümünü ayırma), bir adım "Doğrulandı" yazılırken ve `docs/PROJE.md` içinde test komutu yokken okunur. İlgili bölüm yeterlidir. Yetki kuralları `AGENTS.md` içindedir.
 
 ## Yol haritası
 
@@ -15,15 +15,17 @@ Kullanıcı genel araştırma belgelerini `docs/arastirma/` altına koyar. `docs
 5. Tasarım (araştırmadan çıkan tasarım, riskler, yol haritasından ve araştırmadan farklar, alt adım sıralama gerekçesi) `docs/aktif-asama/TASARIM.md`, alt adım tablosu `docs/aktif-asama/PLAN.md` dosyasına yazılır. Alt adım tasarımları `### 1.1 — kısa ad` gibi ayrı Markdown başlığı alır; kalın yazı başlık yerine geçmez, çünkü bağlantı ve arama başlıkla çalışır.
 6. Aşama büyüklüğünü kontrol et (aşağıdaki "Aşama büyüklüğü").
 
-## Alt adımı sohbette planlama
+## Alt adımı planlama
 
-İsteğe bağlıdır. Aşama planı (ör. 1.1–1.5) yazıldıktan sonra kullanıcı "1.2'yi planla" diyebilir; "1.2'yi uygula" derse ayrıca plan sunma zorunluluğu doğmaz.
+Aşama planında kısa bir `3.1` satırı varsa "3.1'i planla" komutu o satırı `3.1.1`, `3.1.2` … biçiminde ayrıntılandırıp aynı `docs/aktif-asama/PLAN.md` dosyasına kaydetme yetkisidir. Numaralandırma diğer aşamalarda da aynı biçimde işler.
 
-1. Adımın kabul ölçütünü ve "İlgili kaynaklarını", ilgili kodu ve testleri, `plan: K-xxx` işaretinden sonraki karar dizini satırlarını ve `PROJE.md` sözleşmelerini incele (`AGENTS.md` §3 "Kod değiştirmeden önce"). Dosya değiştirme.
-2. Yalnız o adım için sohbette kısa sun: izlenecek yaklaşım, değişecek yerler, sonucun nasıl doğrulanacağı (komut ve beklenen sonuç), "Dur ve danış" gerektiren veya kullanıcı kararı isteyen noktalar. Araştırma ve çözüm seçme serbestliği korunur; plan sözleşme değildir, uygulamada daha iyi bir yol çıkarsa kapsam içinde sapılır ve özette belirtilir.
-3. Kabul ölçütü, kapsam veya karar değişecekse uygulamaya başlamadan kullanıcıya sor.
-4. Uygulama komutunu bekle. Plan sunumu `AGENTS.md` §4'teki "kullanıcı yanıtı bekleniyor" kaydını gerektirmez. "Uygula" yetkisinin kapsamı `AGENTS.md` §1.2'dedir.
-5. Kayıt ihtiyaç kadardır: yeni plan dosyası veya zorunlu `1.2.1` alt listesi açılmaz; sohbetin kendisi belgelere kopyalanmaz. İş aynı sohbette biterse olağan `GUNLUK.md` sonuç ve doğrulama kaydı yeter. Kalıcı karar çıkarsa karar düzenine işlenir. İş yarıda kalırsa `DURUM.md` "Yarım kalan" bölümüne seçilen yaklaşım, tamamlanan kısım ve devam noktası kısaca yazılır. Planın `PLAN.md` satırını ve `1.2.1` biçimini yalnız adım gerçekten bölünecekse kullan.
+1. Ana satırın kapsamını, kabul ölçütünü ve "İlgili kaynaklar" hücresini, mevcut alt satırları, `TASARIM.md` dosyasındaki ilgili bölümü, `PROJE.md` sözleşmelerini, ilgili kararları, kodu ve testleri incele. Karar dizinini `AGENTS.md` §3'e göre tara. Ana kapsam, kabul ölçütü veya geçerli karar değişecekse önce kullanıcıya sor.
+2. Alt adım sayısını işin sınırları belirler. Her satır tek başına yetkilendirilebilir, uygulanabilir ve doğrulanabilir bir sonuç içersin. Önkoşul varsa hangi satırın önce tamamlanması gerektiğini belirt. Tabloya kapsam, kabul ölçütü, doğrulama yöntemi (uygunsa komut ve beklenen sonuç), inceleme katmanı ve gerekçesi, ilgili kaynaklar ve yeni satır için "Planlandı" durumu yaz.
+3. Ana satırı ve numarasını koru. Ana satırın kapsam hücresine alt satır numaralarını yaz ve alt satırları hemen altında aynı tabloda tut. Ana satır toplam kapsamı ve kapanış ölçütünü gösterir. Alt satırların kaydedilmesi ana satırın durumunu değiştirmez. Ana satır ancak tüm alt satırlar doğrulandıktan ve kendi kabul ölçütü karşılandıktan sonra "Doğrulandı" olur.
+4. Yeniden planlamada önce mevcut satırları ve kayıtların onlara yaptığı göndermeleri incele. Açık satırları gerektiği kadar güncelle, yeni iş için kullanılmamış numara ekle. Aynı işi ikinci kez yazma, tamamlanmış satırları yeniden açma ve mevcut numaraları değiştirme. Gerekli teknik ayrıntıyı mevcut `docs/aktif-asama/TASARIM.md` içinde ilgili numaranın başlığı altında tut. Her alt adım için ayrı dosya açma.
+5. Dosya yazılabilen modda `PLAN.md` ve gerekliyse `TASARIM.md` değişikliğini ayrı onay beklemeden kaydet, özeti ver ve dur. Planlama sırasında ürün kodu veya test kodu yazma. Kullanıcı "sohbette değerlendir, dosyaya yazma" derse yalnız sohbet içinde değerlendir ve bu tercihi koru.
+6. Araç o anda yalnız sohbet içinde plan sunabiliyorsa önerilen satırları ve teslimatı açıkça belirt. Örnek: “Bu plan onaylandığında 3.1.1, 3.1.2 … aktif plana kaydedilecek. Kod uygulaması ayrı komutla başlayacak.” Hemen ardından gelen "uygula" veya "Implement this plan" yalnız sunulan `PLAN.md` ve gerekiyorsa `TASARIM.md` düzenlemesini yetkilendirir. Bu komut ana satırın veya alt satırların kod uygulamasını başlatmaz.
+7. Açık "3.1.1'i uygula" komutuyla yeniden plan sunmadan o satırın uygulamasına ve doğrulamasına geç. Sonraki satıra kendiliğinden başlama. Kullanıcı açık bir aralık verirse `AGENTS.md` §1.2'deki aralık yetkisini kullan. Bölünmüş bir işi bir bütün olarak uygulamak isteyen kullanıcıdan hangi alt satırları yetkilendirdiğini belirtmesini iste.
 
 ## Aşama büyüklüğü
 
@@ -36,12 +38,12 @@ Plan yazılırken ve uygulamada yeni alt bölme gerektiğinde ölçülür. Aşam
 ## PLAN.md yapısı
 
 - **Başlangıç** (en fazla 15 satır): aşama, aşama durumu, güncel adım işaretçisi, önemli kapsam sınırları ve bağlantılar. Durum tablosu ve tasarım burada tekrar edilmez; commit/CI kimliği, test sayısı ve tarihli ayrıntı da yazılmaz (bunlar `GUNLUK.md`'dedir). Yeni oturumda planın yalnız bu bölümü, "Aşama kuralları" ve ilgili adım satırları okunur. Güncel adım değişince işaretçi de güncellenir.
-- **Alt adımlar:** `1.1`, `1.2` gibi kalıcı numaralar; numara yeniden kullanılmaz. Büyük adım `1.2.1` gibi bölünebilir; bölmek uygulama izni değildir. Her satırda kapsam, kabul ölçütü, doğrulama yöntemi, inceleme katmanı (`INCELEME.md`), ilgili kaynaklar ve durum bulunur.
-- **İlgili kaynaklar:** yalnız o adım için gereken belge veya bölüm, K-numarası, kod ya da test yolu; kısa göreli bağlantı olarak (ör. `[PROJE.md — Test komutları](../PROJE.md#test-komutları)`, `K-004`, `[TASARIM.md — 1.2](TASARIM.md#12--kısa-ad)`, `src/x.py`). Bütün repo veya bütün belge klasörü listelenmez. Adım planlanırken `docs/KARARLAR.md` dizinindeki son K-numarası hücrenin sonuna `plan: K-xxx` olarak yazılır; kod değiştirmeden önce bundan sonraki dizin satırları taranır. Adım yeniden planlanır veya bölünürse işaret güncellenir. Dizin boşsa işaret yazılmaz; işaret kaynak sayılmaz.
+- **Alt adımlar:** `1.1`, `1.2`, `1.2.1` gibi kalıcı numaralar kullanılır. Numaralar yeniden kullanılmaz. Bölünen adımlar "Alt adımı planlama" bölümündeki düzeni izler. Her satırda kapsam, kabul ölçütü, doğrulama yöntemi, inceleme katmanı (`INCELEME.md`), ilgili kaynaklar ve durum bulunur.
+- **İlgili kaynaklar:** yalnız o adım için gereken belge veya bölüm, K-numarası, kod ya da test yolu; kısa göreli bağlantı olarak (ör. `[PROJE.md — Test komutları](../PROJE.md#test-komutları)`, `K-004`, `[TASARIM.md — 1.2](TASARIM.md#12--kısa-ad)`, `src/x.py`). Bütün repo veya bütün belge klasörü listelenmez. Adım planlanırken `docs/KARARLAR.md` dizinindeki son K-numarası hücrenin sonuna `plan: K-xxx` olarak yazılır; kod değiştirmeden önce bundan sonraki dizin satırları taranır. Yeni veya yeniden planlanan satıra planlama anındaki işaret yazılır. Tamamlanmış satırların işareti korunur. Dizin boşsa işaret yazılmaz; işaret kaynak sayılmaz.
 
 ## Tamamlanan adımı kısaltma
 
-Satır, "Doğrulandı" durumunun yazıldığı düzenlemede kısaltılır; sonraki adıma bırakılmaz. "Doğrulandı" olan satır yaklaşık 300 karaktere indirilir: tek cümlelik kapsam, tek cümlelik doğrulama özeti ve `GUNLUK.md` doğrulama kaydına bağlantı; commit/CI kimliği ve test sayısı satıra yazılmaz, günlükte kalır. Böylece satır commit'ten önce de kısaltılabilir; "İlgili kaynaklar" korunur. Kısaltmadan önce kabul ölçütünün `GUNLUK.md` doğrulama kaydında veya `TASARIM.md` içinde bulunduğunu kontrol et; yoksa önce günlüğe yaz. Kabul ölçütü kısaltma sırasında kaybolmaz.
+Satır, "Doğrulandı" durumunun yazıldığı düzenlemede kısaltılır; sonraki adıma bırakılmaz. "Doğrulandı" olan satır yaklaşık 300 karaktere indirilir: tek cümlelik kapsam, tek cümlelik doğrulama özeti ve `GUNLUK.md` doğrulama kaydına bağlantı; commit/CI kimliği ve test sayısı satıra yazılmaz, günlükte kalır. Böylece satır commit'ten önce de kısaltılabilir; "İlgili kaynaklar" ve varsa ana satırdaki alt adım numaraları korunur. Kısaltmadan önce kabul ölçütünün `GUNLUK.md` doğrulama kaydında veya `TASARIM.md` içinde bulunduğunu kontrol et; yoksa önce günlüğe yaz. Kabul ölçütü kısaltma sırasında kaybolmaz.
 
 ## Test komutu
 
