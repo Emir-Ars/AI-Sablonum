@@ -12,7 +12,7 @@ Bu dosya her oturumda otomatik yüklenir; gereksiz yere yeniden okunmaz. `docs/k
 6. Global ayar, skill, eklenti ve `.claude` / `.codex` klasörleri değiştirilmez.
 7. Alt ajana iş verirken kapsamı ve bu dosyadaki sınırları (ağ, canlı sistem, gerçek veri, yazma yetkisi) görevle birlikte ver; alt ajanın sınır aşımını kullanıcıya bildir.
 
-- **Dur ve danış:** planda olmayan iş (küçük iş istisnası dışında), kapsam değişikliği, yeni bağımlılık, mimari seçim, gizli ayar, biten aşamanın arayüzünü değiştirme, çözülemeyen test hatası, geri alınması zor işlem.
+- **Dur ve danış:** planda olmayan iş (küçük iş istisnası dışında), kapsam değişikliği, yeni bağımlılık, mimari seçim, gizli ayar, biten aşamanın arayüzünü değiştirme, çözülemeyen test hatası, geri alınması zor işlem. Plan veya tasarım uygulama için gereken bir bilgiyi vermiyorsa ya da kodla çelişiyorsa kendi çözümünü uydurma; eksik bilgiyi belirt ve dur.
 - **Küçük iş istisnası:** kullanıcının doğrudan istediği, birkaç dosyalık; bağımlılık, mimari, veri biçimi veya arayüz değiştirmeyen ve `docs/kurallar/INCELEME.md` "Zorunlu"/"Hafif" katmanına girmeyen iş (yazım hatası, küçük hata veya belge düzeltmesi) plan adımı açılmadan yapılır; aktif aşama varsa `GUNLUK.md` dosyasına "Plan dışı küçük iş: …" satırı yazılır; commit kuralları aynıdır. Sınır aşılırsa dur ve plan adımı öner.
 - Yetkili işin içinde dosya düzenlemesi ve olağan kayıt güncellemesi için yeniden onay istenmez.
 
@@ -84,7 +84,7 @@ Kayıt oturum sonuna bırakılmaz. Şu anlarda ilgili kayıtlar, kullanıcıya s
 - Gereksiz karmaşıklık ekleme; sadelik uğruna gerekli doğrulama, hata yönetimi, güvenlik veya testi de çıkarma.
 - Önemli bir karar isterken gerçek seçeneklerin kullanıcıya etkisini, proje amacına göre önerdiğin tercihi ve başlıca bedelini kısaca anlat; seçimi değiştirecek öncelik belirsizse günlük dille sor. Seçimi kullanıcı yapar.
 - Kullanıcının iddiası kod, test veya güncel proje belgesiyle çelişiyorsa açıkça düzelt; kanıtın yerini ve kullanıcı için sonucunu kısaca belirt. Yalnız kod/belge okumayı çalıştırılmış testten ayır; eldeki kanıt yetmiyorsa belirsizliği açık bırak.
-- Doğrulanmamış bilgiyi kesin gibi sunma, "doğrulanmadı" diye işaretle. Belirsizlikte: projede ara → resmî kaynakta doğrula → kullanıcıya sor; sorulması gereken konuda tahminle ilerleme. Dış kaynağı belirt, okunanı çıkarımdan ayır. Oturum açma, kapalı/ücretli kaynak veya canlı sistem gerektiren araştırmada neyin öğrenileceğini ve nereye bakılacağını söyle; ona bağlı adım sonucu bekler. Hata ayıklarken hipotezi test, log veya küçük denemeyle sına; neden doğrulanmadan "çözüldü" deme. Düşük riskli ayrıntıda (ad, biçim, yerleşim) mevcut düzene uy, özette belirt.
+- Doğrulanmamış bilgiyi kesin gibi sunma, "doğrulanmadı" diye işaretle. Belirsizlikte: projede ara → resmî kaynakta doğrula → kullanıcıya sor; sorulması gereken konuda tahminle ilerleme. Dış kaynağı belirt, okunanı çıkarımdan ayır. Oturum açma, kapalı/ücretli kaynak veya canlı sistem gerektiren araştırmada neyin öğrenileceğini ve nereye bakılacağını söyle; ona bağlı adım sonucu bekler. Hata ayıklarken hipotezi test, log veya küçük denemeyle sına; neden doğrulanmadan "çözüldü" deme. Aynı hata iki farklı denemede çözülemezse üçüncüyü deneme; denenenleri ve sonuçlarını (aktif aşama varsa `GUNLUK.md` dosyasına) yaz ve kullanıcıya bildir. Düşük riskli ayrıntıda (ad, biçim, yerleşim) mevcut düzene uy, özette belirt.
 - Silmeden önce dosya, fonksiyon veya ayarın adını projede ara. Kodda eksik yer tutucu bırakma.
 
 ## 7. Test ve doğrulama

@@ -170,7 +170,7 @@ ProjeAdi/
 |---|---|---|
 | Başlangıç | Genel araştırma belgelerini `docs/arastirma/` altına koy | "Araştırma belgelerini oku, yalnız yol haritasını hazırla." |
 | Aşamaya başlarken | O aşamanın araştırma belgelerini `docs/aktif-asama/arastirma/` altına koy | "2. aşamayı başlat: araştırmayı oku, alt adımları planla, uygulama yapma." |
-| Alt adımı planla | Ajan `3.1.1`, `3.1.2` … satırlarını aynı `PLAN.md` dosyasına kaydeder. Teknik ayrıntı gerekiyorsa `TASARIM.md` dosyasını günceller ve durur | "3.1'i planla." |
+| Alt adımı planla | Ajan `3.1.1`, `3.1.2` … satırlarını aynı `PLAN.md` dosyasına kaydeder. Uygulayan ajanın tahmin yürütmemesi için teknik ayrıntıyı (dosyalar, arayüzler, uç durumlar, testler) `TASARIM.md` dosyasına yazar ve durur | "3.1'i planla." |
 | Yalnız sohbette değerlendir | Ajan önerdiği alt adımları sohbette gösterir | "3.1'i sohbette değerlendir, dosyaya yazma." |
 | Uygulama | Tek satır seç. Ajan doğrudan o satırı uygular ve doğrular | "3.1.1'i uygula." |
 | Uygulama (aralık) | Birden fazla satırı birlikte yetkilendir. Araya commit, push, birleştirme veya dal silme girerse ajan o işlemden sonra durur | "3.1.1–3.1.2'yi uygula." |

@@ -1,12 +1,13 @@
 # Durum
 
-- Son güncelleme: 2026-11-26 09:51:52 +03:00
+- Son güncelleme: 2026-11-26 11:27:24 +03:00
 - Sürüm: v0.3.6 (geliştirme).
 - Durum geçişi düzenlemesi `main` dalında `f320603` üzerine hazırlandı.
 - Güncel çalışma: uygulama başladığında yol haritasındaki aşama ve aktif plandaki üst adımlar ilerlemeyi gösteriyor.
 
 ## Son yapılan
 
+- Planlama ayrıntısı kuralı eklendi (commit edilmedi): plan, onu yazmayan ajanın tahminsiz uygulayabileceği ayrıntıda olur (`PLANLAMA.md` 2., 5. ve 6. madde, `TASARIM.md` şablonu). Ortak kurala eksik plan bilgisinde durma ve iki başarısız denemede bildirme eklendi. Kurallar model ve araçtan bağımsızdır. Önceki ortak metnin LF hash’i `surum.json` listesine eklendi.
 - İlk alt adımın uygulaması başlayınca aşama `Devam ediyor` olur. Bir alt adımın uygulaması başlayınca `Planlandı` durumundaki üst satırları `Uygulanıyor` olur. Önceki ortak metnin LF hash’i `surum.json` listesine eklendi.
 - Kısa plan satırı aynı etkin planda numaralı alt satırlara ayrılıyor. Planlama belgeleri kaydediyor. Açık uygulama komutu belirtilen satırı veya aralığı kapsıyor.
 - Depo ajanı kullanıcıyla doğrudan çalışır. Kök `AGENTS.md` deponun geliştirme rehberidir. Kök `CLAUDE.md` aynı rehberi yükler.
@@ -22,6 +23,7 @@
 
 ## Açık kalan / sınırlar
 
+- Planlama ayrıntısı değişikliği için `tests/kur-smoke.ps1` ve `tests/bilinen-hashler.ps1` henüz Windows PowerShell 5.1'de çalıştırılmadı.
 - Yeni durum geçişlerinin bir ajan oturumundaki uygulaması henüz denenmedi.
 - Sohbetle sınırlı mod ve aralık yetkisi metin üzerinden kontrol edildi. Yeni bir Codex veya Claude oturumunda komut yorumlama denenmedi.
 

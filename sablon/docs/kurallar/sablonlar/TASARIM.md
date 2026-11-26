@@ -11,7 +11,7 @@ Henüz yazılmadı.
 
 ## Tasarım
 
-Henüz yazılmadı. Bir ana adım bölündüğünde gerekli teknik ayrıntıyı bu dosyada `### 3.1.1 — kısa ad` gibi ilgili numaranın başlığı altında tut. `PLAN.md` "İlgili kaynaklar" sütunu bu başlığa bağlantı verebilir.
+Henüz yazılmadı. Bir ana adım bölündüğünde gerekli teknik ayrıntıyı bu dosyada `### 3.1.1 — kısa ad` gibi ilgili numaranın başlığı altında tut. Her adım başlığı, planı yazmayan bir ajanın tahmin yürütmeden uygulayabileceği kadar şunları içerir: değişecek dosya ve fonksiyonlar; arayüz, imza veya veri biçimi değişiklikleri; uç durumlar ve hata yolları; yazılacak test senaryoları. `PLAN.md` "İlgili kaynaklar" sütunu bu başlığa bağlantı verebilir.
 
 ## Riskler ve açık noktalar
 
