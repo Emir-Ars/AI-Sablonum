@@ -1,32 +1,28 @@
 # Durum
 
-- Son güncelleme: 2026-11-26 11:27:24 +03:00
-- Sürüm: v0.3.6 (geliştirme).
-- Durum geçişi düzenlemesi `main` dalında `f320603` üzerine hazırlandı.
-- Güncel çalışma: uygulama başladığında yol haritasındaki aşama ve aktif plandaki üst adımlar ilerlemeyi gösteriyor.
+- Son güncelleme: 2026-11-26 14:44 +03:00
+- Sürüm: v0.3.7 (geliştirme).
+- Planlama ayrıntısı kuralı `main` dalında `cae5407` ile gönderildi; bu kayıt ve sürüm yükseltmesi ayrı commit'te.
+- Güncel çalışma: yok; şablon değişikliği tamamlandı.
 
 ## Son yapılan
 
-- Planlama ayrıntısı kuralı eklendi (commit edilmedi): plan, onu yazmayan ajanın tahminsiz uygulayabileceği ayrıntıda olur (`PLANLAMA.md` 2., 5. ve 6. madde, `TASARIM.md` şablonu). Ortak kurala eksik plan bilgisinde durma ve iki başarısız denemede bildirme eklendi. Kurallar model ve araçtan bağımsızdır. Önceki ortak metnin LF hash’i `surum.json` listesine eklendi.
-- İlk alt adımın uygulaması başlayınca aşama `Devam ediyor` olur. Bir alt adımın uygulaması başlayınca `Planlandı` durumundaki üst satırları `Uygulanıyor` olur. Önceki ortak metnin LF hash’i `surum.json` listesine eklendi.
-- Kısa plan satırı aynı etkin planda numaralı alt satırlara ayrılıyor. Planlama belgeleri kaydediyor. Açık uygulama komutu belirtilen satırı veya aralığı kapsıyor.
-- Depo ajanı kullanıcıyla doğrudan çalışır. Kök `AGENTS.md` deponun geliştirme rehberidir. Kök `CLAUDE.md` aynı rehberi yükler.
-- Yerel görev ve araştırma dosyaları `yerel-yedek/` içinde. İncelemeler, sürüm doğrulamaları ve geliştirme arşivi `yerel-yedek/docs/` altında.
+- v0.3.7: plan, onu yazmayan ajanın tahminsiz uygulayabileceği ayrıntıda olur (`PLANLAMA.md` 2., 5. ve 6. madde, `TASARIM.md` şablonu). Ortak kurala eksik plan bilgisinde durma ve iki başarısız denemede bildirme eklendi. Kurallar model ve araçtan bağımsızdır. Önceki ortak metnin LF hash’i `surum.json` listesine eklendi. README'ye v0.3.7 notu ve projelere `*.md text eol=lf` önerisi eklendi.
+- İlk alt adımın uygulaması başlayınca aşama `Devam ediyor`, adımın `Planlandı` üst satırları `Uygulanıyor` olur.
+- Kısa plan satırı aynı etkin planda numaralı alt satırlara ayrılıyor. Açık uygulama komutu belirtilen satırı veya aralığı kapsıyor.
+- Kök `AGENTS.md` deponun geliştirme rehberidir; kök `CLAUDE.md` aynı rehberi yükler. Yerel notlar `yerel-yedek/` içinde.
 
 ## Doğrulama
 
-- Windows PowerShell 5.1 ile 30 kurulum ve güncelleme senaryosu geçti. Başarısız veya atlanan senaryo yok.
-- Önceki v0.3.6 paketiyle kurulan geçici projede, kurulum kaydındaki ortak metin hash alanı yokken güncelleme iki yeni kuralı kurdu. Dolu plan, yol haritası ve projeye özel kural korundu.
-- Tam Git geçmişi ile bilinen ortak metin hash’leri eşleşti (EKSİK=0, FAZLA=0).
-- Geçici projede plan kaydı ve yeniden planlama kod dosyalarını değiştirmedi. İlk alt adımın testi geçti, ikinci alt adım `Planlandı` kaldı.
-- Ayrı geçici projede v0.3.5 → v0.3.6 geçişi doğrulandı. Dolu plan ve projeye özel bölüm korundu.
+- `cae5407` öncesi: `tests/kur-smoke.ps1` ve `tests/bilinen-hashler.ps1` Windows PowerShell 5.1'de geçti (kullanıcı bildirimi; çıktı bu kayda alınmadı). Sürümün 0.3.7'ye yükseltilmesinden sonra testler yeniden çalıştırılmadı.
+- Gerçek projede v0.3.4 → v0.3.6 güncellemesi (bu kuralla): kuru çalıştırma 8 dosya ve `AGENTS.md` ortak kısmı yeniledi, 9 dolu belge korundu; projeye özel bölüm korundu.
+- Önceki sürümlerde: 30 kurulum ve güncelleme senaryosu geçti; v0.3.5 → v0.3.6 geçişi geçici projede doğrulandı.
 
 ## Açık kalan / sınırlar
 
-- Planlama ayrıntısı değişikliği için `tests/kur-smoke.ps1` ve `tests/bilinen-hashler.ps1` henüz Windows PowerShell 5.1'de çalıştırılmadı.
-- Yeni durum geçişlerinin bir ajan oturumundaki uygulaması henüz denenmedi.
-- Sohbetle sınırlı mod ve aralık yetkisi metin üzerinden kontrol edildi. Yeni bir Codex veya Claude oturumunda komut yorumlama denenmedi.
+- Yeni planlama kuralının bir ajan oturumunda (plan modu → kayıt → uygulama) davranışı henüz gözlenmedi.
+- Uzun projeye özel bölümü olan projede güncelleme sonrası `AGENTS.md` 20 bin karakteri aştı; temizlik projede yapıldı.
 
 ## Sonraki devam noktası
 
-Yeni bir şablon fikri doğrudan bu depoda ele alınabilir. Önceki gönderimin CI sonucu için kullanıcının izni veya ileteceği sonuç bekleniyor.
+Yeni bir şablon fikri doğrudan bu depoda ele alınabilir. TiktokGame projesi v0.3.7'ye güncellenecek.

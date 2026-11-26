@@ -26,6 +26,8 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\kur.ps1 -TargetDirecto
 
 Kurucu yalnız yeni dosya ekler. Kurulacak dosyalardan biri hedefte varsa hiçbir şey yazmadan durur. Ağ veya Git işlemi yapmaz; `.claude`, `.codex` ve diğer global klasörlere dokunmaz. Projendeki diğer dosyalar olduğu gibi kalır.
 
+Windows'ta araçlar Markdown dosyalarını CRLF satır sonuyla kaydedebilir; o zaman Git bütün dosyayı değişmiş gösterir ve küçük kayıt değişiklikleri büyük fark gibi görünür. Projenin `.gitattributes` dosyasına `*.md text eol=lf` satırını eklemen önerilir. Kurucu ve güncelleyici bu dosyaya yazmaz; satırı sen eklersin.
+
 Ajana repo bağlantısını verip kurdurmak istersen şunu söyleyebilirsin:
 
 > Bu şablon reposunu geçici bir klasöre indir, kur.ps1 ile şu anki projeme kur, kurulum sonucunu göster ve geçici klasörü yalnız benim onayımla sil.
@@ -133,6 +135,8 @@ v0.3.5 ile gelen okuma rehberi, karar durumu ile yerinin ayrılması ve kapanı�
 - `docs/DURUM.md` ve etkin `GUNLUK.md` başlık açıklamalarını yeni şablondakilerle değiştir; daha önce kapanmış bir aşamanın commit sonucu hiçbir yerde yazılı değilse etkin `GUNLUK.md` dosyasına "Aşama N kapanış sonucu" kaydı olarak ekletebilirsin.
 
 v0.3.6 ile "3.1'i planla" komutu numaralı alt satırları etkin `PLAN.md` dosyasına kaydeder. Güncelleyici ortak kuralı ve planlama rehberini yeniler. Dolu bir planda yeni düzeni kullanmak için ilgili adımı planlatman yeterli. Var olan adım numaraları ve tamamlanmış satırlar korunur.
+
+v0.3.7 ile plan, onu yazmayan ve sohbeti görmeyen bir ajanın tahmin yürütmeden uygulayabileceği ayrıntıda yazılır: `TASARIM.md` adım başlığına değişecek dosya ve fonksiyonlar, arayüz değişiklikleri, uç durumlar ve test senaryoları girer. Sohbette sunulan plan dosyaya kısaltılmadan aktarılır. Ortak kurala iki madde eklendi: plan eksik veya kodla çelişkiliyse ajan çözüm uydurmadan durur; aynı hata iki denemede çözülemezse kullanıcıya bildirir. Kurallar model ve araçtan bağımsızdır. Güncelleyici ortak kısmı ve planlama rehberini yeniler; dolu `TASARIM.md` değişmez, yeni düzen sonraki planlamadan itibaren uygulanır. Güncellemeden sonra projeye özel kurallarda tekrar ve çelişki listesini iste; uzun projeye özel bölümü olan projelerde `AGENTS.md` 20 bin karakteri geçebilir.
 
 ## Kurulan dosyalar
 
