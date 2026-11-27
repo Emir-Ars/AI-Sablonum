@@ -186,7 +186,7 @@ try {
         }
         if ($copy.source.EndsWith('.ps1') -and ($sourceBytes.Length -lt 3 -or $sourceBytes[0] -ne 239 -or $sourceBytes[1] -ne 187 -or $sourceBytes[2] -ne 191)) { throw ('PowerShell betiği UTF-8 BOM içermeli: ' + $copy.source) }
         $sourceFiles.Add([pscustomobject]@{path=$copy.source; sha256=$sourceHash})
-        $payload.Add([pscustomobject]@{relativePath=$copy.target; path=$targetPath; bytes=$sourceBytes; sha256=$sourceHash})
+        $payload.Add([pscustomobject]@{relativePath=$copy.target; path=$targetPath; bytes=$sourceBytes; sha256=$sourceHash; lfSha256=(Get-LfHash $sourceBytes)})
         $seenTargets[$copy.target] = $true
     }
     foreach ($requiredTarget in $requiredTargets) { if (-not $seenTargets.ContainsKey($requiredTarget)) { throw ('Zorunlu kurulum dosyası eksik: ' + $requiredTarget) } }
@@ -201,10 +201,10 @@ try {
 
     $claudeText = "@AGENTS.md`n`n# Claude için proje girişi`n`nÇalışma kuralları yukarıdaki AGENTS.md içindedir. Oturuma docs/DURUM.md ile başla; uygulama için kullanıcının yetkilendirdiği kapsamı bekle.`n"
     [byte[]]$claudeBytes = $utf8.GetBytes($claudeText)
-    $payload.Add([pscustomobject]@{relativePath='CLAUDE.md'; path=(Get-PackagePath $targetRoot 'CLAUDE.md'); bytes=$claudeBytes; sha256=(Get-BytesHash $claudeBytes)})
+    $payload.Add([pscustomobject]@{relativePath='CLAUDE.md'; path=(Get-PackagePath $targetRoot 'CLAUDE.md'); bytes=$claudeBytes; sha256=(Get-BytesHash $claudeBytes); lfSha256=(Get-LfHash $claudeBytes)})
     $geminiText = "@AGENTS.md`n`n# Gemini için proje girişi`n`nÇalışma kuralları yukarıdaki AGENTS.md içindedir. Oturuma docs/DURUM.md ile başla; uygulama için kullanıcının yetkilendirdiği kapsamı bekle.`n"
     [byte[]]$geminiBytes = $utf8.GetBytes($geminiText)
-    $payload.Add([pscustomobject]@{relativePath='GEMINI.md'; path=(Get-PackagePath $targetRoot 'GEMINI.md'); bytes=$geminiBytes; sha256=(Get-BytesHash $geminiBytes)})
+    $payload.Add([pscustomobject]@{relativePath='GEMINI.md'; path=(Get-PackagePath $targetRoot 'GEMINI.md'); bytes=$geminiBytes; sha256=(Get-BytesHash $geminiBytes); lfSha256=(Get-LfHash $geminiBytes)})
     $recordPath = Get-PackagePath $targetRoot '.ai-sablon/kurulum.json'
     $outputPaths = @($payload | ForEach-Object { $_.path }) + @($recordPath)
     $conflicts = New-Object 'Collections.Generic.List[string]'
@@ -221,7 +221,7 @@ try {
 
     $writeStarted = $true
     foreach ($file in $payload) { Write-NewInstallFile $file.path $file.bytes }
-    $installedFiles = @($payload | ForEach-Object { [pscustomobject]@{path=$_.relativePath; sha256=$_.sha256} })
+    $installedFiles = @($payload | ForEach-Object { [pscustomobject]@{path=$_.relativePath; sha256=$_.sha256; lfSha256=$_.lfSha256} })
     $record = [ordered]@{
         schemaVersion = 1
         templateVersion = $version.version

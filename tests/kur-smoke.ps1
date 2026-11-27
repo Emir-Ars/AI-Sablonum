@@ -3,7 +3,7 @@ param(
     [switch]$KeepTemp
 )
 
-# Kurucu (kur.ps1) için duman testi. Ek modül gerektirmez (Pester yok), Windows PowerShell 5.1 ile çalışır.
+# Kurucu (kur.ps1) ve güncelleyici (guncelle.ps1) için duman testi. Ek modül gerektirmez (Pester yok), Windows PowerShell 5.1 ile çalışır.
 $ErrorActionPreference = 'Stop'
 [Console]::OutputEncoding = [Text.Encoding]::UTF8
 $utf8NoBom = New-Object Text.UTF8Encoding($false)
@@ -169,8 +169,14 @@ try {
         $expectedCount = @($versionInfo.copyFiles).Count + 2
         Assert-True (@($record.installedFiles).Count -eq $expectedCount) ('installedFiles sayısı ' + @($record.installedFiles).Count + ', beklenen ' + $expectedCount)
         foreach ($entry in $record.installedFiles) {
-            $actual = Get-FileSha (Join-Path $cleanTarget ($entry.path.Replace('/', '\')))
+            $installedPath = Join-Path $cleanTarget ($entry.path.Replace('/', '\'))
+            $actual = Get-FileSha $installedPath
             Assert-True ($actual -eq $entry.sha256) ('Kayıtlı hash gerçek dosyadan farklı: ' + $entry.path)
+            Assert-True ($null -ne $entry.PSObject.Properties['lfSha256'] -and $entry.lfSha256 -cmatch '^[0-9a-f]{64}$') ('Kayıtlı lfSha256 geçersiz veya eksik: ' + $entry.path)
+            if ($entry.path.EndsWith('.md')) {
+                $expectedLf = Get-TextLfHash ([IO.File]::ReadAllText($installedPath, $utf8NoBom))
+                Assert-True ($entry.lfSha256 -eq $expectedLf) ('Kayıtlı lfSha256 gerçek LF hash ile farklı: ' + $entry.path)
+            }
         }
         $parts = Read-AgentsParts (Join-Path $cleanTarget 'AGENTS.md')
         Assert-True ($null -ne $record.PSObject.Properties['agentsCommonLfSha256']) 'Temiz kurulumda LF hash alanı yok.'
@@ -180,12 +186,18 @@ try {
 
     Invoke-Scenario '3 Encoding (BOM)' {
         Assert-True ($null -ne $cleanResult -and $cleanResult.Code -eq 0) 'Senaryo 1 başarısız; encoding kontrolü yapılamaz.'
-        foreach ($file in Get-ChildItem -LiteralPath $cleanTarget -Recurse -File -Force -Filter '*.md') {
+        foreach ($file in Get-ChildItem -LiteralPath $cleanTarget -Recurse -File -Force | Where-Object { $_.Extension -in @('.md', '.json') }) {
             $bytes = [IO.File]::ReadAllBytes($file.FullName)
-            Assert-True (-not ($bytes.Length -ge 3 -and $bytes[0] -eq 239 -and $bytes[1] -eq 187 -and $bytes[2] -eq 191)) ('Kurulu .md dosyasında BOM var: ' + $file.Name)
+            Assert-True (-not ($bytes.Length -ge 3 -and $bytes[0] -eq 239 -and $bytes[1] -eq 187 -and $bytes[2] -eq 191)) ('Kurulu metin dosyasında BOM var: ' + $file.Name)
         }
-        $kurBytes = [IO.File]::ReadAllBytes($kurPath)
-        Assert-True ($kurBytes[0] -eq 239 -and $kurBytes[1] -eq 187 -and $kurBytes[2] -eq 191) 'kur.ps1 BOM''lu değil.'
+        foreach ($repoNoBom in @('AGENTS.md', 'CLAUDE.md', 'GEMINI.md', 'surum.json')) {
+            $bytes = [IO.File]::ReadAllBytes((Join-Path $repoRoot $repoNoBom))
+            Assert-True (-not ($bytes.Length -ge 3 -and $bytes[0] -eq 239 -and $bytes[1] -eq 187 -and $bytes[2] -eq 191)) ('Depo dosyasında BOM var: ' + $repoNoBom)
+        }
+        foreach ($psRel in @('kur.ps1', 'guncelle.ps1', 'tests\kur-smoke.ps1', 'tests\bilinen-hashler.ps1')) {
+            $psBytes = [IO.File]::ReadAllBytes((Join-Path $repoRoot $psRel))
+            Assert-True ($psBytes.Length -ge 3 -and $psBytes[0] -eq 239 -and $psBytes[1] -eq 187 -and $psBytes[2] -eq 191) ($psRel + ' BOM''lu değil.')
+        }
     }
 
     Invoke-Scenario 'R1 Kurulu belgelerdeki yerel bağlantılar ve rehber yolları hedefte var' {
@@ -228,6 +240,18 @@ try {
         Assert-True ((Get-FileSha (Join-Path $target 'AGENTS.md')) -eq $rulesHash) 'Kurulu AGENTS.md dağıtılan ortak kurallarla eşleşmiyor.'
         foreach ($name in @('AGENTS.md', 'CLAUDE.md', 'GEMINI.md')) {
             Assert-True ((Get-FileSha (Join-Path $target $name)) -eq (Get-FileSha (Join-Path $cleanTarget $name))) ('Depo rehberleri kurulan dosyayı etkiliyor: ' + $name)
+        }
+    }
+
+    Invoke-Scenario 'R3 kur.ps1 ve guncelle.ps1 koruma listeleri ve giriş dosyaları uyumlu' {
+        Assert-True ($null -ne $cleanResult -and $cleanResult.Code -eq 0) 'Karşılaştırma için temiz kurulum gerekli.'
+        $kurSrc = [IO.File]::ReadAllText($kurPath, $utf8NoBom)
+        $guncelleSrc = [IO.File]::ReadAllText((Join-Path $repoRoot 'guncelle.ps1'), $utf8NoBom)
+        foreach ($varPattern in @('(?m)^\s*\$protectedRoots\s*=\s*(.+?)\r?$', '(?m)^\s*\$blockedTargetPrefixes\s*=\s*(.+?)\r?$', '(?m)^\s*\$expectedGenerated\s*=\s*(.+?)\r?$', '(?m)^\s*\$claudeText\s*=\s*(.+?)\r?$', '(?m)^\s*\$geminiText\s*=\s*(.+?)\r?$')) {
+            $km = [regex]::Match($kurSrc, $varPattern)
+            $gm = [regex]::Match($guncelleSrc, $varPattern)
+            Assert-True ($km.Success -and $gm.Success) ('Parite deseni bulunamadı: ' + $varPattern)
+            Assert-True ($km.Groups[1].Value.Trim() -ceq $gm.Groups[1].Value.Trim()) ('kur.ps1 ve guncelle.ps1 farklı: ' + $varPattern)
         }
     }
 
@@ -793,6 +817,65 @@ try {
         Assert-True ($resKeep.Code -eq 0) ('Koruma güncellemesi başarısız: ' + $resKeep.Err)
         Assert-True ((Get-FileSha $userGeminiPath) -eq $userGeminiHash) 'Kullanıcının GEMINI.md dosyası değişmiş.'
         Assert-True ($resKeep.Out -match 'Kullanıcı değiştirmiş[\s\S]*GEMINI\.md') 'Kullanıcının GEMINI.md dosyası raporda yok.'
+    }
+
+    Invoke-Scenario 'U20 Güncelle: CRLF/LF dönüşümü olan değiştirilmemiş rehber güncellenir, satır sonu korunur' {
+        # (a) Eski kayıt biçimi (lfSha256 yok): LF kurulum -> CRLF dönüşümü -> yeni şablon güncellemesi CRLF'yi korur.
+        $oldLfPkg = Join-Path $runRoot 'u20-eski-lf'
+        New-PackageCopy $oldLfPkg
+        Set-PackageMarkdownLineEndings $oldLfPkg "`n"
+        $oldVer = [IO.File]::ReadAllText((Join-Path $oldLfPkg 'surum.json'), $utf8NoBom)
+        Write-TextNoBom (Join-Path $oldLfPkg 'surum.json') ($oldVer -replace '"version":\s*"[^"]+"', '"version": "0.3.6"')
+        $oldPlanlama = Join-Path $oldLfPkg 'sablon\docs\kurallar\PLANLAMA.md'
+        Write-TextNoBom $oldPlanlama ([IO.File]::ReadAllText($oldPlanlama, $utf8NoBom) + "`neski planlama notu`n")
+        $targetCrlf = Join-Path $runRoot 'u20-crlf'
+        $insA = Invoke-Kur $targetCrlf (Join-Path $oldLfPkg 'kur.ps1')
+        Assert-True ($insA.Code -eq 0) ('U20a kurulumu başarısız: ' + $insA.Err)
+        $recAPath = Join-Path $targetCrlf '.ai-sablon\kurulum.json'
+        $recA = [IO.File]::ReadAllText($recAPath, $utf8NoBom) | ConvertFrom-Json
+        foreach ($e in $recA.installedFiles) { $e.PSObject.Properties.Remove('lfSha256') }
+        Write-TextNoBom $recAPath ((ConvertTo-Json -InputObject $recA -Depth 8) + "`n")
+        $planA = Join-Path $targetCrlf 'docs\kurallar\PLANLAMA.md'
+        $planAText = [IO.File]::ReadAllText($planA, $utf8NoBom)
+        Assert-True (-not $planAText.Contains("`r")) 'U20a başlangıç dosyası LF değil.'
+        Write-TextNoBom $planA ($planAText.Replace("`n", "`r`n"))
+        # Kullanıcı gerçekten değiştirdiği CRLF dosyayı korusun.
+        $gitA = Join-Path $targetCrlf 'docs\kurallar\GIT.md'
+        Write-TextNoBom $gitA (([IO.File]::ReadAllText($gitA, $utf8NoBom) + "`nkullanici degisikligi`n").Replace("`n", "`r`n"))
+        $gitAHash = Get-FileSha $gitA
+        $resA = Invoke-Guncelle $targetCrlf -Apply
+        Assert-True ($resA.Code -eq 0) ('U20a güncellemesi başarısız: ' + $resA.Err)
+        $afterPlanA = [IO.File]::ReadAllText($planA, $utf8NoBom)
+        $expectedPlan = [IO.File]::ReadAllText((Join-Path $repoRoot 'sablon\docs\kurallar\PLANLAMA.md'), $utf8NoBom).Replace("`r`n", "`n")
+        Assert-True ($afterPlanA.Replace("`r`n", "`n") -ceq $expectedPlan) 'CRLF''ye dönen değiştirilmemiş PLANLAMA.md güncellenmemiş.'
+        Assert-True ($afterPlanA.Contains("`r`n") -and -not [regex]::IsMatch($afterPlanA, '(?<!\r)\n')) 'Güncellenen PLANLAMA.md CRLF biçimini korumamış.'
+        Assert-True ((Get-FileSha $gitA) -eq $gitAHash) 'Kullanıcının değiştirdiği CRLF GIT.md değişmiş.'
+        $beforeSecondA = Get-Snapshot $targetCrlf
+        $secondA = Invoke-Guncelle $targetCrlf -Apply
+        Assert-True ($secondA.Code -eq 0) ('U20a ikinci çalıştırma başarısız: ' + $secondA.Err)
+        $diffA = Compare-Snapshot $beforeSecondA (Get-Snapshot $targetCrlf)
+        Assert-True ($null -eq $diffA) ('U20a ikinci çalıştırma dosya değiştirmiş: ' + $diffA)
+
+        # (b) Yeni kayıt biçimi (lfSha256 var): CRLF kurulum -> LF dönüşümü -> yeni LF paketten güncelleme LF kalır.
+        $oldCrlfPkg = Join-Path $runRoot 'u20-eski-crlf'
+        New-PackageCopy $oldCrlfPkg
+        $oldVerB = [IO.File]::ReadAllText((Join-Path $oldCrlfPkg 'surum.json'), $utf8NoBom)
+        Write-TextNoBom (Join-Path $oldCrlfPkg 'surum.json') ($oldVerB -replace '"version":\s*"[^"]+"', '"version": "0.3.6"')
+        $oldPlanlamaB = Join-Path $oldCrlfPkg 'sablon\docs\kurallar\PLANLAMA.md'
+        Write-TextNoBom $oldPlanlamaB ([IO.File]::ReadAllText($oldPlanlamaB, $utf8NoBom) + "`neski planlama b`n")
+        Set-PackageMarkdownLineEndings $oldCrlfPkg "`r`n"
+        $targetLf = Join-Path $runRoot 'u20-lf'
+        $insB = Invoke-Kur $targetLf (Join-Path $oldCrlfPkg 'kur.ps1')
+        Assert-True ($insB.Code -eq 0) ('U20b kurulumu başarısız: ' + $insB.Err)
+        $planB = Join-Path $targetLf 'docs\kurallar\PLANLAMA.md'
+        Write-TextNoBom $planB ([IO.File]::ReadAllText($planB, $utf8NoBom).Replace("`r`n", "`n"))
+        $newLfPkg = Join-Path $runRoot 'u20-yeni-lf'
+        New-PackageCopy $newLfPkg
+        Set-PackageMarkdownLineEndings $newLfPkg "`n"
+        $resB = Invoke-Guncelle $targetLf -Apply -Script (Join-Path $newLfPkg 'guncelle.ps1')
+        Assert-True ($resB.Code -eq 0) ('U20b güncellemesi başarısız: ' + $resB.Err)
+        $afterPlanB = [IO.File]::ReadAllText($planB, $utf8NoBom)
+        Assert-True ($afterPlanB -ceq $expectedPlan) 'LF''ye dönen değiştirilmemiş PLANLAMA.md güncellenmemiş veya LF korunmamış.'
     }
 
 } finally {

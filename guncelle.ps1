@@ -204,11 +204,16 @@ try {
     if ([version]$record.templateVersion -lt [version]'0.2.0') { throw ('Kurulu sürüm (v' + $record.templateVersion + ') v0.2 öncesi belge yapısını kullanıyor; otomatik güncelleme yapılmaz. README "Var olan projeye kurulum" bölümündeki elle birleştirme yolunu kullan.') }
     if ([version]$record.templateVersion -gt [version]$version.version) { throw ('Kurulu sürüm (' + $record.templateVersion + ') bu paketten (' + $version.version + ') yeni; eski pakete geri dönülmez.') }
     $recordedHashes = @{}
+    $recordedLfHashes = @{}
     $recordOrder = New-Object 'Collections.Generic.List[string]'
     foreach ($entry in @($record.installedFiles)) {
-        if ($null -eq $entry -or $entry.path -isnot [string] -or $entry.sha256 -isnot [string] -or $entry.sha256 -notmatch '^[0-9a-f]{64}$') { throw 'Kurulum kaydındaki installedFiles girdisi geçersiz.' }
+        if ($null -eq $entry -or $entry.path -isnot [string] -or $entry.sha256 -isnot [string] -or $entry.sha256 -cnotmatch '^[0-9a-f]{64}$') { throw 'Kurulum kaydındaki installedFiles girdisi geçersiz.' }
         if ($recordedHashes.ContainsKey($entry.path)) { throw ('Kurulum kaydında tekrarlı yol: ' + $entry.path) }
         $recordedHashes[$entry.path] = $entry.sha256
+        if ($null -ne $entry.PSObject.Properties['lfSha256']) {
+            if ($entry.lfSha256 -isnot [string] -or $entry.lfSha256 -cnotmatch '^[0-9a-f]{64}$') { throw 'Kurulum kaydındaki installedFiles lfSha256 girdisi geçersiz.' }
+            $recordedLfHashes[$entry.path] = $entry.lfSha256
+        }
         $recordOrder.Add($entry.path)
     }
     $recordedCommonLf = $null
@@ -240,22 +245,25 @@ try {
         }
         if ($copy.source.EndsWith('.ps1') -and ($sourceBytes.Length -lt 3 -or $sourceBytes[0] -ne 239 -or $sourceBytes[1] -ne 187 -or $sourceBytes[2] -ne 191)) { throw ('PowerShell betiği UTF-8 BOM içermeli: ' + $copy.source) }
         $sourceFiles.Add([pscustomobject]@{path=$copy.source; sha256=$sourceHash})
-        $payload.Add([pscustomobject]@{relativePath=$copy.target; path=$targetPath; bytes=$sourceBytes; sha256=$sourceHash})
+        $payload.Add([pscustomobject]@{relativePath=$copy.target; path=$targetPath; bytes=$sourceBytes; sha256=$sourceHash; lfSha256=(Get-LfHash $sourceBytes)})
         $seenTargets[$copy.target] = $true
     }
     foreach ($requiredTarget in $requiredTargets) { if (-not $seenTargets.ContainsKey($requiredTarget)) { throw ('Zorunlu kurulum dosyası eksik: ' + $requiredTarget) } }
     if ($version.packageStatus -eq 'release' -and $pendingFeatures.Count -gt 0) { throw 'Yayımlanmış paket bekleyen bileşen içeremez.' }
+    $kurScriptPath = Join-Path $sourceRoot 'kur.ps1'
+    if (-not (Test-Path -LiteralPath $kurScriptPath -PathType Leaf)) { throw 'Kaynak pakette kur.ps1 eksik.' }
+    Assert-UnredirectedPath $kurScriptPath
     $sourceFiles.Add([pscustomobject]@{path='surum.json'; sha256=(Get-BytesHash $versionBytes)})
-    $sourceFiles.Add([pscustomobject]@{path='kur.ps1'; sha256=(Get-BytesHash ([IO.File]::ReadAllBytes((Join-Path $sourceRoot 'kur.ps1'))))})
+    $sourceFiles.Add([pscustomobject]@{path='kur.ps1'; sha256=(Get-BytesHash ([IO.File]::ReadAllBytes($kurScriptPath)))})
     $sourceFiles.Add([pscustomobject]@{path='guncelle.ps1'; sha256=(Get-BytesHash ([IO.File]::ReadAllBytes($PSCommandPath)))})
 
     # CLAUDE.md ve GEMINI.md metinleri kur.ps1 ile aynı olmalı.
     $claudeText = "@AGENTS.md`n`n# Claude için proje girişi`n`nÇalışma kuralları yukarıdaki AGENTS.md içindedir. Oturuma docs/DURUM.md ile başla; uygulama için kullanıcının yetkilendirdiği kapsamı bekle.`n"
     [byte[]]$claudeBytes = $utf8.GetBytes($claudeText)
-    $payload.Add([pscustomobject]@{relativePath='CLAUDE.md'; path=(Get-PackagePath $targetRoot 'CLAUDE.md'); bytes=$claudeBytes; sha256=(Get-BytesHash $claudeBytes)})
+    $payload.Add([pscustomobject]@{relativePath='CLAUDE.md'; path=(Get-PackagePath $targetRoot 'CLAUDE.md'); bytes=$claudeBytes; sha256=(Get-BytesHash $claudeBytes); lfSha256=(Get-LfHash $claudeBytes)})
     $geminiText = "@AGENTS.md`n`n# Gemini için proje girişi`n`nÇalışma kuralları yukarıdaki AGENTS.md içindedir. Oturuma docs/DURUM.md ile başla; uygulama için kullanıcının yetkilendirdiği kapsamı bekle.`n"
     [byte[]]$geminiBytes = $utf8.GetBytes($geminiText)
-    $payload.Add([pscustomobject]@{relativePath='GEMINI.md'; path=(Get-PackagePath $targetRoot 'GEMINI.md'); bytes=$geminiBytes; sha256=(Get-BytesHash $geminiBytes)})
+    $payload.Add([pscustomobject]@{relativePath='GEMINI.md'; path=(Get-PackagePath $targetRoot 'GEMINI.md'); bytes=$geminiBytes; sha256=(Get-BytesHash $geminiBytes); lfSha256=(Get-LfHash $geminiBytes)})
 
     $newAgentsItem = @($payload | Where-Object { $_.relativePath -eq 'AGENTS.md' })[0]
     $newAgentsSplit = Split-AgentsBytes $newAgentsItem.bytes
@@ -270,7 +278,7 @@ try {
     $agentsManualBytes = $null
     foreach ($item in $payload) {
         $rel = $item.relativePath
-        $entry = [pscustomobject]@{ Rel = $rel; Path = $item.path; Action = ''; Detail = ''; Bytes = $null; CurHash = $null; NewHash = $item.sha256 }
+        $entry = [pscustomobject]@{ Rel = $rel; Path = $item.path; Action = ''; Detail = ''; Bytes = $null; CurHash = $null; CurLfHash = $null; NewHash = $item.sha256; NewLfHash = $item.lfSha256 }
         $plan.Add($entry)
         Assert-UnredirectedPath $item.path
         $exists = Test-Path -LiteralPath $item.path
@@ -292,6 +300,7 @@ try {
         }
         [byte[]]$currentBytes = [IO.File]::ReadAllBytes($item.path)
         $entry.CurHash = Get-BytesHash $currentBytes
+        $entry.CurLfHash = Get-LfHash $currentBytes
         if ($rel -eq 'AGENTS.md') {
             $currentSplit = $null
             try { $currentSplit = Split-AgentsBytes $currentBytes } catch { $currentSplit = $null }
@@ -328,10 +337,22 @@ try {
             $agentsManualBytes = $newAgentsSplit.Common
             continue
         }
-        if ($entry.CurHash -eq $item.sha256 -or (Get-LfHash $currentBytes) -eq (Get-LfHash $item.bytes)) { $entry.Action = 'Ayni'; continue }
-        if ($null -ne $recordedHash -and $entry.CurHash -eq $recordedHash) {
+        if ($entry.CurHash -eq $item.sha256 -or $entry.CurLfHash -eq $item.lfSha256) { $entry.Action = 'Ayni'; continue }
+        $recordedLfHash = $null
+        if ($recordedLfHashes.ContainsKey($rel)) { $recordedLfHash = $recordedLfHashes[$rel] }
+        $unmodified = ($null -ne $recordedHash -and $entry.CurHash -eq $recordedHash) -or ($null -ne $recordedLfHash -and $entry.CurLfHash -eq $recordedLfHash) -or ($null -eq $recordedLfHash -and $null -ne $recordedHash -and $entry.CurLfHash -eq $recordedHash)
+        if ($unmodified) {
             if (Test-ReadOnlyFile $item.path) { $problems.Add('Salt okunur dosya: ' + $rel) }
-            $entry.Action = 'Guncelle'; $entry.Bytes = $item.bytes
+            $updateBytes = $item.bytes
+            if ($rel.EndsWith('.md')) {
+                $currentText = $null
+                try { $currentText = $utf8.GetString($currentBytes) } catch { $currentText = $null }
+                if ($null -ne $currentText -and $currentText.Contains("`r`n") -and -not [regex]::IsMatch($currentText, '(?<!\r)\n')) {
+                    $newText = $utf8.GetString($item.bytes).Replace("`r`n", "`n").Replace("`n", "`r`n")
+                    $updateBytes = $utf8.GetBytes($newText)
+                }
+            }
+            $entry.Action = 'Guncelle'; $entry.Bytes = $updateBytes
             continue
         }
         $entry.Action = 'Kullanici'
@@ -385,7 +406,7 @@ try {
 
         $versionChanged = ($record.templateVersion -ne $version.version)
         $anyChange = @($plan | Where-Object { $_.Action -in @('Ekle', 'Guncelle', 'AgentsGuncelle') }).Count -gt 0
-        $refreshNeeded = @($plan | Where-Object { $_.Action -eq 'Ayni' -and $recordedHashes.ContainsKey($_.Rel) -and $recordedHashes[$_.Rel] -ne $_.CurHash }).Count -gt 0
+        $refreshNeeded = @($plan | Where-Object { $_.Action -eq 'Ayni' -and $recordedHashes.ContainsKey($_.Rel) -and ($recordedHashes[$_.Rel] -ne $_.CurHash -or ($recordedLfHashes.ContainsKey($_.Rel) -and $recordedLfHashes[$_.Rel] -ne $_.CurLfHash)) }).Count -gt 0
         # Değer aynı kalsa da eski alanın yeni LF alanına taşınması kaydı yenilemeyi gerektirir.
         $commonChanged = ($finalCommonLf -ne $recordedCommonLf) -or ($null -ne $finalCommonLf -and $null -ne $record.PSObject.Properties['agentsCommonSha256'])
         $writeRecord = $anyChange -or $versionChanged -or $refreshNeeded -or $commonChanged
@@ -438,17 +459,24 @@ try {
             # 3. aşama: bütün yazmalar başarılıysa kayıt en son güncellenir.
             if ($writeRecord) {
                 $hashMap = [ordered]@{}
-                foreach ($path in $recordOrder) { $hashMap[$path] = $recordedHashes[$path] }
+                $lfHashMap = @{}
+                foreach ($path in $recordOrder) {
+                    $hashMap[$path] = $recordedHashes[$path]
+                    if ($recordedLfHashes.ContainsKey($path)) { $lfHashMap[$path] = $recordedLfHashes[$path] }
+                }
                 foreach ($row in $plan) {
                     switch ($row.Action) {
-                        'Ekle' { $hashMap[$row.Rel] = $row.NewHash }
-                        'Guncelle' { $hashMap[$row.Rel] = $row.NewHash }
-                        'AgentsGuncelle' { $hashMap[$row.Rel] = (Get-BytesHash $row.Bytes) }
-                        'Ayni' { $hashMap[$row.Rel] = $row.CurHash }
-                        'AgentsAyni' { if (-not $hashMap.Contains($row.Rel)) { $hashMap[$row.Rel] = $row.CurHash } }
+                        'Ekle' { $hashMap[$row.Rel] = (Get-BytesHash $row.Bytes); $lfHashMap[$row.Rel] = (Get-LfHash $row.Bytes) }
+                        'Guncelle' { $hashMap[$row.Rel] = (Get-BytesHash $row.Bytes); $lfHashMap[$row.Rel] = (Get-LfHash $row.Bytes) }
+                        'AgentsGuncelle' { $hashMap[$row.Rel] = (Get-BytesHash $row.Bytes); $lfHashMap[$row.Rel] = (Get-LfHash $row.Bytes) }
+                        'Ayni' { $hashMap[$row.Rel] = $row.CurHash; $lfHashMap[$row.Rel] = $row.CurLfHash }
+                        'AgentsAyni' { if (-not $hashMap.Contains($row.Rel)) { $hashMap[$row.Rel] = $row.CurHash; $lfHashMap[$row.Rel] = $row.CurLfHash } }
                     }
                 }
-                $installedFiles = @($hashMap.Keys | ForEach-Object { [pscustomobject]@{ path = $_; sha256 = $hashMap[$_] } })
+                $installedFiles = @($hashMap.Keys | ForEach-Object {
+                    if ($lfHashMap.ContainsKey($_)) { [pscustomobject]@{ path = $_; sha256 = $hashMap[$_]; lfSha256 = $lfHashMap[$_] } }
+                    else { [pscustomobject]@{ path = $_; sha256 = $hashMap[$_] } }
+                })
                 $newRecord = [ordered]@{}
                 foreach ($property in $record.PSObject.Properties) { $newRecord[$property.Name] = $property.Value }
                 $newRecord['schemaVersion'] = 1

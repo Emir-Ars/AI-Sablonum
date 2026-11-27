@@ -110,7 +110,7 @@ try {
         }
     }
     Write-Output ('Toplam: EKSİK={0} FAZLA={1}; geçmiş ortak kısım={2}' -f $missing, $extra, $historical.Count)
-    if ($missing -gt 0) { exit 1 }
+    if ($missing -gt 0 -or $extra -gt 0) { exit 1 }
     exit 0
 } catch {
     [Console]::Error.WriteLine(('Bilinen hash denetimi başarısız: ' + $_.Exception.Message))
