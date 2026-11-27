@@ -1,26 +1,25 @@
 # Durum
 
-- Son güncelleme: 2026-11-27 17:24 +03:00
-- Sürüm: v0.3.7 (geliştirme).
-- Güncel çalışma: `genel/KURALLAR.md` dış kaynak/prompt injection koruması ve eşzamanlı yazma yetkili ajan kuralı eklendi; değişiklikler henüz commit edilmedi.
+- Son güncelleme: 2026-11-27 21:22 +03:00
+- Sürüm: v0.3.8 (geliştirme).
+- Güncel çalışma: v0.3.8 sürüm yükseltmesi, `README.md`, `docs/DURUM.md` ve `gorseller/akis.svg` güncellendi; Aşama 4 commit ve push bekliyor.
 
 ## Son yapılan
 
-- v0.3.7 (güvenlik ve uyumluluk): `genel/KURALLAR.md` §1.8 olarak dış kaynakların (`arastirma/`, web sayfaları, araç çıktıları, üçüncü taraf dokümanlar) yalnız bilgi kaynağı olduğu ve talimat/yetki kaynağı olmadığı eklendi. §3'teki eşzamanlı çalışma kuralı sağlayıcı/model bağımsız hâle getirilerek aynı çalışma ağacında birden fazla yazma yetkili ajan yasağı ile salt okunur inceleme / ayrı Git worktree istisnası netleştirildi (`15.411` karakter). Önceki ortak metnin (`8ce99b4`) LF hash'i (`3d052a0c...`) `surum.json` listesine eklendi; `README.md` güncellendi.
-- v0.3.7 (`8ce99b4`, push edildi): kurucu/güncelleyiciye `GEMINI.md` (`@AGENTS.md`) üretimi, `.gemini` / `GEMINI_CLI_HOME` / `.agent/` korumaları ve `U19`/`7c` duman senaryoları eklendi; depo köküne `GEMINI.md` eklendi.
-- Kök `AGENTS.md` deponun geliştirme rehberidir; kök `CLAUDE.md` ve `GEMINI.md` aynı rehberi yükler. Yerel notlar `yerel-yedek/` içinde.
+- Aşama 4 (v0.3.8 hazırlık): `surum.json` sürümü `0.3.8`, `pendingFeatures` alanı `agent-session-validation` yapıldı; `README.md`, `docs/DURUM.md` ve `gorseller/akis.svg` (`TASARIM.md` eklendi) güncellendi.
+- Aşama 3 (`80c127f`, push edildi): `kur.ps1` ve `guncelle.ps1` içine `lfSha256` ve CRLF/LF-dirençli güncelleme + CRLF koruma eklendi; `tests/kur-smoke.ps1` tüm `.ps1` BOM denetimi, `R3` parite testi ve `U20` senaryosuyla genişletildi; `tests/bilinen-hashler.ps1` `FAZLA > 0` için `exit 1` yapacak şekilde sıkılaştırıldı; CI `paths` listesine workflow dosyası eklendi.
+- Aşama 2 (`e35743e`, push edildi): `genel/KURALLAR.md` sadeleştirilip `14.784` karaktere indirildi (`.agent`/`.agents`/`.ai-sablon` koruması, §1.2 ve §6 "2 deneme sınırı" görünürlüğü, §3 yol haritası / `TASARIM.md` / `plan: K-xxx` / salt okunur alt ajan netleştirmeleri); önceki ortak metin LF hash'i (`5e91d920...`) `surum.json`'a eklendi.
+- Aşama 1 (`bb83360`, push edildi): `PLANLAMA.md` eleştirel araştırma değerlendirme kuralı ve durum geçişleri eklendi; `ARSIVLEME.md` adım 7 günlük çelişkisi, `GIT.md` geçici mesaj dosyası, `sablonlar/TASARIM.md`, `PLAN.md`, `GUNLUK.md` ve 18 satırlık `DURUM.md` şablonu güncellendi.
 
 ## Doğrulama
 
-- `tests/kur-smoke.ps1` (Windows PowerShell 5.1): 30 geçti, 0 kaldı, 2 atlandı (`7a` junction erişim engellendi, `8` ACL yazmayı engellemedi — yerel sandbox kısıtı).
-- `tests/bilinen-hashler.ps1` (Windows PowerShell 5.1): geçti (`EKSİK=0`, `FAZLA=0`, 14 geçmiş ortak kısım).
-- Gerçek projede v0.3.4 → v0.3.6 güncellemesi (önceki çalışma): kuru çalıştırma 8 dosya ve `AGENTS.md` ortak kısmı yeniledi, 9 dolu belge korundu; projeye özel bölüm korundu.
+- `tests/kur-smoke.ps1` (Windows PowerShell 5.1): 32 geçti, 0 kaldı, 2 atlandı (`7a` junction erişim engellendi, `8` ACL yazmayı engellemedi — yerel sandbox kısıtı).
+- `tests/bilinen-hashler.ps1` (Windows PowerShell 5.1): geçti (`EKSİK=0`, `FAZLA=0`, 15 geçmiş ortak kısım).
 
 ## Açık kalan / sınırlar
 
-- Yeni planlama kuralının bir ajan oturumunda (plan modu → kayıt → uygulama) davranışı henüz gözlenmedi.
-- Uzun projeye özel bölümü olan projede güncelleme sonrası `AGENTS.md` 20 bin karakteri aştı; temizlik projede yapıldı.
+- Yeni planlama ve eleştirel araştırma değerlendirme kurallarının gerçek bir ajan oturumunda (`plan` → kayıt → uygulama) davranışı henüz gözlenmedi (`agent-session-validation`).
 
 ## Sonraki devam noktası
 
-Değişiklikler kullanıcı onayıyla commit edilip push edilebilir; ardından projeler (ör. TiktokGame) v0.3.7'ye güncellenebilir.
+Aşama 4 (v0.3.8) kullanıcı onayıyla commit edilip push edilebilir; ardından kurulu projeler (ör. `Darphane`, `TiktokGame`) kuru çalıştırmayla v0.3.8'e güncellenebilir.

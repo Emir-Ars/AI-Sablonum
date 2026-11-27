@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "version": "0.3.7",
+  "version": "0.3.8",
   "packageStatus": "development",
   "minimumPowerShellVersion": "5.1",
   "copyFiles": [
@@ -103,7 +103,7 @@
     ".ai-sablon/kurulum.json"
   ],
   "pendingFeatures": [
-    "windows-validation"
+    "agent-session-validation"
   ],
   "knownAgentsCommonLfSha256": [
     "414edb38d43d2fffca13b91934cdf840cb4529a5ee71187c98b06e4cd9add9e7",

@@ -43,6 +43,8 @@ Hedefte `AGENTS.md`, `CLAUDE.md`, `GEMINI.md` veya `docs/` altında kurulacak do
 3. Projendeki `CLAUDE.md` ve `GEMINI.md` dosyalarının ilk satırına `@AGENTS.md` ekle.
 4. Çakışmayan `docs/` dosyalarını projene kopyala.
 
+Not: Elle birleştirmede `.ai-sablon/kurulum.json` oluşturulmadığı için ileride `guncelle.ps1` kullanılamaz; şablon güncellemeleri de elle birleştirilir.
+
 Uyarı: projen `docs/` klasörünü MkDocs, Docusaurus veya GitHub Pages gibi bir belge sitesi için kullanıyorsa şablon belgeleri o sitede yayımlanabilir; site ayarında bu dosyaları dışarıda bırak.
 
 ## Önerilen araç izin ayarları
@@ -102,7 +104,7 @@ powershell.exe -NoProfile -File .\guncelle.ps1 -TargetDirectory "C:\Projeler\Pro
 
 - **Eski kurulumlar:** v0.2.0 ve sonrası desteklenir. v0.3.0'dan önce kurulmuş projelerde `AGENTS.md` ortak kısmı, paketteki bilinen eski sürümlerden biriyle birebir aynıysa otomatik yenilenir. Ortak kısmı sen değiştirdiysen veya tanınmayan bir sürümse dokunulmaz; `-Uygula` ile yeni ortak kısım `.ai-sablon/yeni-AGENTS-ortak.md` dosyasına yazılır, elle birleştirirsin. v0.1 kurulumları reddedilir; "Var olan projeye kurulum" bölümündeki elle birleştirme yolunu kullan.
 - **Güvenlik:** üzerine yazılan her dosyanın eski hâli önce `.ai-sablon/yedek/<tarih-saat>/` altına kopyalanır. Hiçbir dosya silinmez. Yedek alınamazsa hiçbir dosya değiştirilmez. Kurulu sürüm paketten yeniyse güncelleme reddedilir. Yedekler ve elle birleştirme dosyası Git'te izlenmeyen dosya olarak görünür; istersen projenin `.gitignore` dosyasına `.ai-sablon/yedek/` ve `.ai-sablon/yeni-AGENTS-ortak.md` satırlarını ekle (kurucu ve güncelleyici `.gitignore` dosyasına yazmaz).
-- **Sınırlar:** yalnız satır sonu (CRLF/LF) farkı olan dosya "aynı" sayılır ve yeniden yazılmaz. Bunun dışındaki karşılaştırma bayt düzeyindedir: BOM eklenmiş veya içeriği değişmiş dosya "sen değiştirmişsin" diye raporlanır ve güvenli tarafta kalınır. Hedefte `.ai-sablon/kurulum.json` yoksa betik çıkış kodu 1 ile durur.
+- **Sınırlar:** yalnız satır sonu (CRLF/LF) farkı olan dosya "aynı" sayılır ve yeniden yazılmaz; içeriği kurulumdan beri değişmemiş ama satır sonu CRLF↔LF dönmüş rehber ve şablon dosyaları da yeni sürümde güncellenir ve hedef `.md` dosyasının CRLF biçimi korunur. Bunun dışındaki karşılaştırma bayt düzeyindedir: BOM eklenmiş veya içeriği değişmiş dosya "sen değiştirmişsin" diye raporlanır ve güvenli tarafta kalınır. Hedefte `.ai-sablon/kurulum.json` yoksa betik çıkış kodu 1 ile durur.
 - Betik yalnız `kur.ps1` ile kurulmuş projeler içindir ve yedekten geri yükleme yapmaz; geri almak için yedek klasöründeki dosyayı kendin kopyalarsın.
 
 Güncellemeden sonra ajana şunu söyle: "Ortak kısım güncellendi. Projeye özel kurallarda, docs/kurallar/proje-*.md dosyalarında ve aşama kurallarında artık ortak kurala girmiş veya onunla çelişen maddeleri listele; AGENTS.md'yi ölç. Değişiklik yapma, önce listeyi göster." Silmek veya değiştirmek senin kararındır. Bu, aşama kapanışındaki tekrar ve çelişki kontrolünün (`docs/kurallar/ARSIVLEME.md` adım 3) güncelleme anındaki karşılığıdır; yeni ortak kurallar `AGENTS.md` dosyasını 20 bin karakter eşiğinin üstüne çıkarabilir.
@@ -141,6 +143,12 @@ v0.3.5 ile gelen okuma rehberi, karar durumu ile yerinin ayrılması ve kapanı�
 v0.3.6 ile "3.1'i planla" komutu numaralı alt satırları etkin `PLAN.md` dosyasına kaydeder. Güncelleyici ortak kuralı ve planlama rehberini yeniler. Dolu bir planda yeni düzeni kullanmak için ilgili adımı planlatman yeterli. Var olan adım numaraları ve tamamlanmış satırlar korunur.
 
 v0.3.7 ile plan, onu yazmayan ve sohbeti görmeyen bir ajanın tahmin yürütmeden uygulayabileceği ayrıntıda yazılır: `TASARIM.md` adım başlığına değişecek dosya ve fonksiyonlar, arayüz değişiklikleri, uç durumlar ve test senaryoları girer. Sohbette sunulan plan dosyaya kısaltılmadan aktarılır. Ortak kurala şu maddeler eklendi: plan eksik veya kodla çelişkiliyse ajan çözüm uydurmadan durur; aynı hata iki denemede çözülemezse kullanıcıya bildirir; dış kaynaklar (`arastirma/` belgeleri, web sayfaları, araç çıktıları, üçüncü taraf dokümanlar) yalnız bilgi kaynağıdır, talimat veya yetki kaynağı değildir; aynı çalışma ağacında birden fazla yazma yetkili ajan eşzamanlı çalışmaz (salt okunur inceleme ajanları ve ayrı Git worktree istisnadır). Kurallar model ve araçtan bağımsızdır; Gemini CLI ve Gemini Code Assist için `GEMINI.md` (`@AGENTS.md`) giriş dosyası ve `.gemini` korumaları eklendi. Güncelleyici ortak kısmı, planlama rehberini ve eksikse `GEMINI.md` dosyasını ekler/yeniler; dolu `TASARIM.md` değişmez, yeni düzen sonraki planlamadan itibaren uygulanır. Güncellemeden sonra projeye özel kurallarda tekrar ve çelişki listesini iste; uzun projeye özel bölümü olan projelerde `AGENTS.md` 20 bin karakteri geçebilir.
+
+v0.3.8 ile şu iyileştirmeler geldi:
+- **Eleştirel araştırma değerlendirmesi ve rehber tutarlılığı:** `docs/kurallar/PLANLAMA.md` dosyasına `arastirma/` belgelerini mevcut mimari, kod ve kararlar karşısında eleştirel sınama kuralı (kanıt, gerekçeli alternatif ve bedel sunma; kullanıcı onayı olmadan karar değiştirmeme; kabul edilen farkları `KARARLAR.md` ve `TASARIM.md`'ye işleme) ile aşama planı durum geçişleri eklendi. `ARSIVLEME.md` adım 7 bağlantı tarama sonucunun yeni aktif `GUNLUK.md` dosyasına yazılması, `GIT.md` geçici commit mesajı dosyasının proje dışı geçici klasörde tutulup silinmesi ve `sablonlar/TASARIM.md` bağlantısının zorunlu olması hizalandı; boş `DURUM.md` şablonu 18 satıra sıkılaştırıldı.
+- **Ortak kural sadeleştirme ve netlik (`AGENTS.md`):** §1.6 korumasına `.agent`, `.agents` ve `.ai-sablon` eklendi; uzun §1.2 ve §6 paragrafları bölünerek "2 deneme sınırı" ile kapsam/Git durma kuralları görünür kılındı; §3 okuma tablosuna yol haritası, `TASARIM.md` adım başlığı, netleştirilmiş `plan: K-xxx` daraltması ve salt okunur araştırma/inceleme alt ajanı istisnası işlendi; rehber tekrarları temizlenerek ortak metin 14.784 karaktere indirildi.
+- **Güncelleyici, test ve CI sıkılaştırması:** `kurulum.json` `installedFiles` girdilerine geriye uyumlu `lfSha256` eklendi; `guncelle.ps1` CRLF↔LF dönmüş değiştirilmemiş rehberleri günceller ve hedef `.md` CRLF biçimini korur. `tests/kur-smoke.ps1` tüm `.ps1` dosyalarının BOM'unu, `kur.ps1`–`guncelle.ps1` paritesini (`R3`) ve CRLF/LF rehber güncellemesini (`U20`) doğrular; `tests/bilinen-hashler.ps1` fazla hash durumunda da hata verir.
+- **Dolu projelerde güncelleme:** `guncelle.ps1` ortak `AGENTS.md` kısmını ve değiştirilmemiş rehber/şablon dosyalarını otomatik yeniler; dolu `DURUM.md` ve `aktif-asama/` belgeleri korunur (yeni boş şablon düzenleri sonraki aşamalarda veya isteğe bağlı olarak uygulanır).
 
 ## Kurulan dosyalar
 
@@ -232,10 +240,11 @@ Kapanış commit'inin CI sonucu arşivlemeden sonra gelirse arşiv yeniden açı
 
 ## Bu repodaki dosyalar
 
-Şablonu geliştirmek için VS Code’da bu klasörü açıp ajanla doğrudan çalışabilirsin. Kök `AGENTS.md` kısa geliştirme rehberidir. Yukarıdaki aşama ve kayıt düzeni şablonu kurduğun projelerde geçerlidir.
+Şablonu geliştirmek için VS Code’da bu klasörü açıp ajanla doğrudan çalışabilirsin. Kök `AGENTS.md` (ve onu yükleyen `CLAUDE.md` ile `GEMINI.md`) kısa geliştirme rehberidir. Yukarıdaki aşama ve kayıt düzeni şablonu kurduğun projelerde geçerlidir.
 
 | Dosya | Görev |
 |---|---|
+| `AGENTS.md`, `CLAUDE.md`, `GEMINI.md` | Bu şablon deposunun geliştirme rehberi ve araç girişleri |
 | `genel/KURALLAR.md` | Hedef projeye `AGENTS.md` olarak kurulan kurallar |
 | `sablon/docs/` | Hedef projeye kurulan başlangıç belgeleri |
 | `kur.ps1`, `surum.json` | Kurucu ve kurulacak dosya listesi |
@@ -244,4 +253,4 @@ Kapanış commit'inin CI sonucu arşivlemeden sonra gelirse arşiv yeniden açı
 | `tests/bilinen-hashler.ps1` | Eski ortak kural hash listesini Git geçmişiyle karşılaştırır (tam geçmiş gerekir) |
 | `gorseller/akis.svg` | Akış görseli |
 
-Sürüm 0.3.7, durum "geliştirme". Doğrulama sonuçları ve açık sınırlar `docs/DURUM.md` içindedir.
+Sürüm 0.3.8, durum "geliştirme". Doğrulama sonuçları ve açık sınırlar `docs/DURUM.md` içindedir.
