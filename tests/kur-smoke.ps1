@@ -166,7 +166,7 @@ try {
             Assert-True ($sourceHash -eq $targetHash) ('Hash farklı: ' + $copy.target)
         }
         $record = [IO.File]::ReadAllText((Join-Path $cleanTarget '.ai-sablon\kurulum.json'), $utf8NoBom) | ConvertFrom-Json
-        $expectedCount = @($versionInfo.copyFiles).Count + 1
+        $expectedCount = @($versionInfo.copyFiles).Count + 2
         Assert-True (@($record.installedFiles).Count -eq $expectedCount) ('installedFiles sayısı ' + @($record.installedFiles).Count + ', beklenen ' + $expectedCount)
         foreach ($entry in $record.installedFiles) {
             $actual = Get-FileSha (Join-Path $cleanTarget ($entry.path.Replace('/', '\')))
@@ -226,7 +226,7 @@ try {
         Assert-True ($result.Code -eq 0) ('Paket kopyasından kurulum başarısız: ' + $result.Err)
         $rulesHash = Get-FileSha (Join-Path $repoRoot 'genel\KURALLAR.md')
         Assert-True ((Get-FileSha (Join-Path $target 'AGENTS.md')) -eq $rulesHash) 'Kurulu AGENTS.md dağıtılan ortak kurallarla eşleşmiyor.'
-        foreach ($name in @('AGENTS.md', 'CLAUDE.md')) {
+        foreach ($name in @('AGENTS.md', 'CLAUDE.md', 'GEMINI.md')) {
             Assert-True ((Get-FileSha (Join-Path $target $name)) -eq (Get-FileSha (Join-Path $cleanTarget $name))) ('Depo rehberleri kurulan dosyayı etkiliyor: ' + $name)
         }
     }
@@ -284,6 +284,14 @@ try {
         # Paket ev klasörünün içindeyse kur.ps1 önce "iç içe" kontrolünde durur; iki ileti de doğru reddin kanıtıdır.
         Assert-True ($result.Err -match 'ev klasörüne|iç içe') 'Hata iletisinde ev klasörü veya iç içe hedef uyarısı yok.'
         Assert-True (-not (Test-Path -LiteralPath $agentsPath) -and -not (Test-Path -LiteralPath $docsPath)) 'Ev klasöründe AGENTS.md veya docs oluşmuş.'
+    }
+
+    Invoke-Scenario '7c Yol güvenliği: global .gemini dizini' {
+        $geminiSub = Join-Path ([Environment]::GetFolderPath('UserProfile')) '.gemini\ai-sablon-smoke-deneme'
+        $result = Invoke-Kur $geminiSub
+        Assert-True ($result.Code -eq 1) ('Çıkış kodu 1 değil: ' + $result.Code)
+        Assert-True ($result.Err -match 'Global yapay zekâ dizinine') 'Global dizin hata iletisi yok.'
+        Assert-True (-not (Test-Path -LiteralPath $geminiSub)) 'Global .gemini altında klasör oluşmuş.'
     }
 
     Invoke-Scenario '8 Orta aşamada hata' {
@@ -757,6 +765,34 @@ try {
         Assert-True ($after.Common.Replace("`r`n", "`n") -ceq $expected.Common.Replace("`r`n", "`n")) 'Ortak kısım yeni sürüme geçmemiş.'
         $record = [IO.File]::ReadAllText((Join-Path $target '.ai-sablon\kurulum.json'), $utf8NoBom) | ConvertFrom-Json
         Assert-True (@($record.installedFiles | Where-Object { $newGuides -contains $_.path }).Count -eq $newGuides.Count) 'Yeni rehberler kurulum kaydına yazılmamış.'
+    }
+
+    Invoke-Scenario 'U19 Güncelle: GEMINI.md olmayan eski kurulum GEMINI.md alır; kullanıcının GEMINI.md dosyası korunur' {
+        $targetAdd = New-OldInstall 'u19-ekle'
+        Remove-Item -LiteralPath (Join-Path $targetAdd 'GEMINI.md') -Force
+        $recordAddPath = Join-Path $targetAdd '.ai-sablon\kurulum.json'
+        $recordAdd = [IO.File]::ReadAllText($recordAddPath, $utf8NoBom) | ConvertFrom-Json
+        $recordAdd.installedFiles = @($recordAdd.installedFiles | Where-Object { $_.path -ne 'GEMINI.md' })
+        Write-TextNoBom $recordAddPath ((ConvertTo-Json -InputObject $recordAdd -Depth 8) + "`n")
+        $resAdd = Invoke-Guncelle $targetAdd -Apply
+        Assert-True ($resAdd.Code -eq 0) ('Ekleme güncellemesi başarısız: ' + $resAdd.Err)
+        Assert-True (Test-Path -LiteralPath (Join-Path $targetAdd 'GEMINI.md') -PathType Leaf) 'GEMINI.md eklenmemiş.'
+        Assert-True ((Get-FileSha (Join-Path $targetAdd 'GEMINI.md')) -eq (Get-FileSha (Join-Path $cleanTarget 'GEMINI.md'))) 'Eklenen GEMINI.md temiz kurulumla aynı değil.'
+        $recordAddAfter = [IO.File]::ReadAllText($recordAddPath, $utf8NoBom) | ConvertFrom-Json
+        Assert-True (@($recordAddAfter.installedFiles | Where-Object { $_.path -eq 'GEMINI.md' }).Count -eq 1) 'GEMINI.md kurulum kaydına yazılmamış.'
+
+        $targetKeep = New-OldInstall 'u19-koru'
+        $userGeminiPath = Join-Path $targetKeep 'GEMINI.md'
+        Write-TextNoBom $userGeminiPath "# Kullanıcıya özel GEMINI.md`n"
+        $userGeminiHash = Get-FileSha $userGeminiPath
+        $recordKeepPath = Join-Path $targetKeep '.ai-sablon\kurulum.json'
+        $recordKeep = [IO.File]::ReadAllText($recordKeepPath, $utf8NoBom) | ConvertFrom-Json
+        $recordKeep.installedFiles = @($recordKeep.installedFiles | Where-Object { $_.path -ne 'GEMINI.md' })
+        Write-TextNoBom $recordKeepPath ((ConvertTo-Json -InputObject $recordKeep -Depth 8) + "`n")
+        $resKeep = Invoke-Guncelle $targetKeep -Apply
+        Assert-True ($resKeep.Code -eq 0) ('Koruma güncellemesi başarısız: ' + $resKeep.Err)
+        Assert-True ((Get-FileSha $userGeminiPath) -eq $userGeminiHash) 'Kullanıcının GEMINI.md dosyası değişmiş.'
+        Assert-True ($resKeep.Out -match 'Kullanıcı değiştirmiş[\s\S]*GEMINI\.md') 'Kullanıcının GEMINI.md dosyası raporda yok.'
     }
 
 } finally {

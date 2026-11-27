@@ -150,13 +150,13 @@ try {
     if ((Test-InDirectory $targetRoot $sourceRoot) -or (Test-InDirectory $sourceRoot $targetRoot)) { throw 'Kaynak paketle iç içe bir hedefe güncelleme yapılmaz.' }
     $profileRoot = Get-LocalPath ([Environment]::GetFolderPath('UserProfile'))
     if ($targetRoot -eq $profileRoot) { throw 'Kullanıcı ev klasörüne güncelleme yapılmaz; bir proje klasörü seç.' }
-    $protectedRoots = @((Join-Path $profileRoot '.codex'), (Join-Path $profileRoot '.claude'), (Join-Path $profileRoot '.agents'), (Join-Path $profileRoot '.vscode'), (Join-Path $profileRoot '.vscode-insiders'))
+    $protectedRoots = @((Join-Path $profileRoot '.codex'), (Join-Path $profileRoot '.claude'), (Join-Path $profileRoot '.gemini'), (Join-Path $profileRoot '.agents'), (Join-Path $profileRoot '.vscode'), (Join-Path $profileRoot '.vscode-insiders'))
     $appDataRoot = [Environment]::GetFolderPath('ApplicationData')
     if (-not [string]::IsNullOrWhiteSpace($appDataRoot)) {
         $protectedRoots += Join-Path $appDataRoot 'Code\User'
         $protectedRoots += Join-Path $appDataRoot 'Code - Insiders\User'
     }
-    foreach ($variableName in @('CODEX_HOME', 'CLAUDE_CONFIG_DIR')) {
+    foreach ($variableName in @('CODEX_HOME', 'CLAUDE_CONFIG_DIR', 'GEMINI_CLI_HOME')) {
         $configuredRoot = [Environment]::GetEnvironmentVariable($variableName)
         if (-not [string]::IsNullOrWhiteSpace($configuredRoot)) { $protectedRoots += Get-LocalPath $configuredRoot }
     }
@@ -184,10 +184,10 @@ try {
 
     if (@($version.copyFiles).Count -lt 1 -or @($version.copyFiles).Count -gt 100) { throw 'Sürüm kaydının kaynak dosya listesi geçersiz.' }
     $allowedSourcePrefixes = @('genel/', 'sablon/')
-    $blockedTargetPrefixes = @('.git/', '.claude/', '.codex/', '.agents/', '.vscode/', '.ai-sablon/')
+    $blockedTargetPrefixes = @('.git/', '.claude/', '.codex/', '.gemini/', '.agents/', '.agent/', '.vscode/', '.ai-sablon/')
     $requiredTargets = @('AGENTS.md', 'docs/DURUM.md', 'docs/aktif-asama/PLAN.md')
-    $expectedGenerated = @('CLAUDE.md', '.ai-sablon/kurulum.json')
-    if (@($version.generatedFiles).Count -ne 2 -or @(Compare-Object ($version.generatedFiles | Sort-Object) ($expectedGenerated | Sort-Object)).Count -ne 0) { throw 'Üretilecek dosya listesi geçersiz.' }
+    $expectedGenerated = @('CLAUDE.md', 'GEMINI.md', '.ai-sablon/kurulum.json')
+    if (@($version.generatedFiles).Count -ne 3 -or @(Compare-Object ($version.generatedFiles | Sort-Object) ($expectedGenerated | Sort-Object)).Count -ne 0) { throw 'Üretilecek dosya listesi geçersiz.' }
     $pendingFeatures = @($version.pendingFeatures | Where-Object { $null -ne $_ })
     if (@($pendingFeatures | Where-Object { $_ -isnot [string] -or $_ -notmatch '^[a-z0-9-]+$' }).Count -gt 0 -or @($pendingFeatures | Select-Object -Unique).Count -ne $pendingFeatures.Count) { throw 'Bekleyen bileşen listesi geçersiz.' }
 
@@ -249,10 +249,13 @@ try {
     $sourceFiles.Add([pscustomobject]@{path='kur.ps1'; sha256=(Get-BytesHash ([IO.File]::ReadAllBytes((Join-Path $sourceRoot 'kur.ps1'))))})
     $sourceFiles.Add([pscustomobject]@{path='guncelle.ps1'; sha256=(Get-BytesHash ([IO.File]::ReadAllBytes($PSCommandPath)))})
 
-    # CLAUDE.md metni kur.ps1 ile aynı olmalı.
+    # CLAUDE.md ve GEMINI.md metinleri kur.ps1 ile aynı olmalı.
     $claudeText = "@AGENTS.md`n`n# Claude için proje girişi`n`nÇalışma kuralları yukarıdaki AGENTS.md içindedir. Oturuma docs/DURUM.md ile başla; uygulama için kullanıcının yetkilendirdiği kapsamı bekle.`n"
     [byte[]]$claudeBytes = $utf8.GetBytes($claudeText)
     $payload.Add([pscustomobject]@{relativePath='CLAUDE.md'; path=(Get-PackagePath $targetRoot 'CLAUDE.md'); bytes=$claudeBytes; sha256=(Get-BytesHash $claudeBytes)})
+    $geminiText = "@AGENTS.md`n`n# Gemini için proje girişi`n`nÇalışma kuralları yukarıdaki AGENTS.md içindedir. Oturuma docs/DURUM.md ile başla; uygulama için kullanıcının yetkilendirdiği kapsamı bekle.`n"
+    [byte[]]$geminiBytes = $utf8.GetBytes($geminiText)
+    $payload.Add([pscustomobject]@{relativePath='GEMINI.md'; path=(Get-PackagePath $targetRoot 'GEMINI.md'); bytes=$geminiBytes; sha256=(Get-BytesHash $geminiBytes)})
 
     $newAgentsItem = @($payload | Where-Object { $_.relativePath -eq 'AGENTS.md' })[0]
     $newAgentsSplit = Split-AgentsBytes $newAgentsItem.bytes

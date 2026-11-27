@@ -99,6 +99,7 @@
   ],
   "generatedFiles": [
     "CLAUDE.md",
+    "GEMINI.md",
     ".ai-sablon/kurulum.json"
   ],
   "pendingFeatures": [
@@ -116,6 +117,7 @@
     "0d043c3a7b7dc978d61d3e32170d3430df888d93240225f12cde83c317c7b824",
     "0d57a61d262e7e59fa77f230a6733aa4628b41b748f55d829bf61615786c8b65",
     "97c2680604de5fdaf356e81543cef85f9d34c6d77992367efb41e018117ee0c8",
-    "1e3dd4a4658ed9663850e17aeac273b005ea8f2dcfb55e821fcb98fe1218d4fc"
+    "1e3dd4a4658ed9663850e17aeac273b005ea8f2dcfb55e821fcb98fe1218d4fc",
+    "be870758ef8b1e0ca1a658b155387dd055b145e199381f2d158d3e34681bcceb"
   ]
 }

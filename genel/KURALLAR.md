@@ -9,7 +9,7 @@ Bu dosya her oturumda otomatik yüklenir; gereksiz yere yeniden okunmaz. `docs/k
 3. `git add .` / `git add -A` kullanılmaz. Commit açık onayla, push ve birleştirme ayrı onayla yapılır. `git push --force`, `git reset --hard`, `git clean`, dal silme (yerel veya uzak) ve toplu silme açık onay ister. Dosyalar tek tek eklenir; `.gitignore` kapsamındaki dosya commit'e katılmaz. Commit ve PR açıklamasına yapay zekâ imzası veya `Co-Authored-By` eklenmez.
 4. Şifre, anahtar ve token hiçbir dosyaya, komuta veya mesaja yazılmaz. `.env` ve gizli ayar değişikliği önce sorulur.
 5. Çalıştırılmayan test veya gözlenmeyen sonuç "doğrulandı" diye yazılmaz.
-6. Global ayar, skill, eklenti ve `.claude` / `.codex` klasörleri değiştirilmez.
+6. Global ayar, skill, eklenti ve `.claude` / `.codex` / `.gemini` klasörleri değiştirilmez.
 7. Alt ajana iş verirken kapsamı ve bu dosyadaki sınırları (ağ, canlı sistem, gerçek veri, yazma yetkisi) görevle birlikte ver; alt ajanın sınır aşımını kullanıcıya bildir.
 
 - **Dur ve danış:** planda olmayan iş (küçük iş istisnası dışında), kapsam değişikliği, yeni bağımlılık, mimari seçim, gizli ayar, biten aşamanın arayüzünü değiştirme, çözülemeyen test hatası, geri alınması zor işlem. Plan veya tasarım uygulama için gereken bir bilgiyi vermiyorsa ya da kodla çelişiyorsa kendi çözümünü uydurma; eksik bilgiyi belirt ve dur.
@@ -43,7 +43,7 @@ Bu dosya her oturumda otomatik yüklenir; gereksiz yere yeniden okunmaz. `docs/k
 - Bağlamdaki bilgi yeniden okunur: dosya dışarıdan değişmişse, dal değişmişse, kayıt ile kod çelişiyorsa veya bilgi artık bağlamda yoksa.
 - `GUNLUK.md` ve `docs/arsiv/` her mesajda ve baştan sona okunmaz; aranır veya yalnız ilgili bölümü okunur. `docs/ACIK_KONULAR.md` ilgili konu gelince aranır.
 - Aktif plan veya aşama yoksa bu normal başlangıçtır; olmayan dosya tekrar aranmaz.
-- Kayıtlar çelişiyor veya eskimişse uygulamadan önce bildir. Codex ve Claude aynı projede aynı anda çalışmaz; araç değişince yeni sohbette önce durum özetlenir.
+- Kayıtlar çelişiyor veya eskimişse uygulamadan önce bildir. Farklı yapay zekâ araçları aynı projede aynı anda çalışmaz; araç değişince yeni sohbette önce durum özetlenir.
 
 ## 4. Kayıtlar: ne zaman ve nereye
 

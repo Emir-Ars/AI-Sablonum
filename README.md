@@ -1,6 +1,8 @@
-# AI proje şablonu (Codex + Claude)
+# AI proje şablonu (Codex + Claude + Gemini)
 
-Codex ve Claude ile VS Code'da proje geliştirirken aynı çalışma düzenini kullanmak için kurulan küçük bir kural ve belge paketi.
+Codex, Claude Code, Gemini CLI, Gemini Code Assist ve Google Antigravity ile aynı çalışma düzenini kullanmak için kurulan küçük bir kural ve belge paketi.
+
+Ortak kurallar proje kökündeki `AGENTS.md` dosyasındadır. Codex ve Google Antigravity bu dosyayı doğrudan okur ([Antigravity kural dosyaları](https://antigravity.google/docs/rules)); kurucu Claude için `CLAUDE.md`, Gemini CLI ve Gemini Code Assist için `GEMINI.md` (`@AGENTS.md`) giriş dosyalarını üretir.
 
 Hedefler:
 - **Bağlamı küçük tutma:** her oturumda kısa kurallar, durum notu ve planın yalnız başlangıç bölümü ile ilgili adımları okunur; ayrıntılı rehberler yalnız ilgili işte okunur.
@@ -24,7 +26,7 @@ Betik çalıştırma engellenirse yalnız bu işlem için:
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\kur.ps1 -TargetDirectory "C:\Projeler\ProjeAdi"
 ```
 
-Kurucu yalnız yeni dosya ekler. Kurulacak dosyalardan biri hedefte varsa hiçbir şey yazmadan durur. Ağ veya Git işlemi yapmaz; `.claude`, `.codex` ve diğer global klasörlere dokunmaz. Projendeki diğer dosyalar olduğu gibi kalır.
+Kurucu yalnız yeni dosya ekler. Kurulacak dosyalardan biri hedefte varsa hiçbir şey yazmadan durur. Ağ veya Git işlemi yapmaz; `.claude`, `.codex`, `.gemini` ve diğer global klasörlere dokunmaz. Projendeki diğer dosyalar olduğu gibi kalır.
 
 Windows'ta araçlar Markdown dosyalarını CRLF satır sonuyla kaydedebilir; o zaman Git bütün dosyayı değişmiş gösterir ve küçük kayıt değişiklikleri büyük fark gibi görünür. Projenin `.gitattributes` dosyasına `*.md text eol=lf` satırını eklemen önerilir. Kurucu ve güncelleyici bu dosyaya yazmaz; satırı sen eklersin.
 
@@ -34,11 +36,11 @@ Ajana repo bağlantısını verip kurdurmak istersen şunu söyleyebilirsin:
 
 ## Var olan projeye kurulum
 
-Hedefte `AGENTS.md`, `CLAUDE.md` veya `docs/` altında kurulacak dosyalardan aynı adlı biri varsa kurucu hiçbir şey yazmadan durur. Elle birleştirmek için:
+Hedefte `AGENTS.md`, `CLAUDE.md`, `GEMINI.md` veya `docs/` altında kurulacak dosyalardan aynı adlı biri varsa kurucu hiçbir şey yazmadan durur. Elle birleştirmek için:
 
 1. Şablonu boş bir geçici klasöre kur.
-2. Projendeki mevcut `AGENTS.md` / `CLAUDE.md` içeriğini kurulan `AGENTS.md` dosyasının "Projeye özel kurallar" bölümüne taşı.
-3. Projendeki `CLAUDE.md` dosyasının ilk satırına `@AGENTS.md` ekle.
+2. Projendeki mevcut `AGENTS.md` / `CLAUDE.md` / `GEMINI.md` içeriğini kurulan `AGENTS.md` dosyasının "Projeye özel kurallar" bölümüne taşı.
+3. Projendeki `CLAUDE.md` ve `GEMINI.md` dosyalarının ilk satırına `@AGENTS.md` ekle.
 4. Çakışmayan `docs/` dosyalarını projene kopyala.
 
 Uyarı: projen `docs/` klasörünü MkDocs, Docusaurus veya GitHub Pages gibi bir belge sitesi için kullanıyorsa şablon belgeleri o sitede yayımlanabilir; site ayarında bu dosyaları dışarıda bırak.
@@ -73,6 +75,8 @@ Uyarı: projen `docs/` klasörünü MkDocs, Docusaurus veya GitHub Pages gibi bi
 - `Read(...)` ve `Edit(...)` yasakları Claude'un dosya araçlarına ve tanıdığı dosya komutlarına (ör. `cat`, `head`) uygulanır; dosya adını vermeden okuyan komutlara (ör. `grep -r`) ve dosyayı kendisi açan betiklere (Python, Node) uygulanmaz. Codex bu dosyayı okumaz. Ajanın hiç okumaması gereken veri için kod içinde erişim kontrolü ve test kullan; işletim sistemi düzeyinde koruma için aracın sandbox ayarına bak ([belge](https://code.claude.com/docs/en/permissions)). Belgeye göre Claude Code yerel Windows'ta komutları sandbox'sız çalıştırır ([sandbox belgesi](https://code.claude.com/docs/en/sandboxing)).
 
 **Codex.** Onay ve sandbox ayarları `config.toml` dosyasında yapılır: kullanıcı düzeyinde `~/.codex/config.toml`, proje düzeyinde `.codex/config.toml` (yalnız güvenilen projelerde yüklenir). İlgili anahtarlar `approval_policy` (ör. `"on-request"`) ve `sandbox_mode` (ör. `"workspace-write"`) anahtarlarıdır. Geçerli değerlerin tam listesini [Codex belgesinden](https://developers.openai.com/codex/config-basic) kontrol et; bu README'de yalnız belgede örnek olarak geçenler anılmıştır.
+
+**Gemini CLI.** Kullanıcı düzeyi ayarlar `~/.gemini/settings.json`, proje düzeyi ayarlar `.gemini/settings.json` dosyasında yapılır. Sandbox (`--sandbox` / `GEMINI_SANDBOX`) ve kural tabanlı araç izinleri (`allow`, `deny`, `ask_user` ile Policy Engine) için [Gemini CLI yapılandırma](https://geminicli.com/docs/get-started/configuration) ve [Policy Engine](https://geminicli.com/docs/core/policy-engine) belgelerine bak.
 
 ## Kurulu projeyi güncelleme
 
@@ -136,14 +140,15 @@ v0.3.5 ile gelen okuma rehberi, karar durumu ile yerinin ayrılması ve kapanı�
 
 v0.3.6 ile "3.1'i planla" komutu numaralı alt satırları etkin `PLAN.md` dosyasına kaydeder. Güncelleyici ortak kuralı ve planlama rehberini yeniler. Dolu bir planda yeni düzeni kullanmak için ilgili adımı planlatman yeterli. Var olan adım numaraları ve tamamlanmış satırlar korunur.
 
-v0.3.7 ile plan, onu yazmayan ve sohbeti görmeyen bir ajanın tahmin yürütmeden uygulayabileceği ayrıntıda yazılır: `TASARIM.md` adım başlığına değişecek dosya ve fonksiyonlar, arayüz değişiklikleri, uç durumlar ve test senaryoları girer. Sohbette sunulan plan dosyaya kısaltılmadan aktarılır. Ortak kurala iki madde eklendi: plan eksik veya kodla çelişkiliyse ajan çözüm uydurmadan durur; aynı hata iki denemede çözülemezse kullanıcıya bildirir. Kurallar model ve araçtan bağımsızdır. Güncelleyici ortak kısmı ve planlama rehberini yeniler; dolu `TASARIM.md` değişmez, yeni düzen sonraki planlamadan itibaren uygulanır. Güncellemeden sonra projeye özel kurallarda tekrar ve çelişki listesini iste; uzun projeye özel bölümü olan projelerde `AGENTS.md` 20 bin karakteri geçebilir.
+v0.3.7 ile plan, onu yazmayan ve sohbeti görmeyen bir ajanın tahmin yürütmeden uygulayabileceği ayrıntıda yazılır: `TASARIM.md` adım başlığına değişecek dosya ve fonksiyonlar, arayüz değişiklikleri, uç durumlar ve test senaryoları girer. Sohbette sunulan plan dosyaya kısaltılmadan aktarılır. Ortak kurala iki madde eklendi: plan eksik veya kodla çelişkiliyse ajan çözüm uydurmadan durur; aynı hata iki denemede çözülemezse kullanıcıya bildirir. Kurallar model ve araçtan bağımsızdır; Gemini CLI ve Gemini Code Assist için `GEMINI.md` (`@AGENTS.md`) giriş dosyası ve `.gemini` korumaları eklendi. Güncelleyici ortak kısmı, planlama rehberini ve eksikse `GEMINI.md` dosyasını ekler/yeniler; dolu `TASARIM.md` değişmez, yeni düzen sonraki planlamadan itibaren uygulanır. Güncellemeden sonra projeye özel kurallarda tekrar ve çelişki listesini iste; uzun projeye özel bölümü olan projelerde `AGENTS.md` 20 bin karakteri geçebilir.
 
 ## Kurulan dosyalar
 
 ```text
 ProjeAdi/
-├── AGENTS.md                 Kurallar (Codex okur; her oturumda yüklenir)
+├── AGENTS.md                 Ortak kurallar (Codex ve Antigravity doğrudan okur)
 ├── CLAUDE.md                 @AGENTS.md (Claude aynı kuralları okur)
+├── GEMINI.md                 @AGENTS.md (Gemini CLI ve Code Assist aynı kuralları okur)
 ├── .ai-sablon/kurulum.json   Kurulan sürüm ve dosya özetleri
 └── docs/
     ├── DURUM.md              Şu an neredeyiz (oturum başında ilk okunan)
@@ -239,4 +244,4 @@ Kapanış commit'inin CI sonucu arşivlemeden sonra gelirse arşiv yeniden açı
 | `tests/bilinen-hashler.ps1` | Eski ortak kural hash listesini Git geçmişiyle karşılaştırır (tam geçmiş gerekir) |
 | `gorseller/akis.svg` | Akış görseli |
 
-Sürüm 0.3.6, durum "geliştirme". Doğrulama sonuçları ve açık sınırlar `docs/DURUM.md` içindedir.
+Sürüm 0.3.7, durum "geliştirme". Doğrulama sonuçları ve açık sınırlar `docs/DURUM.md` içindedir.
