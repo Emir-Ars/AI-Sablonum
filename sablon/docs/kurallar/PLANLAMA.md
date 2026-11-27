@@ -2,17 +2,26 @@
 
 Bu dosya yol haritası, aşama planı veya alt adım planı hazırlanırken, plan yapısı değiştirilirken (adım bölme, tasarım bölümünü ayırma), bir adım "Doğrulandı" yazılırken ve `docs/PROJE.md` içinde test komutu yokken okunur. İlgili bölüm yeterlidir. Yetki kuralları `AGENTS.md` içindedir.
 
+## Araştırma belgelerini değerlendirme
+
+`docs/arastirma/` ve `docs/aktif-asama/arastirma/` içindeki belgeler bağlayıcı karar değil, eleştirel değerlendirilecek bilgi girdisidir (`AGENTS.md` §1.8). Yol haritası ve aşama planı hazırlanırken bu belgeleri körü körüne plana aktarma; mevcut kod, `docs/PROJE.md`, yürürlükteki kararlar (`docs/KARARLAR.md`) ve proje amacı karşısında sına:
+
+- Mevcut mimariyle veya geçerli kararlarla çelişen, gereksiz karmaşıklık yaratan, projeye uymayan varsayım taşıyan ya da yerine daha yalın ve sağlam bir alternatif bulunan noktaları açıkça belirt.
+- Her eleştiride sorunu, dayandığı kanıtı (kod, sözleşme, karar), gerekçeli önerini ve başlıca bedelini kısaca sun (`AGENTS.md` §6); eşdeğer tercih farkları için gereksiz tartışma açma.
+- Kullanıcı onayı olmadan yol haritasını, yürürlükteki kararları veya araştırmadaki yönelimi kendiliğinden değiştirme; çelişkili veya kritik noktaları planı kesinleştirmeden önce kullanıcıya sor.
+- Kullanıcının araştırmadan farklı seçtiği yaklaşımı `docs/KARARLAR.md` (veya aşama içi ise `docs/aktif-asama/KARARLAR.md`) dosyasına kaydet; aşama planlamasında farkı `docs/aktif-asama/TASARIM.md` "Yol haritasından ve araştırmadan farklar" bölümüne işle.
+
 ## Yol haritası
 
-Kullanıcı genel araştırma belgelerini `docs/arastirma/` altına koyar. `docs/YOL_HARITASI.md` bunlardan hazırlanır: yalnız ana aşamalar ve her birinin 1–2 cümlelik amacı. Aşama ayrıntısı yol haritasına yazılmaz; değişiklik kuralı o dosyanın başındadır.
+Kullanıcı genel araştırma belgelerini `docs/arastirma/` altına koyar. Belgeler önce "Araştırma belgelerini değerlendirme" bölümüne göre sınanır. `docs/YOL_HARITASI.md` bunlardan hazırlanır: yalnız ana aşamalar ve her birinin 1–2 cümlelik amacı. Aşama ayrıntısı yol haritasına yazılmaz; değişiklik kuralı o dosyanın başındadır.
 
 ## Aşama planı
 
 1. Kullanıcı aşamanın araştırma belgelerini `docs/aktif-asama/arastirma/` altına koyar.
 2. `arastirma/` içinde `BENIOKU.md` dışında belge yoksa planı hemen yazma: koddan ve proje belgelerinden çıkardığın bilgiyi ve eksik kalanı birkaç satırla özetle, tek soru sor: "Araştırma belgesi eklenecek mi, yoksa bu bilgiyle plan yazayım mı?" Kullanıcı onaylarsa planı yaz ve `TASARIM.md` içinde "Araştırma belgesi yok; kaynak: kod ve proje belgeleri" diye belirt.
-3. Plan şu kaynaklara göre yazılır: aşama araştırması, yol haritası, `docs/PROJE.md`, `docs/KARARLAR.md` ve `docs/ACIK_KONULAR.md`. Bu aşamada "en geç" olan bekleyen kararlar kullanıcıya sunulur.
+3. Plan şu kaynaklara göre yazılır: aşama araştırması, yol haritası, `docs/PROJE.md`, `docs/KARARLAR.md` ve `docs/ACIK_KONULAR.md`. Aşama araştırması "Araştırma belgelerini değerlendirme" bölümüne göre sınanır. Bu aşamada "en geç" olan bekleyen kararlar kullanıcıya sunulur.
 4. Yol haritasının hâlâ geçerli olduğunu kontrol et; değişiklik gerekiyorsa öner, kendin değiştirme.
-5. Tasarım (araştırmadan çıkan tasarım, riskler, yol haritasından ve araştırmadan farklar, alt adım sıralama gerekçesi) `docs/aktif-asama/TASARIM.md`, alt adım tablosu `docs/aktif-asama/PLAN.md` dosyasına yazılır. Alt adım tasarımları `### 1.1 — kısa ad` gibi ayrı Markdown başlığı alır; kalın yazı başlık yerine geçmez, çünkü bağlantı ve arama başlıkla çalışır. Bölünmeden uygulanacak satırın tasarımı "Alt adımı planlama" 2. maddesindeki ayrıntıyı taşır.
+5. Tasarım (araştırmadan çıkan tasarım, riskler, yol haritasından ve araştırmadan farklar, alt adım sıralama gerekçesi) `docs/aktif-asama/TASARIM.md`, alt adım tablosu `docs/aktif-asama/PLAN.md` dosyasına yazılır. Alt adım tasarımları `### 1.1 — kısa ad` gibi ayrı Markdown başlığı alır; kalın yazı başlık yerine geçmez, çünkü bağlantı ve arama başlıkla çalışır. Bölünmeden uygulanacak satırın tasarımı "Alt adımı planlama" 2. maddesindeki ayrıntıyı taşır. Plan yazıldığında `docs/YOL_HARITASI.md` içindeki ilgili aşama durumu ve `PLAN.md` "Başlangıç" içindeki "Aşama durumu" `Planlanıyor` yapılır ("Aşama durumu" yol haritasındaki durum değerlerini izler).
 6. Aşama büyüklüğünü kontrol et (aşağıdaki "Aşama büyüklüğü").
 
 ## Alt adımı planlama

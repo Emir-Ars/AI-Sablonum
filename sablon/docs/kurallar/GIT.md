@@ -7,7 +7,7 @@ Bu dosya commit önerirken, commit, push, birleştirme veya dal silme yaparken v
 1. İlgili doğrulamaları çalıştır.
 2. Değişen dosya listesini ve Türkçe commit mesajını öner. Liste, kodla birlikte değişen hafıza belgelerini (`DURUM.md`, `PLAN.md`, `GUNLUK.md`, kararlar, `PROJE.md`) de içerir.
 3. Kullanıcı onayından sonra dosyaları tek tek ekle; `.gitignore` kapsamındaki dosya commit'e katılmaz.
-4. Türkçe mesajı BOM'suz UTF-8 bir dosyaya yaz ve `git commit -F <dosya>` ile kullan.
+4. Türkçe mesajı proje dışındaki geçici bir klasörde (ör. `$env:TEMP`) BOM'suz UTF-8 dosyaya yaz, `git commit -F <dosya>` ile kullan ve commit sonrası geçici dosyayı sil (çalışma ağacında bırakma).
 5. Sonucu `git log --oneline -1` ve `git status --short` ile gözle; commit kimliğini bildir.
 
 Kullanıcı commit kapsamını daraltırsa dışarıda kalan önemli kayıtları (ör. güncellenmiş `PLAN.md`) bildir; kendiliğinden ekleme.

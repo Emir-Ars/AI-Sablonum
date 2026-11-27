@@ -20,10 +20,11 @@ Henüz kayıt yok.
 - Yarım kaldıysa: Kalan iş, engel ve devam noktası.
 ```
 
-Kapanış sonucu (kapanmış aşamanın commit'inin sonradan gelen sonucu; arşiv değişmez):
+Kapanış sonucu (adım 7 bağlantı taraması ve kapanmış aşamanın commit/CI sonucu; arşiv değişmez):
 
 ```text
 ## yyyy-MM-dd HH:mm — Aşama 2 kapanış sonucu
+- Bağlantı taraması: kırık bağlantı sayısı.
 - Commit: gözlenen commit kimliği.
 - Sonuç: CI yeşil / kırmızı / okunamadı; varsa koşu kimliği veya bağlantısı.
 ```
